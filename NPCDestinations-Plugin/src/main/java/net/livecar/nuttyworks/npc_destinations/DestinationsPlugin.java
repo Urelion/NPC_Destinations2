@@ -2,7 +2,8 @@ package net.livecar.nuttyworks.npc_destinations;
 
 import net.citizensnpcs.Citizens;
 import net.citizensnpcs.api.event.CitizensDisableEvent;
-import net.livecar.nuttyworks.npc_destinations.bridges.*;
+import net.livecar.nuttyworks.npc_destinations.bridges.MCUtil_1_18_R1R2;
+import net.livecar.nuttyworks.npc_destinations.bridges.MCUtilsBridge;
 import net.livecar.nuttyworks.npc_destinations.citizens.Citizens_Processing;
 import net.livecar.nuttyworks.npc_destinations.citizens.Citizens_Utilities;
 import net.livecar.nuttyworks.npc_destinations.citizens.Citizens_WaypointProvider;
@@ -18,7 +19,8 @@ import net.livecar.nuttyworks.npc_destinations.messages.Language_Manager;
 import net.livecar.nuttyworks.npc_destinations.messages.Messages_Manager;
 import net.livecar.nuttyworks.npc_destinations.messages.jsonChat;
 import net.livecar.nuttyworks.npc_destinations.metrics.BStat_Metrics;
-import net.livecar.nuttyworks.npc_destinations.particles.*;
+import net.livecar.nuttyworks.npc_destinations.particles.PlayParticleInterface;
+import net.livecar.nuttyworks.npc_destinations.particles.PlayParticle_1_18_R1R2;
 import net.livecar.nuttyworks.npc_destinations.pathing.AstarPathFinder;
 import net.livecar.nuttyworks.npc_destinations.plugins.Plugin_Manager;
 import net.livecar.nuttyworks.npc_destinations.plugins.timemanager.DestinationsTimeManager;
@@ -26,11 +28,11 @@ import net.livecar.nuttyworks.npc_destinations.plugins.timemanager.realworldtime
 import net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.betonquest.BetonQuest_Interface;
 import net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.jobsreborn.JobsReborn_Plugin;
 import net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.plotsquared.PlotSquared;
-import net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.plotsquared.PlotSquared_Plugin_V3;
 import net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.plotsquared.PlotSquared_Plugin_V6;
 import net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.sentinel.Sentinel_Plugin;
 import net.livecar.nuttyworks.npc_destinations.utilities.Utilities;
-import net.livecar.nuttyworks.npc_destinations.worldguard.*;
+import net.livecar.nuttyworks.npc_destinations.worldguard.WorldGuardInterface;
+import net.livecar.nuttyworks.npc_destinations.worldguard.WorldGuard_7_0_7;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -45,45 +47,44 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-//  use regions to define he wonder area
 public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implements org.bukkit.event.Listener {
 
-    public static DestinationsPlugin Instance            = null;
+    public static DestinationsPlugin Instance = null;
 
     // For quick reference to this instance of the plugin.
-    public FileConfiguration         getDefaultConfig;
+    public FileConfiguration getDefaultConfig;
 
     // variables
-    public List<DebugTarget>         debugTargets        = null;
-    public jsonChat                  jsonChat            = null;
-    public AstarPathFinder           getPathClass        = null;
-    public String                    currentLanguage     = "en_def";
-    public Level                     debugLogLevel       = Level.OFF;
-    public int                       maxDistance         = 500;
-    public int                       Version             = 10000;
-    public int                       entityRadius        = 47 * 47;
+    public List<DebugTarget> debugTargets = null;
+    public jsonChat jsonChat = null;
+    public AstarPathFinder getPathClass = null;
+    public String currentLanguage = "en_def";
+    public Level debugLogLevel = Level.OFF;
+    public int maxDistance = 500;
+    public int Version = 10000;
+    public int entityRadius = 47 * 47;
 
     // Storage locations
-    public File                      languagePath;
-    public File                      loggingPath;
+    public File languagePath;
+    public File loggingPath;
 
     // Links to classes
-    public Language_Manager          getLanguageManager  = null;
-    public Messages_Manager          getMessageManager   = null;
-    public Citizens                  getCitizensPlugin   = null;
-    public BetonQuest_Interface      getBetonQuestPlugin = null;
-    public LightAPI_Plugin           getLightPlugin      = null;
-    public JobsReborn_Plugin         getJobsRebornPlugin = null;
-    public Sentinel_Plugin           getSentinelPlugin   = null;
-    public Plugin_Manager            getPluginManager    = null;
-    public WorldGuardInterface       getWorldGuardPlugin = null;
-    public PlayParticleInterface getParticleManager  = null;
-    public Utilities                 getUtilitiesClass   = null;
-    public Command_Manager           getCommandManager   = null;
-    public Citizens_Processing       getCitizensProc     = null;
-    public PlotSquared               getPlotSquared      = null;
-    public MCUtilsBridge             getMCUtils          = null;
-    public DestinationsTimeManager   getTimeManager      = null;
+    public Language_Manager getLanguageManager = null;
+    public Messages_Manager getMessageManager = null;
+    public Citizens getCitizensPlugin = null;
+    public BetonQuest_Interface getBetonQuestPlugin = null;
+    public LightAPI_Plugin getLightPlugin = null;
+    public JobsReborn_Plugin getJobsRebornPlugin = null;
+    public Sentinel_Plugin getSentinelPlugin = null;
+    public Plugin_Manager getPluginManager = null;
+    public WorldGuardInterface getWorldGuardPlugin = null;
+    public PlayParticleInterface getParticleManager = null;
+    public Utilities getUtilitiesClass = null;
+    public Command_Manager getCommandManager = null;
+    public Citizens_Processing getCitizensProc = null;
+    public PlotSquared getPlotSquared = null;
+    public MCUtilsBridge getMCUtils = null;
+    public DestinationsTimeManager getTimeManager = null;
 
     public void onLoad() {
         DestinationsPlugin.Instance = this;
@@ -93,12 +94,9 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
             getServer().getLogger().log(Level.WARNING, "Worldguard not found, custom flags are not enabled");
         } else {
             String wgVer = getServer().getPluginManager().getPlugin("WorldGuard").getDescription().getVersion();
-            if (wgVer.contains(";"))
-                wgVer = wgVer.substring(0, wgVer.indexOf(";"));
-            if (wgVer.contains("-SNAPSHOT"))
-                wgVer = wgVer.substring(0, wgVer.indexOf("-"));
-            if (wgVer.startsWith("v"))
-                wgVer = wgVer.substring(1);
+            if (wgVer.contains(";")) wgVer = wgVer.substring(0, wgVer.indexOf(";"));
+            if (wgVer.contains("-SNAPSHOT")) wgVer = wgVer.substring(0, wgVer.indexOf("-"));
+            if (wgVer.startsWith("v")) wgVer = wgVer.substring(1);
 
             String[] parts = wgVer.split("[.]");
 
@@ -140,23 +138,17 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
             if (!goodVersion) {
                 getServer().getLogger().log(Level.WARNING, "This Worldguard version is not supported, custom flags are not enabled");
             } else {
-                if (majorVersion == 6 && WorldGuard_6_2_2.isValidVersion())
-                    this.getWorldGuardPlugin = new WorldGuard_6_2_2(this);
-                else if (majorVersion == 7 && WorldGuard_7_0_1.isValidVersion())
-                    this.getWorldGuardPlugin = new WorldGuard_7_0_1(this);
-                else if (majorVersion == 7 && WorldGuard_7_0_3.isValidVersion())
-                    this.getWorldGuardPlugin = new WorldGuard_7_0_3(this);
-                else if (majorVersion == 7 && WorldGuard_7_0_0.isValidVersion())
-                    this.getWorldGuardPlugin = new WorldGuard_7_0_0(this);
+                if (majorVersion == 7 && WorldGuard_7_0_7.isValidVersion())
+                    this.getWorldGuardPlugin = new WorldGuard_7_0_7(this);
                 this.getWorldGuardPlugin.registerFlags();
             }
         }
-    
-    
+
+
         if (getServer().getPluginManager().getPlugin("Quests") != null) {
             //Write out the quests addon to the quests modules folder.
             if (new File(this.getDataFolder().getParentFile(), "/Quests/modules").exists())
-                exportFile(new File(this.getDataFolder().getParentFile(), "/Quests/modules"), "NPCDestinations_Quests-2.3.0.jar",true);
+                exportFile(new File(this.getDataFolder().getParentFile(), "/Quests/modules"), "NPCDestinations_Quests-2.3.0.jar", true);
         }
 
     }
@@ -184,8 +176,7 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
         // Init Default settings
         if (this.getDefaultConfig.contains("language"))
             this.currentLanguage = this.getDefaultConfig.getString("language");
-        if (this.currentLanguage.equalsIgnoreCase("en-default"))
-            this.currentLanguage = "en_def";
+        if (this.currentLanguage.equalsIgnoreCase("en-default")) this.currentLanguage = "en_def";
 
         if (this.getDefaultConfig.contains("max-distance"))
             this.maxDistance = this.getDefaultConfig.getInt("max-distance", 500);
@@ -197,81 +188,10 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
         getCommandManager.registerCommandClass(Commands_NPC.class);
         getCommandManager.registerCommandClass(Commands_Location.class);
 
-        // Mark the version
-        if (Bukkit.getServer().getClass().getPackage().getName().endsWith("v1_8_R3")) {
-            Version = 10808;
-            getParticleManager = new PlayParticle_1_8_R3();
-            getMCUtils = new MCUtil_1_8_R3();
-            getMessageManager.consoleMessage(this, "destinations", "console_messages.plugin_version", getServer().getVersion().substring(getServer().getVersion().indexOf('(')));
-        } else if (Bukkit.getServer().getClass().getPackage().getName().endsWith("v1_9_R2")) {
-            Version = 10902;
-            getParticleManager = new PlayParticle_1_9_R2();
-            getMCUtils = new MCUtil_1_9_R2();
-            getMessageManager.consoleMessage(this, "destinations", "console_messages.plugin_version", getServer().getVersion().substring(getServer().getVersion().indexOf('(')));
-        } else if (Bukkit.getServer().getClass().getPackage().getName().endsWith("v1_10_R1")) {
-            Version = 11000;
-            getParticleManager = new PlayParticle_1_10_R1();
-            getMCUtils = new MCUtil_1_10_R1();
-            getMessageManager.consoleMessage(this, "destinations", "console_messages.plugin_version", getServer().getVersion().substring(getServer().getVersion().indexOf('(')));
-        } else if (Bukkit.getServer().getClass().getPackage().getName().endsWith("v1_11_R1") && getServer().getVersion().endsWith("MC: 1.11)")) {
-            Version = 11100;
-            getParticleManager = new PlayParticle_1_11_R1();
-            getMCUtils = new MCUtil_1_11_R1();
-            getMessageManager.consoleMessage(this, "destinations", "console_messages.plugin_version", getServer().getVersion().substring(getServer().getVersion().indexOf('(')));
-        } else if (Bukkit.getServer().getClass().getPackage().getName().endsWith("v1_11_R1") && getServer().getVersion().endsWith("MC: 1.11.1)")) {
-            Version = 11110;
-            getParticleManager = new PlayParticle_1_11_R1();
-            getMCUtils = new MCUtil_1_11_R1();
-            getMessageManager.consoleMessage(this, "destinations", "console_messages.plugin_version", getServer().getVersion().substring(getServer().getVersion().indexOf('(')));
-        } else if (Bukkit.getServer().getClass().getPackage().getName().endsWith("v1_11_R1") && getServer().getVersion().endsWith("MC: 1.11.2)")) {
-            Version = 11120;
-            getParticleManager = new PlayParticle_1_11_R1();
-            getMCUtils = new MCUtil_1_11_R1();
-            getMessageManager.consoleMessage(this, "destinations", "console_messages.plugin_version", getServer().getVersion().substring(getServer().getVersion().indexOf('(')));
-        } else if (Bukkit.getServer().getClass().getPackage().getName().endsWith("v1_12_R1")) {
-            Version = 11200;
-            getParticleManager = new PlayParticle_1_12_R1();
-            getMCUtils = new MCUtil_1_12_R1();
-            getMessageManager.consoleMessage(this, "destinations", "console_messages.plugin_version", getServer().getVersion().substring(getServer().getVersion().indexOf('(')));
-        } else if (Bukkit.getServer().getClass().getPackage().getName().endsWith("v1_13_R2")) {
-            Version = 11310;
-            getParticleManager = new PlayParticle_1_13_R2();
-            getMCUtils = new MCUtil_1_13_R2();
-            getMessageManager.consoleMessage(this, "destinations", "console_messages.plugin_version", getServer().getVersion().substring(getServer().getVersion().indexOf('(')));
-        } else if (Bukkit.getServer().getClass().getPackage().getName().endsWith("v1_14_R1")) {
-            Version = 11410;
-            getParticleManager = new PlayParticle_1_14_R1();
-            getMCUtils = new MCUtil_1_14_R1();
-            getMessageManager.consoleMessage(this, "destinations", "console_messages.plugin_version", getServer().getVersion().substring(getServer().getVersion().indexOf('(')));
-        } else if (Bukkit.getServer().getClass().getPackage().getName().endsWith("v1_14_R2")) {
-            Version = 11420;
-            getParticleManager = new PlayParticle_1_14_R2();
-            getMCUtils = new MCUtil_1_14_R2();
-            getMessageManager.consoleMessage(this, "destinations", "console_messages.plugin_version", getServer().getVersion().substring(getServer().getVersion().indexOf('(')));
-        } else if (Bukkit.getServer().getClass().getPackage().getName().endsWith("v1_15_R1")) {
-            Version = 11520;
-            getParticleManager = new PlayParticle_1_15_R1();
-            getMCUtils = new MCUtil_1_15_R1();
-            getMessageManager.consoleMessage(this, "destinations", "console_messages.plugin_version", getServer().getVersion().substring(getServer().getVersion().indexOf('(')));
-        } else if (Bukkit.getServer().getClass().getPackage().getName().endsWith("v1_16_R1")) {
-            Version = 11610;
-            getParticleManager = new PlayParticle_1_16_R1();
-            getMCUtils = new MCUtil_1_16_R1();
-            getMessageManager.consoleMessage(this, "destinations", "console_messages.plugin_version", getServer().getVersion().substring(getServer().getVersion().indexOf('(')));
-        } else if (Bukkit.getServer().getClass().getPackage().getName().endsWith("v1_16_R2")) {
-            Version = 11620;
-            getParticleManager = new PlayParticle_1_16_R2();
-            getMCUtils = new MCUtil_1_16_R2();
-            getMessageManager.consoleMessage(this, "destinations", "console_messages.plugin_version", getServer().getVersion().substring(getServer().getVersion().indexOf('(')));
-        } else if (Bukkit.getServer().getClass().getPackage().getName().endsWith("v1_16_R3")) {
-            Version = 11640;
-            getParticleManager = new PlayParticle_1_16_R3();
-            getMCUtils = new MCUtil_1_16_R3();
-            getMessageManager.consoleMessage(this, "destinations", "console_messages.plugin_version", getServer().getVersion().substring(getServer().getVersion().indexOf('(')));
-        } else if (Bukkit.getServer().getClass().getPackage().getName().endsWith("v1_17_R1")) {
+        if (Bukkit.getServer().getClass().getPackage().getName().endsWith("v1_18")) {
             Version = 11710;
-            getParticleManager = new PlayParticle_1_17_R1();
-            getMCUtils = new MCUtil_1_17_R1();
+            getParticleManager = new PlayParticle_1_18_R1R2();
+            getMCUtils = new MCUtil_1_18_R1R2();
             getMessageManager.consoleMessage(this, "destinations", "console_messages.plugin_version", getServer().getVersion().substring(getServer().getVersion().indexOf('(')));
         } else {
             getMessageManager.consoleMessage(this, "destinations", "console_messages.plugin_unknownversion", Bukkit.getServer().getClass().getPackage().getName());
@@ -280,19 +200,18 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
         }
 
         //Determine the time engine
-        String timePlugin = this.getConfig().getString("timeplugin","default");
-        
-        switch (timePlugin.toUpperCase())
-        {
+        String timePlugin = this.getConfig().getString("timeplugin", "default");
+
+        switch (timePlugin.toUpperCase()) {
             case "REALWORLD":
                 this.getTimeManager = new DestinationsRealWorldTimeManager();
                 break;
             default:
                 this.getTimeManager = new DestinationsTimeManager();
         }
-        
+
         getPathClass = new AstarPathFinder(this);
-    
+
         // Init links to other plugins
         if (getServer().getPluginManager().getPlugin("Citizens") == null || getServer().getPluginManager().getPlugin("Citizens").isEnabled() == false || !(getServer().getPluginManager().getPlugin("Citizens") instanceof Citizens)) {
             this.getMessageManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|CitizensNotFound");
@@ -309,9 +228,9 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
             getMessageManager.consoleMessage(this, "destinations", "Console_Messages.betonquest_notfound");
         } else {
             String versionString = getServer().getPluginManager().getPlugin("BetonQuest").getDescription().getVersion();
-            if (versionString.startsWith("1.")){
+            if (versionString.startsWith("1.")) {
                 getBetonQuestPlugin = new net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.betonquest.v1.BetonQuest_Plugin(this);
-            }else{
+            } else {
                 getBetonQuestPlugin = new net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.betonquest.v2.BetonQuest_Plugin(this);
             }
             getMessageManager.consoleMessage(this, "destinations", "Console_Messages.betonquest_found", versionString);
@@ -356,17 +275,7 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
                 try {
                     Class.forName("com.github.intellectualsites.plotsquared.plot.flag.Flag");
                     this.getPlotSquared = new PlotSquared_Plugin_V6();
-                    getMessageManager.consoleMessage(this, "destinations", "Console_Messages.plotsquared_found","V4-" + getServer().getPluginManager().getPlugin("PlotSquared").getDescription().getVersion());
-                } catch (Exception e) {
-                }
-            }
-
-            if (getPlotSquared == null) {
-                try {
-                    Class.forName("com.intellectualcrafters.plot.flag.Flag");
-                    getMessageManager.consoleMessage(this, "destinations", "Console_Messages.plotsquared_found","V3-" + getServer().getPluginManager().getPlugin("PlotSquared").getDescription().getVersion());
-                    this.getPlotSquared = new PlotSquared_Plugin_V3();
-
+                    getMessageManager.consoleMessage(this, "destinations", "Console_Messages.plotsquared_found", "V4-" + getServer().getPluginManager().getPlugin("PlotSquared").getDescription().getVersion());
                 } catch (Exception e) {
                 }
             }
@@ -378,12 +287,9 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
             getMessageManager.consoleMessage(this, "destinations", "console_messages.worldguard_notfound");
         } else {
             String wgVer = getServer().getPluginManager().getPlugin("WorldGuard").getDescription().getVersion();
-            if (wgVer.contains(";"))
-                wgVer = wgVer.substring(0, wgVer.indexOf(";"));
-            if (wgVer.contains("-SNAPSHOT"))
-                wgVer = wgVer.substring(0, wgVer.indexOf("-"));
-            if (wgVer.startsWith("v"))
-                wgVer = wgVer.substring(1);
+            if (wgVer.contains(";")) wgVer = wgVer.substring(0, wgVer.indexOf(";"));
+            if (wgVer.contains("-SNAPSHOT")) wgVer = wgVer.substring(0, wgVer.indexOf("-"));
+            if (wgVer.startsWith("v")) wgVer = wgVer.substring(1);
 
             String[] parts = wgVer.split("[.]");
 
@@ -439,7 +345,7 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
             @Override
             public void run() {
                 try {
-                    getPathClass.CheckStatus();
+                    getPathClass.checkStatus();
                 } catch (Exception e) {
                 }
             }
@@ -457,7 +363,7 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
 
         final BStat_Metrics statsReporting = new BStat_Metrics(this);
 
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, statsReporting::Start,500L);
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, statsReporting::Start, 500L);
     }
 
     public void onDisable() {
@@ -466,7 +372,7 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
             this.getMessageManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onDisable()|Stopping Internal Processes");
             Bukkit.getServer().getScheduler().cancelTasks(this);
             getPathClass.currentTask = null;
-            getPathClass.path_Queue.clear();
+            getPathClass.pathQueue.clear();
             getPathClass = null;
         }
     }
@@ -497,16 +403,14 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
 
     public Boolean hasPermissions(CommandSender player, String[] permissions) {
         for (String perm : permissions) {
-            if (hasPermissions(player, perm))
-                return true;
+            if (hasPermissions(player, perm)) return true;
         }
         return false;
     }
 
     public Boolean hasPermissions(CommandSender player, String permission) {
         if (player instanceof Player) {
-            if (player.isOp())
-                return true;
+            if (player.isOp()) return true;
 
             if (permission.toLowerCase().startsWith("npcdestinations.editall.") && player.hasPermission("npcdestinations.editall.*"))
                 return true;
@@ -521,20 +425,16 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
 
     private void getDefaultConfigs() {
         // Create the default folders
-        if (!this.getDataFolder().exists())
-            this.getDataFolder().mkdirs();
-        if (!languagePath.exists())
-            languagePath.mkdirs();
-        if (!loggingPath.exists())
-            loggingPath.mkdirs();
+        if (!this.getDataFolder().exists()) this.getDataFolder().mkdirs();
+        if (!languagePath.exists()) languagePath.mkdirs();
+        if (!loggingPath.exists()) loggingPath.mkdirs();
 
         // Validate that the default package is in the MountPackages folder. If
         // not, create it.
-        if (!(new File(getDataFolder(), "config.yml").exists()))
-            exportFile(getDataFolder(), "config.yml", false);
-        exportFile(languagePath, "en_def-destinations.yml",true);
-        exportFile(languagePath, "en_def-jobsreborn.yml",true);
-        exportFile(languagePath, "en_def-sentinel.yml",true);
+        if (!(new File(getDataFolder(), "config.yml").exists())) exportFile(getDataFolder(), "config.yml", false);
+        exportFile(languagePath, "en_def-destinations.yml", true);
+        exportFile(languagePath, "en_def-jobsreborn.yml", true);
+        exportFile(languagePath, "en_def-sentinel.yml", true);
 
         this.getDefaultConfig = getUtilitiesClass.loadConfiguration(new File(this.getDataFolder(), "config.yml"));
     }
@@ -555,23 +455,18 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
         }
     }
 
-    private void exportFile(String source, File destination,boolean overwrite) throws IOException {
+    private void exportFile(String source, File destination, boolean overwrite) throws IOException {
         //We overwrite the files anyway
-        if (!overwrite && destination.exists())
-            return;
+        if (!overwrite && destination.exists()) return;
 
-        if (destination.exists())
-            destination.delete();
+        if (destination.exists()) destination.delete();
 
-        if (!destination.getParentFile().exists())
-            throw new IOException("Folders missing.");
+        if (!destination.getParentFile().exists()) throw new IOException("Folders missing.");
 
-        if (!destination.createNewFile())
-            throw new IOException("Failed to create a new file");
+        if (!destination.createNewFile()) throw new IOException("Failed to create a new file");
 
         URL sourceURL = getClass().getResource("/" + source);
-        if (sourceURL == null)
-            throw new IOException("Missing resource file");
+        if (sourceURL == null) throw new IOException("Missing resource file");
 
         byte[] ioBuffer = new byte[1024];
         int bytesRead = 0;
@@ -584,14 +479,13 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
             OutputStream fileOut = new FileOutputStream(destination);
 
             while ((bytesRead = fileIn.read(ioBuffer)) > 0) {
-                fileOut.write(ioBuffer,0,bytesRead);
+                fileOut.write(ioBuffer, 0, bytesRead);
             }
 
             fileOut.flush();
             fileOut.close();
             fileIn.close();
-        } catch (Exception error)
-        {
+        } catch (Exception error) {
             throw new IOException("Failure exporting file");
         }
     }

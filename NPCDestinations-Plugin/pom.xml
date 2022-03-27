@@ -12,7 +12,6 @@
     <artifactId>NPCDestinations-Plugin</artifactId>
 
     <dependencies>
-        <!-- NPC_Destinations Api -->
         <dependency>
             <groupId>net.livecar.nuttyworks.npc_destinations</groupId>
             <artifactId>NPCDestinations-API</artifactId>
@@ -21,126 +20,14 @@
         </dependency>
         <dependency>
             <groupId>net.livecar.nuttyworks.npc_destinations</groupId>
-            <artifactId>NPCDestinations-V1_17_R1</artifactId>
+            <artifactId>NPCDestinations-V1_18_R1R2</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>net.livecar.nuttyworks.npc_destinations</groupId>
-            <artifactId>NPCDestinations-V1_16_R3</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.livecar.nuttyworks.npc_destinations</groupId>
-            <artifactId>NPCDestinations-V1_16_R2</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.livecar.nuttyworks.npc_destinations</groupId>
-            <artifactId>NPCDestinations-V1_16_R1</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.livecar.nuttyworks.npc_destinations</groupId>
-            <artifactId>NPCDestinations-V1_15_R1</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.livecar.nuttyworks.npc_destinations</groupId>
-            <artifactId>NPCDestinations-V1_14_R2</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.livecar.nuttyworks.npc_destinations</groupId>
-            <artifactId>NPCDestinations-V1_14_R1</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.livecar.nuttyworks.npc_destinations</groupId>
-            <artifactId>NPCDestinations-V1_13_R2</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.livecar.nuttyworks.npc_destinations</groupId>
-            <artifactId>NPCDestinations-V1_12_R1</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.livecar.nuttyworks.npc_destinations</groupId>
-            <artifactId>NPCDestinations-V1_11_R1</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.livecar.nuttyworks.npc_destinations</groupId>
-            <artifactId>NPCDestinations-V1_10_R1</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.livecar.nuttyworks.npc_destinations</groupId>
-            <artifactId>NPCDestinations-V1_9_R2</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.livecar.nuttyworks.npc_destinations</groupId>
-            <artifactId>NPCDestinations-V1_8_R3</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.livecar.nuttyworks.npc_destinations</groupId>
-            <artifactId>NPCDestinations-WG6_2_2</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.livecar.nuttyworks.npc_destinations</groupId>
-            <artifactId>NPCDestinations-WG7_0_0</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.livecar.nuttyworks.npc_destinations</groupId>
-            <artifactId>NPCDestinations-WG7_0_1</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.livecar.nuttyworks.npc_destinations</groupId>
-            <artifactId>NPCDestinations-WG7_0_3</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.livecar.nuttyworks.npc_destinations</groupId>
-            <artifactId>NPCDestinations-PlotSquared_v3</artifactId>
+            <artifactId>NPCDestinations-WG7_0_7</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
             <optional>true</optional>
@@ -205,10 +92,9 @@
 
         <!-- Light API -->
         <dependency>
-            <groupId>io.github.qveshn</groupId>
-            <artifactId>LightAPI-fork</artifactId>
-            <version>3.5.2-SNAPSHOT</version>
-            <scope>provided</scope>
+            <groupId>com.github.BeYkeRYkt.LightAPI</groupId>
+            <artifactId>lightapi-bukkit-backward-support</artifactId>
+            <version>5.2.0-Bukkit</version>
         </dependency>
 
         <!-- Jobs Reborn -->
@@ -227,22 +113,6 @@
             <scope>provided</scope>
         </dependency>
 
-<!--        &lt;!&ndash; Worldguard &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>com.sk89q</groupId>-->
-<!--            <artifactId>worldguard</artifactId>-->
-<!--            <version>7.0.0-SNAPSHOT</version>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
-
-<!--        &lt;!&ndash; WorldEdit &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>com.sk89q</groupId>-->
-<!--            <artifactId>worldedit</artifactId>-->
-<!--            <version>6.0.0-SNAPSHOT</version>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
-
         <!-- BeautyQuests -->
         <dependency>
             <groupId>fr.skytasul</groupId>
@@ -254,8 +124,8 @@
         <!-- Quests (Pika) -->
         <dependency>
             <groupId>com.github.PikaMug.Quests</groupId>
-            <artifactId>quests-dist</artifactId>
-            <version>4.0.5</version>
+            <artifactId>quests-api</artifactId>
+            <version>4.2.2</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

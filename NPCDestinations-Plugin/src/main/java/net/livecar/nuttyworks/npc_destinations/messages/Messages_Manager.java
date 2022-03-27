@@ -321,12 +321,12 @@ public class Messages_Manager {
                 message = replaceAll(message, "<setting.allowedpathblockscount>", npcTrait.AllowedPathBlocks == null ? "0" : Integer.toString(npcTrait.AllowedPathBlocks.size()));
             if (message.toLowerCase().contains("<setting.pathtime>")) {
                 if (this.destRef.getPathClass.currentTask != null && this.destRef.getPathClass.currentTask.npc.getId() == npc.getId()) {
-                    long nSeconds = Duration.ofMillis(this.destRef.getPathClass.path_Queue.get(npc.getId()).timeSpent).getSeconds();
+                    long nSeconds = Duration.ofMillis(this.destRef.getPathClass.pathQueue.get(npc.getId()).timeSpent).getSeconds();
                     message = replaceAll(message, "<setting.pathtime>", "&7* " + String.valueOf(Math.abs(nSeconds)));
-                } else if (!this.destRef.getPathClass.path_Queue.containsKey(npc.getId())) {
+                } else if (!this.destRef.getPathClass.pathQueue.containsKey(npc.getId())) {
                     message = replaceAll(message, "<setting.pathtime>", "??");
                 } else {
-                    long nSeconds = Duration.ofMillis(this.destRef.getPathClass.path_Queue.get(npc.getId()).timeSpent).getSeconds();
+                    long nSeconds = Duration.ofMillis(this.destRef.getPathClass.pathQueue.get(npc.getId()).timeSpent).getSeconds();
                     message = replaceAll(message, "<setting.pathtime>", String.valueOf(Math.abs(nSeconds)));
                 }
             }
@@ -649,7 +649,7 @@ public class Messages_Manager {
 
         if (message.toLowerCase().contains("<pathengine.queue.count>"))
             if (destRef.getPathClass != null) {
-                message = replaceAll(message, "<pathengine.queue.count>", Integer.toString(destRef.getPathClass.path_Queue.size()));
+                message = replaceAll(message, "<pathengine.queue.count>", Integer.toString(destRef.getPathClass.pathQueue.size()));
             } else {
                 message = replaceAll(message, "<pathengine.queue.count>", "0");
             }

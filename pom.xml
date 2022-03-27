@@ -11,24 +11,8 @@
     <modules>
         <module>NPCDestinations-API</module>
         <module>NPCDestinations-Plugin</module>
-        <module>NPCDestinations-V1_17_R1</module>
-        <module>NPCDestinations-V1_16_R3</module>
-        <module>NPCDestinations-V1_16_R2</module>
-        <module>NPCDestinations-V1_16_R1</module>
-        <module>NPCDestinations-V1_15_R1</module>
-        <module>NPCDestinations-V1_14_R2</module>
-        <module>NPCDestinations-V1_14_R1</module>
-        <module>NPCDestinations-V1_13_R2</module>
-        <module>NPCDestinations-V1_12_R1</module>
-        <module>NPCDestinations-V1_11_R1</module>
-        <module>NPCDestinations-V1_10_R1</module>
-        <module>NPCDestinations-V1_9_R2</module>
-        <module>NPCDestinations-V1_8_R3</module>
-	    <module>NPCDestinations-WG7_0_0</module>
-        <module>NPCDestinations-WG7_0_1</module>
-        <module>NPCDestinations-WG7_0_3</module>
-        <module>NPCDestinations-WG6_2_2</module>
-        <module>NPCDestinations-PlotSquared_v3</module>
+        <module>NPCDestinations-V1_18_R1R2</module>
+        <module>NPCDestinations-WG7_0_7</module>
         <module>NPCDestinations-PlotSquared_v6</module>
     </modules>
 

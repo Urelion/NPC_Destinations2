@@ -543,7 +543,7 @@ public class Citizens_Processing {
             return false;
         }
         
-        if (destRef.getPathClass.path_Queue.containsKey(npc.getId()))
+        if (destRef.getPathClass.pathQueue.containsKey(npc.getId()))
             return false;
 
         NPCDestinationsTrait trait = npc.getTrait(NPCDestinationsTrait.class);

@@ -15,7 +15,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.logging.Level;
 
 public class Commands_Plugin
@@ -104,16 +103,16 @@ public class Commands_Plugin
     public boolean npcDest_EngineStatus(DestinationsPlugin destinationsRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
     {
         if ((destinationsRef.getPathClass.currentTask == null || destinationsRef.getPathClass.currentTask.npc == null)
-                && destinationsRef.getPathClass.path_Queue.size() == 0) {
+                && destinationsRef.getPathClass.pathQueue.size() == 0) {
             destinationsRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_enginestatus_idle");
         } else if ((destinationsRef.getPathClass.currentTask == null || destinationsRef.getPathClass.currentTask.npc == null)
-                && destinationsRef.getPathClass.path_Queue.size() > 0) {
+                && destinationsRef.getPathClass.pathQueue.size() > 0) {
             destinationsRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_enginestatus_idle_queue");
         } else if ((destinationsRef.getPathClass.currentTask != null || destinationsRef.getPathClass.currentTask.npc != null)
-                && destinationsRef.getPathClass.path_Queue.size() == 0) {
+                && destinationsRef.getPathClass.pathQueue.size() == 0) {
             destinationsRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_enginestatus_processing_noqueue");
         } else if ((destinationsRef.getPathClass.currentTask != null || destinationsRef.getPathClass.currentTask.npc != null)
-                && destinationsRef.getPathClass.path_Queue.size() > 0) {
+                && destinationsRef.getPathClass.pathQueue.size() > 0) {
             destinationsRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_enginestatus_processing_queue");
         }
         return true;

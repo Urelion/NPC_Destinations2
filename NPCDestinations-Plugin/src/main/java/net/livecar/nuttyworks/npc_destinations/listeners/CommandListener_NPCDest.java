@@ -78,13 +78,13 @@ public class CommandListener_NPCDest {
                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.no_permissions");
                 return true;
             } else {
-                if ((destRef.getPathClass.currentTask == null || destRef.getPathClass.currentTask.npc == null) && destRef.getPathClass.path_Queue.size() == 0) {
+                if ((destRef.getPathClass.currentTask == null || destRef.getPathClass.currentTask.npc == null) && destRef.getPathClass.pathQueue.size() == 0) {
                     destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_enginestatus_idle");
-                } else if ((destRef.getPathClass.currentTask == null || destRef.getPathClass.currentTask.npc == null) && destRef.getPathClass.path_Queue.size() > 0) {
+                } else if ((destRef.getPathClass.currentTask == null || destRef.getPathClass.currentTask.npc == null) && destRef.getPathClass.pathQueue.size() > 0) {
                     destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_enginestatus_idle_queue");
-                } else if ((destRef.getPathClass.currentTask != null || destRef.getPathClass.currentTask.npc != null) && destRef.getPathClass.path_Queue.size() == 0) {
+                } else if ((destRef.getPathClass.currentTask != null || destRef.getPathClass.currentTask.npc != null) && destRef.getPathClass.pathQueue.size() == 0) {
                     destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_enginestatus_processing_noqueue");
-                } else if ((destRef.getPathClass.currentTask != null || destRef.getPathClass.currentTask.npc != null) && destRef.getPathClass.path_Queue.size() > 0) {
+                } else if ((destRef.getPathClass.currentTask != null || destRef.getPathClass.currentTask.npc != null) && destRef.getPathClass.pathQueue.size() > 0) {
                     destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_enginestatus_processing_queue");
                 }
             }
