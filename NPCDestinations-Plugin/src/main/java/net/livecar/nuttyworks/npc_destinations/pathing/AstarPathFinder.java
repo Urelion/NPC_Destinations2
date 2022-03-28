@@ -61,7 +61,7 @@ public class AstarPathFinder {
     }
 
     public void addToQueue(NPC npc, NPCDestinationsTrait npcTrait, Location start, Location end, int range, List<Material> AllowedPathBlocks, int blocksBelow, Boolean OpensGates, Boolean OpensWoodDoors, Boolean OpensMetalDoors, String requestedBy) {
-        plugin.getMessageManager.debugMessage(Level.FINEST, "(NPC " + npc.getId() + ", NPCDestinationsTrait " + String.valueOf(npcTrait == null) + ", Location " + start.toString() + ", Location " + end.toString() + ", int " + String.valueOf(range) + ", List<Material> " + AllowedPathBlocks.size() + ", int " + String.valueOf(blocksBelow) + ", Boolean " + String.valueOf(OpensGates) + ", Boolean " + String.valueOf(OpensWoodDoors) + ", Boolean " + String.valueOf(OpensMetalDoors) + ",String " + String.valueOf(requestedBy) + ") " + Arrays.toString(Thread.currentThread().getStackTrace()));
+        plugin.getMessageManager.debugMessage(Level.FINEST, "(NPC " + npc.getId() + ", NPCDestinationsTrait " + (npcTrait == null) + ", Location " + start.toString() + ", Location " + end.toString() + ", int " + range + ", List<Material> " + AllowedPathBlocks.size() + ", int " + blocksBelow + ", Boolean " + OpensGates + ", Boolean " + OpensWoodDoors + ", Boolean " + OpensMetalDoors + ",String " + requestedBy + ") " + Arrays.toString(Thread.currentThread().getStackTrace()));
 
         if (playToPlayers != null) playToPlayers.clear();
 
@@ -286,7 +286,8 @@ public class AstarPathFinder {
     }
 
     private Location findSurface(Location location) {
-        if (location.getBlock().getType().isSolid() && !location.clone().add(0, 1, 0).getBlock().getType().isSolid()) return location;
+        if (location.getBlock().getType().isSolid() && !location.clone().add(0, 1, 0).getBlock().getType().isSolid())
+            return location;
 
         if (!location.getBlock().getType().isSolid() && location.clone().add(0, -1, 0).getBlock().getType().isSolid())
             return location.clone().add(0, -1, 0);
@@ -386,7 +387,7 @@ public class AstarPathFinder {
                 currentTask.timeSpent += (new Date().getTime() - startTime);
                 pathQueue.put(currentTask.npc.getId(), currentTask);
                 Double distance = (new Location(currentTask.world, currentTask.start_X, currentTask.start_Y, currentTask.start_Z)).distance(new Location(currentTask.world, current.getX(), current.getY(), current.getZ()));
-                plugin.getMessageManager.debugMessage(Level.FINEST, "NPCID:" + currentTask.npc.getId() + "|Block limit reached, re-adding task to queue (Distance: " + String.valueOf(distance) + ")");
+                plugin.getMessageManager.debugMessage(Level.FINEST, "NPCID:" + currentTask.npc.getId() + "|Block limit reached, re-adding task to queue (Distance: " + distance + ")");
                 currentTask = null;
                 last_Pause = new Date().getTime() + 200;
 

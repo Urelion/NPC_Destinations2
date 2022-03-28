@@ -15,7 +15,7 @@ import java.util.Map;
 public class BStat_Metrics {
 
     private Metrics metrics = null;
-    private DestinationsPlugin destRef;
+    private final DestinationsPlugin destRef;
 
     public BStat_Metrics(DestinationsPlugin storageRef) {
         destRef = storageRef;

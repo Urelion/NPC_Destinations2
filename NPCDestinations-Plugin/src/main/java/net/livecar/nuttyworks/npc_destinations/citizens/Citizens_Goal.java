@@ -7,8 +7,8 @@ import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.event.EventHandler;
 
 public class Citizens_Goal extends BehaviorGoalAdapter {
-    public boolean    forceFinish;
-    public int        nFailedPathCount = 0;
+    public boolean forceFinish;
+    public int nFailedPathCount = 0;
     private final NPC npc;
 
     private Citizens_Goal(NPC npc) {

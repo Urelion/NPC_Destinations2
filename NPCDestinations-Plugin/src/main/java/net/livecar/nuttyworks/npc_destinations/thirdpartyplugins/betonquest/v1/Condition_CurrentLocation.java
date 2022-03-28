@@ -13,8 +13,8 @@ import java.util.UUID;
 
 public class Condition_CurrentLocation extends Condition {
     private UUID destUUID;
-    private int destID;
-    private int targetNPC;
+    private final int destID;
+    private final int targetNPC;
 
     public Condition_CurrentLocation(Instruction instruction) throws InstructionParseException {
         super(instruction, true);

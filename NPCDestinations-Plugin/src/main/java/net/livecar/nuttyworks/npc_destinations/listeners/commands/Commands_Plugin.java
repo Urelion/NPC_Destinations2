@@ -17,26 +17,24 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 import java.util.logging.Level;
 
-public class Commands_Plugin
-{
+public class Commands_Plugin {
     @CommandInfo(
             name = "reload",
             group = "Plugin Commands",
             languageFile = "destinations",
             helpMessage = "command_reload_help",
-            arguments = { "" },
+            arguments = {""},
             permission = {"npcdestinations.reload"},
             allowConsole = true,
             minArguments = 0,
             maxArguments = 0
     )
-    public boolean npcDest_ReloadConfig(DestinationsPlugin destinationsRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_ReloadConfig(DestinationsPlugin destinationsRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         destinationsRef.getLanguageManager.loadLanguages(true);
         if (sender instanceof Player)
-            destinationsRef.getMessageManager.sendMessage("destinations",sender, "messages.configs_reloaded", ((Player) sender).getDisplayName());
+            destinationsRef.getMessageManager.sendMessage("destinations", sender, "messages.configs_reloaded", ((Player) sender).getDisplayName());
         if (!(sender instanceof Player))
-            destinationsRef.getMessageManager.sendMessage("destinations",sender, "console_messages.configs_reloaded");
+            destinationsRef.getMessageManager.sendMessage("destinations", sender, "console_messages.configs_reloaded");
         return true;
     }
 
@@ -45,23 +43,19 @@ public class Commands_Plugin
             group = "Plugin Commands",
             languageFile = "destinations",
             helpMessage = "command_version_help",
-            arguments = { "" },
+            arguments = {""},
             permission = {"npcdestinations.version"},
             allowConsole = true,
             minArguments = 0,
             maxArguments = 0
     )
-    public boolean npcDest_CurrentVersion(DestinationsPlugin destinationsRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_CurrentVersion(DestinationsPlugin destinationsRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         // Configuration Commands
-        if (sender instanceof Player)
-        {
+        if (sender instanceof Player) {
             destinationsRef.getMessageManager.sendJsonRaw((Player) sender, "[{\"text\":\"--\",\"color\":\"gold\"},{\"text\":\"[\",\"color\":\"white\"},{\"text\":\"NPC Destinations By Nutty101\",\"color\":\"green\"},{\"text\":\"]\",\"color\":\"white\"},{\"text\":\"-----------------------\",\"color\":\"gold\"}]");
             destinationsRef.getMessageManager.sendJsonRaw((Player) sender, "[{\"text\":\"Version\",\"color\":\"green\"},{\"text\":\":\",\"color\":\"yellow\"},{\"text\":\" " + destinationsRef.getDescription().getVersion() + " \",\"color\":\"white\"}]");
             destinationsRef.getMessageManager.sendJsonRaw((Player) sender, "[{\"text\":\"Plugin Link\",\"color\":\"dark_green\"},{\"text\":\": \",\"color\":\"yellow\"},{\"text\":\"https://www.spigotmc.org/resources/nunpcdestinations-create-living-npcs-1-8-3-1-11.13863/\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://www.spigotmc.org/resources/nunpcdestinations-create-living-npcs-1-8-3-1-11.13863/\",\"color\":\"white\"}}]");
-        }
-        else
-        {
+        } else {
             sender.sendMessage("--[NPC Destinations By Nutty101]-----------------------");
             sender.sendMessage("Version: " + destinationsRef.getDescription().getVersion());
             sender.sendMessage("Plugin Link: https://www.spigotmc.org/resources/nunpcdestinations-create-living-npcs-1-8-3-1-11.13863/");
@@ -74,14 +68,13 @@ public class Commands_Plugin
             group = "Plugin Commands",
             languageFile = "destinations",
             helpMessage = "command_backup_help",
-            arguments = { "" },
+            arguments = {""},
             permission = {"npcdestinations.backup"},
             allowConsole = true,
             minArguments = 0,
             maxArguments = 0
     )
-    public boolean npcDest_Backup(DestinationsPlugin destinationsRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_Backup(DestinationsPlugin destinationsRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         Citizens_Utilities citizensUtils = new Citizens_Utilities(destinationsRef);
         citizensUtils.BackupConfig(true);
         destinationsRef.getMessageManager.sendMessage("destinations", sender, "messages.backup_command");
@@ -94,14 +87,13 @@ public class Commands_Plugin
             group = "Plugin Commands",
             languageFile = "destinations",
             helpMessage = "command_enginestatus_help",
-            arguments = { "" },
+            arguments = {""},
             permission = {"npcdestinations.enginestatus"},
             allowConsole = true,
             minArguments = 0,
             maxArguments = 0
     )
-    public boolean npcDest_EngineStatus(DestinationsPlugin destinationsRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_EngineStatus(DestinationsPlugin destinationsRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if ((destinationsRef.getPathClass.currentTask == null || destinationsRef.getPathClass.currentTask.npc == null)
                 && destinationsRef.getPathClass.pathQueue.size() == 0) {
             destinationsRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_enginestatus_idle");
@@ -123,25 +115,23 @@ public class Commands_Plugin
             group = "Plugin Commands",
             languageFile = "destinations",
             helpMessage = "command_allstatus_help",
-            arguments = { "" },
+            arguments = {""},
             permission = {"npcdestinations.allstatus"},
             allowConsole = true,
             minArguments = 0,
             maxArguments = 1
     )
-    public boolean npcDest_AllStatus(DestinationsPlugin destinationsRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_AllStatus(DestinationsPlugin destinationsRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         sender.sendMessage(ChatColor.GOLD + "----- " + destinationsRef.getDescription().getName() + " ----- V "
                 + destinationsRef.getDescription().getVersion());
 
         String messageLevel = "messages";
-        if (sender instanceof Player)
-        {
+        if (sender instanceof Player) {
             messageLevel = "messages";
         } else {
             messageLevel = "console_messages";
         }
-    
+
         for (NPC npcItem : CitizensAPI.getNPCRegistry()) {
             if ((npcItem != null) && (npcItem.hasTrait(NPCDestinationsTrait.class))) {
                 if (inargs.length > 1) {
@@ -149,7 +139,7 @@ public class Commands_Plugin
                     if (!npcName.contains(inargs[1].toLowerCase()))
                         continue;
                 }
-            
+
                 if (!npcItem.isSpawned()) {
                     destinationsRef.getMessageManager.sendMessage("destinations", sender,
                             messageLevel + ".commands_allstatus_notspawned", npcItem);
@@ -198,9 +188,9 @@ public class Commands_Plugin
                             break;
                         default:
                             break;
-                    
+
                     }
-                
+
                 }
             }
         }
@@ -212,18 +202,16 @@ public class Commands_Plugin
             group = "Plugin Commands",
             languageFile = "destinations",
             helpMessage = "",
-            arguments = { "" },
+            arguments = {""},
             permission = {"npcdestinations.debuglog"},
             allowConsole = true,
             minArguments = 0,
             maxArguments = 1
     )
-    public boolean npcDest_DebugLog(DestinationsPlugin destinationsRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_DebugLog(DestinationsPlugin destinationsRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (Level.parse(inargs[1]) != null && !destinationsRef.getUtilitiesClass.isNumeric(inargs[1])) {
 
-            if (!"OFF SEVERE WARNING INFO CONFIG FINE FINER FINEST ALL".contains(inargs[1].toUpperCase()))
-            {
+            if (!"OFF SEVERE WARNING INFO CONFIG FINE FINER FINEST ALL".contains(inargs[1].toUpperCase())) {
                 destinationsRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_off");
                 destinationsRef.debugLogLevel = Level.OFF;
                 return true;
@@ -245,14 +233,13 @@ public class Commands_Plugin
             group = "Plugin Commands",
             languageFile = "destinations",
             helpMessage = "command_debug_help",
-            arguments = { "#|all|*|list" },
-            permission = {"npcdestinations.debug.set","npcdestinations.debug.own","npcdestinations.debug.all"},
+            arguments = {"#|all|*|list"},
+            permission = {"npcdestinations.debug.set", "npcdestinations.debug.own", "npcdestinations.debug.all"},
             allowConsole = false,
             minArguments = 0,
             maxArguments = 1
     )
-    public boolean npcDest_Debug(DestinationsPlugin destRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_Debug(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (inargs.length > 1) {
             if (!sender.hasPermission("npcdestinations.debug.set") && Level.parse(inargs[1]) == null) {
                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.no_permissions");
@@ -410,14 +397,13 @@ public class Commands_Plugin
             group = "Plugin Commands",
             languageFile = "destinations",
             helpMessage = "command_blockstick_help",
-            arguments = { "" },
-            permission = {"npcdestinations.editall.blockstick","npcdestinations.editown.blockstick"},
+            arguments = {""},
+            permission = {"npcdestinations.editall.blockstick", "npcdestinations.editown.blockstick"},
             allowConsole = false,
             minArguments = 0,
             maxArguments = 0
     )
-    public boolean npcDest_BlockStick(DestinationsPlugin destinationsRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_BlockStick(DestinationsPlugin destinationsRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         Player player = (Player) sender;
         ItemStack stack = new ItemStack(Material.STICK, 1);
         ItemMeta im = stack.getItemMeta();

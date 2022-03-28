@@ -11,7 +11,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
 public class jsonChat {
-    private DestinationsPlugin destRef;
+    private final DestinationsPlugin destRef;
 
     public jsonChat(DestinationsPlugin storageRef) {
         destRef = storageRef;
@@ -24,20 +24,19 @@ public class jsonChat {
     public void sendJsonMessage(CommandSender player, String jsonMsg) {
         sendMessage(player, ChatColor.translateAlternateColorCodes('&', jsonMsg));
     }
-    
+
     private void sendMessage(CommandSender player, String jsonMsg) {
         if (destRef.Version < 11200) {
             sendMessageLess12(player, jsonMsg);
         } else {
             try {
                 player.spigot().sendMessage(ComponentSerializer.parse(jsonMsg));
-            } catch (Exception error)
-            {
+            } catch (Exception error) {
                 destRef.getMessageManager.logToConsole(destRef, "Json Failure: " + error.getMessage() + "\n" + jsonMsg);
             }
         }
     }
-    
+
     @SuppressWarnings("rawtypes")
     private void sendMessageLess12(CommandSender player, String jsonMsg) {
         try {

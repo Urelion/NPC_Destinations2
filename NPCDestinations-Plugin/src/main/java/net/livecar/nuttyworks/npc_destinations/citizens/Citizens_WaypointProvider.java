@@ -10,8 +10,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 public class Citizens_WaypointProvider implements WaypointProvider {
-    private Goal             currentGoal;
-    private NPC              npc;
+    private Goal currentGoal;
+    private NPC npc;
     private volatile boolean paused;
 
     public WaypointEditor createEditor(CommandSender sender, CommandContext args) {

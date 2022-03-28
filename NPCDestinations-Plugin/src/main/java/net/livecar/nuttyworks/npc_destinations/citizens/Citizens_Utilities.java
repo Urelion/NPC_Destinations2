@@ -11,9 +11,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class Citizens_Utilities {
-    public static long         lastBackupTime;
+    public static long lastBackupTime;
 
-    private DestinationsPlugin destRef;
+    private final DestinationsPlugin destRef;
 
     public Citizens_Utilities(DestinationsPlugin storageRef) {
         destRef = storageRef;
@@ -51,8 +51,8 @@ public class Citizens_Utilities {
 
             FileOutputStream dest = new FileOutputStream(backupFile.toString());
             ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest));
-            byte data[] = new byte[2048];
-            FileInputStream fi = new FileInputStream(destRef.getCitizensPlugin.getDataFolder().toString() + "/saves.yml");
+            byte[] data = new byte[2048];
+            FileInputStream fi = new FileInputStream(destRef.getCitizensPlugin.getDataFolder() + "/saves.yml");
             origin = new BufferedInputStream(fi, 2048);
             ZipEntry entry = new ZipEntry("saves.yml");
             out.putNextEntry(entry);

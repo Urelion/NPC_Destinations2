@@ -34,7 +34,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class CommandListener_NPCDest {
@@ -45,7 +48,7 @@ public class CommandListener_NPCDest {
         destRef = storageRef;
     }
 
-    @SuppressWarnings({ "deprecation", "unused" })
+    @SuppressWarnings({"deprecation", "unused"})
     public boolean onCommand(CommandSender sender, Command cmd, String cmdLabel, String[] inargs) {
 
         if (inargs.length == 0 || inargs[0].equalsIgnoreCase("help")) {
@@ -101,7 +104,7 @@ public class CommandListener_NPCDest {
                     if ((npcItem != null) && (npcItem.hasTrait(NPCDestinationsTrait.class))) {
                         if (!npcItem.isSpawned()) {
                             destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_allstatus_notspawned", npcItem);
-                
+
                         } else {
                             NPCDestinationsTrait oCurTrait = npcItem.getTrait(NPCDestinationsTrait.class);
                             switch (oCurTrait.getCurrentAction()) {
@@ -354,7 +357,7 @@ public class CommandListener_NPCDest {
                     // Setup the waypoint provider
                     Waypoints waypoints = npc.getTrait(Waypoints.class);
                     boolean success = waypoints.setWaypointProvider("NPCDestinations");
-                    onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                    onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
             }
@@ -459,7 +462,7 @@ public class CommandListener_NPCDest {
                         trait.citizens_DefaultStuck = inargs[6].equalsIgnoreCase("y");
                     }
 
-                    onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                    onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
             }
@@ -526,7 +529,7 @@ public class CommandListener_NPCDest {
                                     } catch (Exception err) {
                                         StringWriter sw = new StringWriter();
                                         err.printStackTrace(new PrintWriter(sw));
-                                        destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.plugin_error", err.getMessage() + "\n" + sw.toString());
+                                        destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.plugin_error", err.getMessage() + "\n" + sw);
                                     }
                                 }
                             }
@@ -624,7 +627,7 @@ public class CommandListener_NPCDest {
                                 oCurLoc.arrival_Commands.remove(listIndex);
                                 Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nIndex));
                                 Bukkit.getServer().getPluginManager().callEvent(changedLocation);
-                                onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                                onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                                 return true;
                             }
                         }
@@ -676,7 +679,7 @@ public class CommandListener_NPCDest {
                             oCurLoc.arrival_Commands.add(commandString);
                             Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nIndex));
                             Bukkit.getServer().getPluginManager().callEvent(changedLocation);
-                            onCommand(sender, cmd, cmdLabel, new String[] { "loccommands", "--npc", Integer.toString(npc.getId()), inargs[1] });
+                            onCommand(sender, cmd, cmdLabel, new String[]{"loccommands", "--npc", Integer.toString(npc.getId()), inargs[1]});
                             return true;
                         } else if (inargs.length > 2) {
                             int nIndex = Integer.parseInt(inargs[1]);
@@ -702,7 +705,7 @@ public class CommandListener_NPCDest {
                                 oCurLoc.arrival_Commands.add(commandString.trim());
                                 Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nIndex));
                                 Bukkit.getServer().getPluginManager().callEvent(changedLocation);
-                                onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                                onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                                 return true;
                             }
                         }
@@ -749,7 +752,7 @@ public class CommandListener_NPCDest {
                         Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nIndex));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
-                        onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                        onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         return true;
                     } else {
                         destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_locweather_badargs");
@@ -774,7 +777,7 @@ public class CommandListener_NPCDest {
                             if (destRef.getPluginManager.getPluginByName(inargs[1].toUpperCase()) != null) {
                                 destRef.getPluginManager.getPluginByName(inargs[1].toUpperCase()).onEnableChanged(npc, trait, true);
                             }
-                            onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                            onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                             return true;
                         }
                         if (trait.enabledPlugins.contains(inargs[1].toUpperCase())) {
@@ -793,7 +796,7 @@ public class CommandListener_NPCDest {
                                 return true;
                             }
                         }
-                        onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                        onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         return true;
                     } else {
                         destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_enableplugin_badargs");
@@ -829,7 +832,7 @@ public class CommandListener_NPCDest {
                         Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nIndex));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
-                        onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                        onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         return true;
                     } else {
                         destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_locweather_badargs");
@@ -880,7 +883,7 @@ public class CommandListener_NPCDest {
                         Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nIndex));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
-                        onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                        onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         return true;
                     } else {
                         destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_localias_badargs");
@@ -962,7 +965,7 @@ public class CommandListener_NPCDest {
                         }
                         trait.NPCLocations.add(oLoc);
 
-                        onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                        onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         return true;
                     } else {
                         destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_addlocation_badargs", trait);
@@ -997,7 +1000,7 @@ public class CommandListener_NPCDest {
                                 return true;
                             }
                             trait.NPCLocations.remove(Integer.parseInt(inargs[1]));
-                            onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                            onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                             return true;
                         } else {
                             destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_info_nolocations", trait);
@@ -1014,7 +1017,7 @@ public class CommandListener_NPCDest {
                                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_info_location", trait, oLoc);
                             }
                         }
-                        onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                        onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         return true;
                     }
                 }
@@ -1035,7 +1038,7 @@ public class CommandListener_NPCDest {
                         destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_maxdistance_badargs", trait);
                         return true;
                     }
-                    onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                    onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
             }
@@ -1053,13 +1056,13 @@ public class CommandListener_NPCDest {
                         trait.PauseForPlayers = -1;
                         trait.PauseTimeout = -1;
                         // V1.39 -- Event
-                        onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                        onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         return true;
                     } else if (inargs.length == 2) {
                         try {
                             trait.PauseForPlayers = Integer.parseInt(inargs[1]);
                             trait.PauseTimeout = -1;
-                            onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                            onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         } catch (Exception e) {
                             destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_pauseplayer_badargs", trait);
                         }
@@ -1068,7 +1071,7 @@ public class CommandListener_NPCDest {
                         try {
                             trait.PauseForPlayers = Integer.parseInt(inargs[1]);
                             trait.PauseTimeout = Integer.parseInt(inargs[2]);
-                            onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                            onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         } catch (Exception e) {
                             destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_pauseplayer_badargs", trait);
                         }
@@ -1116,7 +1119,7 @@ public class CommandListener_NPCDest {
                     }
 
                     Player player = (Player) sender;
-                    player.sendMessage(ChatColor.RED + " " + player.getItemInHand().getType().toString());
+                    player.sendMessage(ChatColor.RED + " " + player.getItemInHand().getType());
                     try {
                         if (trait.AllowedPathBlocks.contains(player.getItemInHand().getType())) {
                             destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_addblock_exists", trait, null, player.getItemInHand().getType());
@@ -1126,7 +1129,7 @@ public class CommandListener_NPCDest {
                     } catch (Exception err) {
                         destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_addblock_badargs", trait);
                     }
-                    onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                    onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
             }
@@ -1158,7 +1161,7 @@ public class CommandListener_NPCDest {
                                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_removeblock_notinlist", trait);
                             } else {
                                 trait.AllowedPathBlocks.remove(material);
-                                onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                                onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                             }
                         }
                     } else {
@@ -1168,13 +1171,13 @@ public class CommandListener_NPCDest {
                                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_removeblock_notinlist", trait);
                             } else {
                                 trait.AllowedPathBlocks.remove(destRef.getMCUtils.getMainHand(player).getType());
-                                onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                                onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                             }
                         } catch (Exception err) {
                             destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_removeblock_badargs", trait);
                         }
                     }
-                    onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                    onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
             }
@@ -1192,7 +1195,7 @@ public class CommandListener_NPCDest {
                         return true;
                     }
                     trait.AllowedPathBlocks.clear();
-                    onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                    onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
             }
@@ -1207,7 +1210,7 @@ public class CommandListener_NPCDest {
                         return true;
                     }
                     trait.OpensGates = !trait.OpensGates;
-                    onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                    onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
             }
@@ -1223,7 +1226,7 @@ public class CommandListener_NPCDest {
                     }
 
                     trait.OpensWoodDoors = !trait.OpensWoodDoors;
-                    onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                    onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
             }
@@ -1239,7 +1242,7 @@ public class CommandListener_NPCDest {
                     }
 
                     trait.OpensMetalDoors = !trait.OpensMetalDoors;
-                    onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                    onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
             }
@@ -1260,7 +1263,7 @@ public class CommandListener_NPCDest {
                         trait.blocksUnderSurface = Integer.parseInt(inargs[1]);
                     }
 
-                    onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                    onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
             }
@@ -1317,7 +1320,7 @@ public class CommandListener_NPCDest {
 
                                     }
                                 }
-                                onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                                onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                                 return true;
                             }
                         } else if (inargs[2].equalsIgnoreCase("clear")) {
@@ -1328,7 +1331,7 @@ public class CommandListener_NPCDest {
                             // V1.39 -- Event
                             Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nIndex));
                             Bukkit.getServer().getPluginManager().callEvent(changedLocation);
-                            onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                            onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                             return true;
                         } else if (inargs[2].equalsIgnoreCase("before")) {
                             trait.NPCLocations.get(nIndex).player_Skin_ApplyOnArrival = false;
@@ -1347,7 +1350,7 @@ public class CommandListener_NPCDest {
                         // V1.39 -- Event
                         Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nIndex));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
-                        onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                        onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         return true;
                     } else {
                         destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_locskin_badargs");
@@ -1398,7 +1401,7 @@ public class CommandListener_NPCDest {
                         Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
-                        onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                        onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         return true;
                     }
                 }
@@ -1430,7 +1433,7 @@ public class CommandListener_NPCDest {
                         // V1.39 -- Event
                         Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
-                        onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                        onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     } catch (Exception e) {
                         destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_locmax_badargs", trait);
                     }
@@ -1465,7 +1468,7 @@ public class CommandListener_NPCDest {
                         // V1.39 -- Event
                         Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
-                        onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                        onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         return true;
                     } else if (inargs.length == 3) {
                         try {
@@ -1477,7 +1480,7 @@ public class CommandListener_NPCDest {
                             // V1.39 -- Event
                             Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
                             Bukkit.getServer().getPluginManager().callEvent(changedLocation);
-                            onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                            onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         } catch (Exception e) {
                             destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_locpause_badargs", trait);
                         }
@@ -1491,7 +1494,7 @@ public class CommandListener_NPCDest {
                             // V1.39 -- Event
                             Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
                             Bukkit.getServer().getPluginManager().callEvent(changedLocation);
-                            onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                            onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         } catch (Exception e) {
                             destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_locpause_badargs", trait);
                         }
@@ -1512,7 +1515,7 @@ public class CommandListener_NPCDest {
                             // V1.39 -- Event
                             Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
                             Bukkit.getServer().getPluginManager().callEvent(changedLocation);
-                            onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                            onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         } catch (Exception e) {
                             destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_locpause_badargs", trait);
                         }
@@ -1555,7 +1558,7 @@ public class CommandListener_NPCDest {
                         Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
-                        onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                        onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     } catch (Exception e) {
                         destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_locprob_badargs", trait);
                     }
@@ -1599,7 +1602,7 @@ public class CommandListener_NPCDest {
                         Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
-                        onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                        onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     } catch (Exception e) {
                         destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_locwand_badargs", trait);
                     }
@@ -1648,7 +1651,7 @@ public class CommandListener_NPCDest {
                     Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
                     Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
-                    onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                    onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
             }
@@ -1677,7 +1680,7 @@ public class CommandListener_NPCDest {
                         Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
-                        onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                        onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         return true;
                     }
 
@@ -1705,7 +1708,7 @@ public class CommandListener_NPCDest {
                         Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
-                        onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                        onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     } catch (Exception e) {
                         destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_locloc_badargs", trait);
                     }
@@ -1735,17 +1738,17 @@ public class CommandListener_NPCDest {
 
                     if (inargs[2].equalsIgnoreCase("set")) {
 
-                        onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                        onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_locsentinel_stored", trait);
                         return true;
                     } else if (inargs[2].equalsIgnoreCase("get")) {
 
-                        onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                        onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_locsentinel_recalled", trait);
                         return true;
                     } else if (inargs[2].equalsIgnoreCase("clear")) {
 
-                        onCommand(sender, cmd, cmdLabel, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                        onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_locsentinel_cleared", trait);
                         return true;
                     } else {
@@ -1756,7 +1759,7 @@ public class CommandListener_NPCDest {
             }
 
             destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_command");
-            onCommand(sender, cmd, cmdLabel, new String[] { "help" });
+            onCommand(sender, cmd, cmdLabel, new String[]{"help"});
             return true; // do this if you didn't handle the command.
         }
 

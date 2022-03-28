@@ -7,8 +7,8 @@ import net.livecar.nuttyworks.npc_destinations.listeners.commands.CommandInfo;
 import org.bukkit.command.CommandSender;
 
 public class Sentinel_Commands {
-    @CommandInfo(name = "locsentinel", group = "External Plugin Commands", languageFile = "sentinel", helpMessage = "command_locsentinel_help", arguments = { "--npc|#", "<npc>|set|get|clear", "set|get|clear" }, permission = {
-            "npcdestinations.editall.locsentinel", "npcdestinations.editown.locsentinel" }, allowConsole = true, minArguments = 2, maxArguments = 2)
+    @CommandInfo(name = "locsentinel", group = "External Plugin Commands", languageFile = "sentinel", helpMessage = "command_locsentinel_help", arguments = {"--npc|#", "<npc>|set|get|clear", "set|get|clear"}, permission = {
+            "npcdestinations.editall.locsentinel", "npcdestinations.editown.locsentinel"}, allowConsole = true, minArguments = 2, maxArguments = 2)
     public boolean npcDest_locSentinel(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (!sender.hasPermission("npcdestinations.editall.locsentinel") && !sender.isOp() && !(isOwner && sender.hasPermission("npcdestinations.editown.locsentinel"))) {
             destRef.getMessageManager.sendMessage("destinations", sender, "messages.no_permissions");
@@ -48,7 +48,7 @@ public class Sentinel_Commands {
                     if (locSetting != null) {
                         addonReference.npcSettings.get(npc.getId()).locations.remove(destTrait.NPCLocations.get(nIndex).LocationIdent);
                     }
-                    destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                    destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
 
@@ -57,7 +57,7 @@ public class Sentinel_Commands {
                     locSetting = addonReference.pluginReference.getCurrentSettings(npc);
                     locSetting.locationID = destTrait.NPCLocations.get(nIndex).LocationIdent;
                     addonReference.npcSettings.get(npc.getId()).locations.put(destTrait.NPCLocations.get(nIndex).LocationIdent, locSetting);
-                    destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                    destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
 
@@ -69,7 +69,7 @@ public class Sentinel_Commands {
 
                 if (inargs[2].equalsIgnoreCase("get")) {
                     addonReference.pluginReference.setCurrentSettings(npc, locSetting);
-                    destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                    destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
             }

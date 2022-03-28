@@ -17,27 +17,27 @@ import java.util.logging.Level;
 
 public class NPCDestinationsTrait extends Trait {
     @Persist
-    public int          PauseForPlayers          = 5;
+    public int PauseForPlayers = 5;
     @Persist
-    public int          PauseTimeout             = 25;
+    public int PauseTimeout = 25;
     // @Persist public Boolean LookOneBlockDown = false;
     @Persist
-    public int          blocksUnderSurface       = 0;
+    public int blocksUnderSurface = 0;
     // Format X:Y:Z:TIMEOFDAY -Old, will convert this to new format on loading
     @Persist
-    public List<String> Locations                = new ArrayList<String>();
+    public List<String> Locations = new ArrayList<String>();
     @Persist
-    public Boolean      OpensGates               = false;
+    public Boolean OpensGates = false;
     @Persist
-    public Boolean      OpensWoodDoors           = false;
+    public Boolean OpensWoodDoors = false;
     @Persist
-    public Boolean      OpensMetalDoors          = false;
+    public Boolean OpensMetalDoors = false;
     @Persist
-    public Boolean      TeleportOnFailedStartLoc = true;
+    public Boolean TeleportOnFailedStartLoc = true;
     @Persist
-    public Boolean      TeleportOnNoPath         = true;
+    public Boolean TeleportOnNoPath = true;
     @Persist
-    public int          MaxDistFromDestination   = 2;
+    public int MaxDistFromDestination = 2;
 
     public enum en_CurrentAction {
         RANDOM_MOVEMENT, PATH_HUNTING, PATH_FOUND, TRAVELING, IDLE, IDLE_FAILED,
@@ -47,56 +47,56 @@ public class NPCDestinationsTrait extends Trait {
         NORMAL_PROCESSING, NO_PROCESSING, SET_LOCATION,
     }
 
-    public List<Destination_Setting> NPCLocations                = new ArrayList<Destination_Setting>();
-    public String                    lastResult                  = "Idle";
-    public List<Material>            AllowedPathBlocks           = new ArrayList<Material>();
-    public LocalDateTime             lastPositionChange;
-    public LocalDateTime             lastPlayerPause;
-    public Location                  lastPauseLocation;
-    public Location                  lastNavigationPoint;
-    public Destination_Setting       currentLocation             = new Destination_Setting();
-    public Destination_Setting       setLocation                 = new Destination_Setting();
-    public Destination_Setting       lastLocation                = new Destination_Setting();
-    public Destination_Setting       monitoredLocation           = null;
-    
-    public List<String>              enabledPlugins              = new ArrayList<String>();
-    public Boolean                   citizens_Swim               = true;
-    public Boolean                   citizens_NewPathFinder      = true;
-    public Boolean                   citizens_AvoidWater         = true;
-    public Boolean                   citizens_DefaultStuck       = true;
-    public Double                    citizens_DistanceMargin     = 1D;
-    public Double                    citizens_PathDistanceMargin = 1D;
+    public List<Destination_Setting> NPCLocations = new ArrayList<Destination_Setting>();
+    public String lastResult = "Idle";
+    public List<Material> AllowedPathBlocks = new ArrayList<Material>();
+    public LocalDateTime lastPositionChange;
+    public LocalDateTime lastPlayerPause;
+    public Location lastPauseLocation;
+    public Location lastNavigationPoint;
+    public Destination_Setting currentLocation = new Destination_Setting();
+    public Destination_Setting setLocation = new Destination_Setting();
+    public Destination_Setting lastLocation = new Destination_Setting();
+    public Destination_Setting monitoredLocation = null;
 
-    public Location                  lastLighting_Loc            = null;
-    public LocalDateTime             lastLighting_Time           = null;
-    public Integer                   lightTask                   = 0;
+    public List<String> enabledPlugins = new ArrayList<String>();
+    public Boolean citizens_Swim = true;
+    public Boolean citizens_NewPathFinder = true;
+    public Boolean citizens_AvoidWater = true;
+    public Boolean citizens_DefaultStuck = true;
+    public Double citizens_DistanceMargin = 1D;
+    public Double citizens_PathDistanceMargin = 1D;
 
-    public LocalDateTime             processingStarted           = null;
-    public Long                      totalProcessingTime         = 0L;
-    public Long                      totalProcessedBlocks        = 0L;
-    public Long                      lastProcessingTime          = 0L;
-    public Long                      lastBlocksPerSec            = 0L;
+    public Location lastLighting_Loc = null;
+    public LocalDateTime lastLighting_Time = null;
+    public Integer lightTask = 0;
 
-    public Integer                   maxProcessingTime           = -1;
-    
-    public String                    lastDebugMessage            = "";
-    
+    public LocalDateTime processingStarted = null;
+    public Long totalProcessingTime = 0L;
+    public Long totalProcessedBlocks = 0L;
+    public Long lastProcessingTime = 0L;
+    public Long lastBlocksPerSec = 0L;
+
+    public Integer maxProcessingTime = -1;
+
+    public String lastDebugMessage = "";
+
     // Inner namespace variables
-    ArrayList<Location>              pendingDestinations         = new ArrayList<Location>();
-    ArrayList<Location>              processedDestinations       = new ArrayList<Location>();
-    ArrayList<Block>                 openedObjects               = new ArrayList<Block>();
-    en_CurrentAction                 currentAction               = en_CurrentAction.IDLE;
-    en_RequestedAction               requestedAction             = en_RequestedAction.NORMAL_PROCESSING;
-    Plugin                           monitoringPlugin            = null;
-    LocalDateTime                    timeLastPathCalc;
-    LocalDateTime                    locationLockUntil;
-    
-    Boolean                          runningDoor                 = false;
-    Block                            lastOpenedObject            = null;
-    
-    UUID                             last_Loc_Reached;
-    int                              requestedPauseTime;
-    
+    ArrayList<Location> pendingDestinations = new ArrayList<Location>();
+    ArrayList<Location> processedDestinations = new ArrayList<Location>();
+    ArrayList<Block> openedObjects = new ArrayList<Block>();
+    en_CurrentAction currentAction = en_CurrentAction.IDLE;
+    en_RequestedAction requestedAction = en_RequestedAction.NORMAL_PROCESSING;
+    Plugin monitoringPlugin = null;
+    LocalDateTime timeLastPathCalc;
+    LocalDateTime locationLockUntil;
+
+    Boolean runningDoor = false;
+    Block lastOpenedObject = null;
+
+    UUID last_Loc_Reached;
+    int requestedPauseTime;
+
     // Public methods
     public NPCDestinationsTrait() {
         super("npcdestinations");
@@ -145,29 +145,25 @@ public class NPCDestinationsTrait extends Trait {
         return Citizens_Processing.trait_getCurLocation(this, noNull);
     }
 
-    
-    public LocalDateTime getLocationLockUntil()
-    {
+
+    public LocalDateTime getLocationLockUntil() {
         return locationLockUntil;
     }
-    
-    public void setLocationLockUntil(LocalDateTime lockUntil)
-    {
+
+    public void setLocationLockUntil(LocalDateTime lockUntil) {
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-mm-dd hh:mm:ss");
-        Citizens_Processing.debugMessage(Level.FINE, "NPC:" + this.npc.getId() + "|" + (lockUntil==null?"Clear":dateFormat.format(lockUntil)) + "|" + Arrays.toString(Thread.currentThread().getStackTrace()));
+        Citizens_Processing.debugMessage(Level.FINE, "NPC:" + this.npc.getId() + "|" + (lockUntil == null ? "Clear" : dateFormat.format(lockUntil)) + "|" + Arrays.toString(Thread.currentThread().getStackTrace()));
         this.locationLockUntil = lockUntil;
     }
-    
-    public void setLocationLockUntil(int seconds)
-    {
+
+    public void setLocationLockUntil(int seconds) {
         this.requestedPauseTime = seconds;
     }
-    
-    public int getPendingLockSeconds()
-    {
+
+    public int getPendingLockSeconds() {
         return this.requestedPauseTime;
     }
-    
+
     public void setRequestedAction(en_RequestedAction action) {
         Citizens_Processing.debugMessage(Level.FINE, "NPCDestinations_Trait.setRequestedAction()|NPC:" + this.npc.getId() + "|" + action.toString());
         this.requestedAction = action;
@@ -245,14 +241,14 @@ public class NPCDestinationsTrait extends Trait {
     }
 
     public void processOpenableObjects() {
-        for (Iterator<Block> iterator = openedObjects.iterator(); iterator.hasNext();) {
+        for (Iterator<Block> iterator = openedObjects.iterator(); iterator.hasNext(); ) {
             Block opened = iterator.next();
             if (opened.getLocation().distanceSquared(this.npc.getEntity().getLocation()) > 4 || (this.pendingDestinations.size() == 0 && this.processedDestinations.size() == 0)) {
                 closeOpenable(opened);
                 iterator.remove();
             }
         }
-        
+
         if (DestinationsPlugin.Instance.getMCUtils.isOpenable(npc.getEntity().getLocation().getBlock())) {
             if (!openedObjects.contains(npc.getEntity().getLocation().getBlock())) {
                 Block oBlock = npc.getEntity().getLocation().getBlock();

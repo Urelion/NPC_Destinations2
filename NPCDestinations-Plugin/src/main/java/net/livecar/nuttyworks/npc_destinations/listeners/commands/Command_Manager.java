@@ -17,9 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Command_Manager {
-    HashMap<String, Command_Record> registeredCommands  = null;
-    private List<String>            commandGroups       = null;
-    private DestinationsPlugin      getStorageReference = null;
+    HashMap<String, Command_Record> registeredCommands = null;
+    private List<String> commandGroups = null;
+    private DestinationsPlugin getStorageReference = null;
 
     public Command_Manager(DestinationsPlugin destRef) {
         this.getStorageReference = destRef;
@@ -76,7 +76,7 @@ public class Command_Manager {
         }
 
         if (inargs.length == 0)
-            inargs = new String[] { "help" };
+            inargs = new String[]{"help"};
 
         if (inargs[0].equalsIgnoreCase("help")) {
 
@@ -130,8 +130,7 @@ public class Command_Manager {
                 return true;
             }
 
-            if (!getStorageReference.hasPermissions(sender, cmdRecord.commandPermission))
-            {
+            if (!getStorageReference.hasPermissions(sender, cmdRecord.commandPermission)) {
                 getStorageReference.getMessageManager.sendMessage(cmdRecord.languageFile, sender, "messages.no_permissions");
                 return true;
             }
@@ -200,20 +199,20 @@ public class Command_Manager {
                                 if (argumentLine.contains("|")) {
                                     if (currentArg.equals("")) {
                                         for (String itemDesc : argumentLine.split("\\|")) {
-                                            results.addAll(parseTabItem(itemDesc, priorArg,currentArg));
+                                            results.addAll(parseTabItem(itemDesc, priorArg, currentArg));
                                         }
 
                                         return results;
                                     } else {
                                         for (String argValue : argumentLine.split("\\|")) {
-                                            results.addAll(parseTabItem(argValue, priorArg,currentArg));
+                                            results.addAll(parseTabItem(argValue, priorArg, currentArg));
                                         }
                                         return results;
                                     }
                                 } else if (argumentLine.equalsIgnoreCase("<PLAYERNAME>")) {
                                     return null;
                                 } else {
-                                    results.addAll(parseTabItem(argumentLine, priorArg,currentArg));
+                                    results.addAll(parseTabItem(argumentLine, priorArg, currentArg));
                                     return results;
                                 }
                             }
@@ -242,18 +241,16 @@ public class Command_Manager {
         List<String> results = new ArrayList<String>();
         if (item.equalsIgnoreCase("<material>") && (!priorArg.equalsIgnoreCase("--region") && !priorArg.equalsIgnoreCase("--npc"))) {
             for (Material materialType : Material.values()) {
-                if (currentValue.length() > 0)
-                {
-                    if (String.valueOf(materialType.name()).toLowerCase().startsWith(currentValue.toLowerCase()))
-                        results.add(String.valueOf(materialType.name()));
+                if (currentValue.length() > 0) {
+                    if (materialType.name().toLowerCase().startsWith(currentValue.toLowerCase()))
+                        results.add(materialType.name());
                 } else {
-                    results.add(String.valueOf(materialType.name()));
+                    results.add(materialType.name());
                 }
             }
         } else if (item.equalsIgnoreCase("<plugin>") && (!priorArg.equalsIgnoreCase("--region") && !priorArg.equalsIgnoreCase("--npc"))) {
             for (DestinationsAddon plugin : getStorageReference.getPluginManager.getPlugins()) {
-                if (currentValue.length() > 0)
-                {
+                if (currentValue.length() > 0) {
                     if (String.valueOf(plugin.getActionName()).toLowerCase().startsWith(currentValue.toLowerCase()))
                         results.add(String.valueOf(plugin.getActionName()));
                 } else {
@@ -262,8 +259,7 @@ public class Command_Manager {
             }
         } else if (item.equalsIgnoreCase("<npc>") && (!priorArg.equalsIgnoreCase("--region"))) {
             for (NPC npc : getStorageReference.getCitizensPlugin.getNPCRegistry()) {
-                if (currentValue.length() > 0)
-                {
+                if (currentValue.length() > 0) {
                     if (String.valueOf(npc.getId()).toLowerCase().startsWith(currentValue.toLowerCase()))
                         results.add(String.valueOf(npc.getId()));
                 } else {
@@ -286,12 +282,9 @@ public class Command_Manager {
         } else {
             for (DestinationsAddon plugin : getStorageReference.getPluginManager.getPlugins()) {
                 List<String> tabItems = plugin.parseTabItem(item, priorArg);
-                if (tabItems.size() > 0)
-                {
-                    if (currentValue.length() > 0)
-                    {
-                        for (String itemName : tabItems)
-                        {
+                if (tabItems.size() > 0) {
+                    if (currentValue.length() > 0) {
+                        for (String itemName : tabItems) {
                             if (itemName.toLowerCase().startsWith(currentValue.toLowerCase()))
                                 results.add(itemName);
                         }

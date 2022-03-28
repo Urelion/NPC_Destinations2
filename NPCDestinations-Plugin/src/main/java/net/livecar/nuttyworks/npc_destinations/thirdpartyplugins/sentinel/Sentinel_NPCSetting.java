@@ -11,11 +11,11 @@ import java.util.UUID;
 
 public class Sentinel_NPCSetting {
 
-    public int                                     npcID;
+    public int npcID;
     public HashMap<UUID, Sentinel_LocationSetting> locations;
-    public Location                                currentDestination;
-    public NPCDestinationsTrait                    destinationsTrait;
-    public Date                                    lastAction;
+    public Location currentDestination;
+    public NPCDestinationsTrait destinationsTrait;
+    public Date lastAction;
 
     public Sentinel_NPCSetting() {
         locations = new HashMap<>();

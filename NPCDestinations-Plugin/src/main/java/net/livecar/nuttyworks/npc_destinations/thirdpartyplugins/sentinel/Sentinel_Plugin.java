@@ -11,15 +11,15 @@ import java.lang.reflect.Field;
 import java.util.Date;
 
 public class Sentinel_Plugin {
-    public DestinationsPlugin destRef           = null;
-    public Sentinel_Addon     getSentinelPlugin = null;
-    public int[]              version;
+    public DestinationsPlugin destRef = null;
+    public Sentinel_Addon getSentinelPlugin = null;
+    public int[] version;
 
     @SuppressWarnings("deprecation")
     public Sentinel_Plugin(DestinationsPlugin storageRef) {
         destRef = storageRef;
 
-        version = new int[] { 0, 0, 0, 0 };
+        version = new int[]{0, 0, 0, 0};
 
         String verString = Bukkit.getServer().getPluginManager().getPlugin("Sentinel").getDescription().getVersion();
         if (verString.contains(" ")) {
@@ -68,13 +68,12 @@ public class Sentinel_Plugin {
 
         Field[] fieldList = SentinelTrait.class.getFields();
         sentStorage.sentinelSettings = new MemoryDataKey();
-        for (Field fieldInfo : fieldList)
-        {
+        for (Field fieldInfo : fieldList) {
             fieldInfo.setAccessible(true);
             try {
                 sentStorage.sentinelSettings.setRaw(fieldInfo.getName(), fieldInfo.get(sentTrait));
-            } catch (Exception err)
-            {}
+            } catch (Exception err) {
+            }
         }
 
         return sentStorage;
@@ -86,13 +85,12 @@ public class Sentinel_Plugin {
         }
         SentinelTrait sentTrait = npc.getTrait(SentinelTrait.class);
         Field[] fieldList = SentinelTrait.class.getFields();
-        for (Field fieldInfo : fieldList)
-        {
+        for (Field fieldInfo : fieldList) {
             fieldInfo.setAccessible(true);
             try {
                 fieldInfo.set(sentTrait, sentStorage.sentinelSettings.getRaw(fieldInfo.getName()));
-            } catch (Exception err)
-            {}
+            } catch (Exception err) {
+            }
         }
 
 

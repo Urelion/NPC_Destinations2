@@ -28,15 +28,14 @@ public class DestinationsAddon {
     }
 
     //Change to allow external plugins to change the world time calc
-    public long getWorldTime(World world)
-    {
+    public long getWorldTime(World world) {
         return -1;
     }
-    
+
     public List<String> parseTabItem(String item, String priorArg) {
         return new ArrayList<String>();
     }
-    
+
     public String parseLanguageLine(String message, NPCDestinationsTrait npcTrait, Destination_Setting locationSetting, Material blockMaterial, NPC npc, int ident) {
         return message;
     }
@@ -46,7 +45,7 @@ public class DestinationsAddon {
     }
 
     public void onLocationLoading(NPC npc, NPCDestinationsTrait npcTrait, Destination_Setting location, DataKey storageKey) {
-    
+
     }
 
     public void onLocationSaving(NPC npc, NPCDestinationsTrait npcTrait, Destination_Setting location, DataKey storageKey) {
@@ -61,6 +60,6 @@ public class DestinationsAddon {
     }
 
     public void onEnableChanged(NPC npc, NPCDestinationsTrait npcTrait, boolean enabled) {
-    
+
     }
 }

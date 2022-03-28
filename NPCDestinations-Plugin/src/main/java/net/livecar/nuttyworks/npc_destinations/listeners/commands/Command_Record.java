@@ -10,18 +10,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class Command_Record {
-    public String    commandName;
-    public String    groupName;
-    public String    languageFile;
-    public String[]  commandPermission;
-    public String    helpMessage;
-    public String[]  arguments;
-    public Boolean   allowConsole;
-    public int       minArguments;
-    public int       maxArguments;
+    public String commandName;
+    public String groupName;
+    public String languageFile;
+    public String[] commandPermission;
+    public String helpMessage;
+    public String[] arguments;
+    public Boolean allowConsole;
+    public int minArguments;
+    public int maxArguments;
 
-    private Class<?> commandClass;
-    private Method   commandMethod;
+    private final Class<?> commandClass;
+    private final Method commandMethod;
 
     public Command_Record(String commandName, String groupName, String languageFile, String[] commandPermission, String helpMessage, Boolean allowConsole, int minArguments, int maxArguments, String[] arguments, Class<?> commandClass,
                           String commandMethod) {

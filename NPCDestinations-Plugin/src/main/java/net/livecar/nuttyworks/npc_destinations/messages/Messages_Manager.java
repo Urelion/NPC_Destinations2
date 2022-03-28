@@ -26,8 +26,8 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 
 public class Messages_Manager {
-    private List<LogDetail>    logHistory;
-    private jsonChat           jsonManager;
+    private List<LogDetail> logHistory;
+    private final jsonChat jsonManager;
     private DestinationsPlugin destRef = null;
 
     public Messages_Manager(DestinationsPlugin storageRef) {
@@ -65,7 +65,7 @@ public class Messages_Manager {
 
         if (destRef.debugLogLevel.intValue() <= debugLevel.intValue()) {
             String className = new Exception().getStackTrace()[1].getClassName();
-            logHistory.add(new LogDetail(debugLevel.toString() + "|" + className.substring(className.lastIndexOf(".")) + "|" + new Exception().getStackTrace()[1].getMethodName() + "|" + new Exception().getStackTrace()[1].getLineNumber() + "|" + extendedMessage));
+            logHistory.add(new LogDetail(debugLevel + "|" + className.substring(className.lastIndexOf(".")) + "|" + new Exception().getStackTrace()[1].getMethodName() + "|" + new Exception().getStackTrace()[1].getLineNumber() + "|" + extendedMessage));
 
             if (destRef.isEnabled()) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(destRef, new Runnable() {
@@ -116,7 +116,7 @@ public class Messages_Manager {
         List<String> processedMessages = new ArrayList<String>();
 
         String[] messages = this.getResultMessage(langFile, msgKey.toLowerCase());
-    
+
         for (String message : messages) {
             String messageLine = parseMessage(sender, langFile, message, npcTrait, locationSetting, material, npc, ident);
             messageLine = messageLine.replaceAll("<message>", Matcher.quoteReplacement(rawMessage));
@@ -322,7 +322,7 @@ public class Messages_Manager {
             if (message.toLowerCase().contains("<setting.pathtime>")) {
                 if (this.destRef.getPathClass.currentTask != null && this.destRef.getPathClass.currentTask.npc.getId() == npc.getId()) {
                     long nSeconds = Duration.ofMillis(this.destRef.getPathClass.pathQueue.get(npc.getId()).timeSpent).getSeconds();
-                    message = replaceAll(message, "<setting.pathtime>", "&7* " + String.valueOf(Math.abs(nSeconds)));
+                    message = replaceAll(message, "<setting.pathtime>", "&7* " + Math.abs(nSeconds));
                 } else if (!this.destRef.getPathClass.pathQueue.containsKey(npc.getId())) {
                     message = replaceAll(message, "<setting.pathtime>", "??");
                 } else {
@@ -361,7 +361,7 @@ public class Messages_Manager {
                                 message = replaceAll(message, "<setting.statusmessage>", this.getResultMessage(langFile, "result_Messages.action_idle_failure")[0]);
                                 break;
                             case PATH_HUNTING:
-                                message = replaceAll(message, "<setting.statusmessage>", this.getResultMessage(langFile, "result_Messages.action_path_hunting")[0] + " (" + String.valueOf(Duration.between(npcTrait.processingStarted, LocalDateTime.now()).getSeconds()) + ")");
+                                message = replaceAll(message, "<setting.statusmessage>", this.getResultMessage(langFile, "result_Messages.action_path_hunting")[0] + " (" + Duration.between(npcTrait.processingStarted, LocalDateTime.now()).getSeconds() + ")");
                                 break;
                             case RANDOM_MOVEMENT:
                                 message = replaceAll(message, "<setting.statusmessage>", this.getResultMessage(langFile, "result_Messages.action_random_movement")[0]);
@@ -374,7 +374,7 @@ public class Messages_Manager {
                                 if (npcTrait.getPendingDestinations() == null) {
                                     newMessage += " (0)";
                                 } else {
-                                    newMessage += " (" + Integer.toString(npcTrait.getPendingDestinations().size()) + ")";
+                                    newMessage += " (" + npcTrait.getPendingDestinations().size() + ")";
                                 }
                                 message = replaceAll(message, "<setting.statusmessage>", newMessage);
                                 break;
@@ -387,12 +387,12 @@ public class Messages_Manager {
                         break;
                     case SET_LOCATION:
                         if (npcTrait.getLocationLockUntil() != null) {
-                            Duration procTime = Duration.between(LocalDateTime.now(),npcTrait.getLocationLockUntil());
+                            Duration procTime = Duration.between(LocalDateTime.now(), npcTrait.getLocationLockUntil());
                             int hours = (int) Math.abs(procTime.getSeconds() / 3600);
                             int minutes = (int) Math.abs((procTime.getSeconds() % 3600) / 60);
                             int seconds = (int) Math.abs(procTime.getSeconds() % 60);
 
-                            message = replaceAll(message, "<setting.statusmessage>", this.getResultMessage(langFile, "result_Messages.action_set_location")[0] + "(" + (hours>0?String.valueOf(hours) + "h ":"") + (minutes>0?String.valueOf(minutes) + "m ":"") + (seconds>0?String.valueOf(seconds) + "s ":"") + ")");
+                            message = replaceAll(message, "<setting.statusmessage>", this.getResultMessage(langFile, "result_Messages.action_set_location")[0] + "(" + (hours > 0 ? hours + "h " : "") + (minutes > 0 ? minutes + "m " : "") + (seconds > 0 ? seconds + "s " : "") + ")");
                         } else {
                             message = replaceAll(message, "<setting.statusmessage>", this.getResultMessage(langFile, "result_Messages.action_set_location")[0]);
                         }
@@ -457,17 +457,17 @@ public class Messages_Manager {
                             } catch (Exception err) {
                                 StringWriter sw = new StringWriter();
                                 err.printStackTrace(new PrintWriter(sw));
-                
-                                destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.plugin_debug", err.getMessage() + "\n" + sw.toString());
+
+                                destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.plugin_debug", err.getMessage() + "\n" + sw);
                             }
                         }
                     }
-                    
+
                     if (npcTrait.NPCLocations.get(nCnt).equals(locationSetting) && locationSetting.equals(npcTrait.currentLocation)) {
                         String linkColor = "aqua";
                         if (locationBlocked)
                             linkColor = "yellow";
-                        message = replaceAll(message, "<location.current>", "{\"text\":\"" + Integer.toString(nCnt) + "\",\"color\":\"" + linkColor + "\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"" + locationSetting.LocationIdent
+                        message = replaceAll(message, "<location.current>", "{\"text\":\"" + nCnt + "\",\"color\":\"" + linkColor + "\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"" + locationSetting.LocationIdent
                                 .toString() + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"" + this.getResultMessage(langFile, "result_Messages.current_location")[0] + "\n&eID: " + locationSetting.LocationIdent.toString()
                                 + "\"}}");
                         bFound = true;
@@ -477,14 +477,14 @@ public class Messages_Manager {
                         if (locationBlocked)
                             linkColor = "red";
                         message = replaceAll(message, "<location.current>", "{\"text\":\"<location.id>\",\"color\":\"" + linkColor + "\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"" + locationSetting.LocationIdent.toString()
-                                + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"&eID: " + locationSetting.LocationIdent.toString() + "\"}}");
+                                + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"&eID: " + locationSetting.LocationIdent + "\"}}");
                         bFound = true;
                     }
                 }
 
                 if (!bFound) {
                     message = replaceAll(message, "<location.current>", "{\"text\":\"<location.id>\",\"color\":\"white\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"" + locationSetting.LocationIdent.toString()
-                            + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"&eID: " + locationSetting.LocationIdent.toString() + "\"}}");
+                            + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"&eID: " + locationSetting.LocationIdent + "\"}}");
                 }
             }
             if (message.toLowerCase().contains("<location.id>")) {
@@ -584,13 +584,10 @@ public class Messages_Manager {
                 message = replaceAll(message, "<location.hand>", locationSetting.items_Hand == null ? "" : getItemName(locationSetting.items_Hand));
             if (message.toLowerCase().contains("<location.offhand>"))
                 message = replaceAll(message, "<location.offhand>", locationSetting.items_Offhand == null ? "" : getItemName(locationSetting.items_Offhand));
-            if (message.toLowerCase().contains("<location.commands>"))
-            {
-                if (locationSetting.arrival_Commands != null && locationSetting.arrival_Commands.size() > 0)
-                {
+            if (message.toLowerCase().contains("<location.commands>")) {
+                if (locationSetting.arrival_Commands != null && locationSetting.arrival_Commands.size() > 0) {
                     String cmds = "";
-                    for (String cmdStr : locationSetting.arrival_Commands)
-                    {
+                    for (String cmdStr : locationSetting.arrival_Commands) {
                         if (cmdStr.length() > 25)
                             cmds += cmdStr.substring(0, 25) + "\n&f  ";
                         else
@@ -749,7 +746,7 @@ public class Messages_Manager {
 }
 
 class LogDetail {
-    public Date   logDateTime;
+    public Date logDateTime;
     public String logContent;
 
     public LogDetail(String logContent) {

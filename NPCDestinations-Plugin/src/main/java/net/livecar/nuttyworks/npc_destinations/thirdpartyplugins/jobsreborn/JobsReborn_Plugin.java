@@ -9,9 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class JobsReborn_Plugin {
-    public DestinationsPlugin                  destRef;
-    public JobsReborn_Addon                    getJobsPlugin;
-    public Map<Integer, JobsReborn_NPCSetting> npcSettings   = new HashMap<>();
+    public DestinationsPlugin destRef;
+    public JobsReborn_Addon getJobsPlugin;
+    public Map<Integer, JobsReborn_NPCSetting> npcSettings = new HashMap<>();
 
     @SuppressWarnings("deprecation")
     public JobsReborn_Plugin(DestinationsPlugin storageRef) {

@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Plugin_Manager {
-    private HashMap<String, DestinationsAddon> pluginRegistration;
-    private DestinationsAddon                  timePlugin         = null;
-    private DestinationsPlugin                 destRef;
+    private final HashMap<String, DestinationsAddon> pluginRegistration;
+    private final DestinationsAddon timePlugin = null;
+    private final DestinationsPlugin destRef;
 
     public Plugin_Manager(DestinationsPlugin storageRef) {
         pluginRegistration = new HashMap<>();
@@ -31,6 +31,8 @@ public class Plugin_Manager {
         return pluginRegistration.get(actionName.toUpperCase());
     }
 
-    public DestinationsAddon getTimePlugin() { return timePlugin; }
-    
+    public DestinationsAddon getTimePlugin() {
+        return timePlugin;
+    }
+
 }

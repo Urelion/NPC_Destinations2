@@ -15,14 +15,13 @@ public class JobsReborn_Commands {
             group = "External Plugin Commands",
             languageFile = "jobsreborn",
             helpMessage = "command_locjobs_help",
-            arguments = { "--npc|#","<npc>|>|<|clear",">|<|clear" },
-            permission = {"npcdestinations.editall.locjobs","npcdestinations.editown.locjobs"},
+            arguments = {"--npc|#", "<npc>|>|<|clear", ">|<|clear"},
+            permission = {"npcdestinations.editall.locjobs", "npcdestinations.editown.locjobs"},
             allowConsole = true,
             minArguments = 1,
             maxArguments = 20
-            )
-    public boolean npcDest_locjobs(DestinationsPlugin destRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    )
+    public boolean npcDest_locjobs(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (!sender.hasPermission("npcdestinations.editall.locjobs") && !sender.isOp() && !(isOwner && sender.hasPermission("npcdestinations.editown.locjobs"))) {
             destRef.getMessageManager.sendMessage("destinations", sender, "messages.no_permissions");
             return true;
@@ -32,7 +31,7 @@ public class JobsReborn_Commands {
                 return true;
             }
 
-            
+
             if (inargs.length > 2) {
                 int nIndex = Integer.parseInt(inargs[1]);
                 if (nIndex > destTrait.NPCLocations.size() - 1) {
@@ -41,43 +40,41 @@ public class JobsReborn_Commands {
                 }
 
                 if (!destTrait.NPCLocations.get(nIndex).managed_Location.equals("")) {
-                    destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_managed",destTrait, destTrait.NPCLocations.get(nIndex));
+                    destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_managed", destTrait, destTrait.NPCLocations.get(nIndex));
                     return true;
                 }
 
                 //Get the location
                 JobsReborn_LocationSetting locSetting = null;
 
-                JobsReborn_Addon addonReference = (JobsReborn_Addon)destRef.getPluginManager.getPluginByName("JOBSREBORN");
-                
+                JobsReborn_Addon addonReference = (JobsReborn_Addon) destRef.getPluginManager.getPluginByName("JOBSREBORN");
+
                 if (!addonReference.pluginReference.npcSettings.containsKey(npc.getId()))
                     addonReference.pluginReference.npcSettings.put(npc.getId(), new JobsReborn_NPCSetting());
-                
-                if (addonReference.pluginReference.npcSettings.get(npc.getId()).locations.containsKey(destTrait.NPCLocations.get(nIndex).LocationIdent)) 
+
+                if (addonReference.pluginReference.npcSettings.get(npc.getId()).locations.containsKey(destTrait.NPCLocations.get(nIndex).LocationIdent))
                     locSetting = addonReference.pluginReference.npcSettings.get(npc.getId()).locations.get(destTrait.NPCLocations.get(nIndex).LocationIdent);
-                
-                
+
+
                 if (inargs[2].equalsIgnoreCase("clear")) {
-                    if (locSetting != null)
-                    {
+                    if (locSetting != null) {
                         addonReference.pluginReference.npcSettings.get(npc.getId()).locations.remove(destTrait.NPCLocations.get(nIndex).LocationIdent);
-                        
+
                         // V1.39 -- Event
                         Location_Updated changeEvent = new Location_Updated(npc, destTrait.NPCLocations.get(nIndex));
                         Bukkit.getServer().getPluginManager().callEvent(changeEvent);
                     }
-                    
-                    destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+
+                    destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
-                
-                if (locSetting == null)
-                {
+
+                if (locSetting == null) {
                     locSetting = new JobsReborn_LocationSetting();
                     locSetting.locationID = destTrait.NPCLocations.get(nIndex).LocationIdent;
                     addonReference.pluginReference.npcSettings.get(npc.getId()).locations.put(destTrait.NPCLocations.get(nIndex).LocationIdent, locSetting);
                 }
-                
+
                 if (inargs[2].equalsIgnoreCase(">")) {
                     locSetting.jobs_Greater = true;
                 } else if (inargs[2].equalsIgnoreCase("<")) {
@@ -85,7 +82,7 @@ public class JobsReborn_Commands {
                 } else {
                     return false;
                 }
-                
+
                 if (Utilities.tryParseInt(inargs[3])) {
                     locSetting.jobs_Max = Integer.parseInt(inargs[3]);
                 } else {
@@ -106,12 +103,12 @@ public class JobsReborn_Commands {
                 Location_Updated changedLocation = new Location_Updated(npc, destTrait.NPCLocations.get(nIndex));
                 Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
-                destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                 return true;
-            } 
+            }
         }
         return false;
     }
 
-    
+
 }

@@ -11,11 +11,11 @@ import java.util.UUID;
 
 public class JobsReborn_NPCSetting {
 
-    public int                                       npcID;
+    public int npcID;
     public HashMap<UUID, JobsReborn_LocationSetting> locations;
-    public Location                                  currentDestination;
-    public NPCDestinationsTrait                      destinationsTrait;
-    public Date                                      lastAction;
+    public Location currentDestination;
+    public NPCDestinationsTrait destinationsTrait;
+    public Date lastAction;
 
     public JobsReborn_NPCSetting() {
         locations = new HashMap<>();

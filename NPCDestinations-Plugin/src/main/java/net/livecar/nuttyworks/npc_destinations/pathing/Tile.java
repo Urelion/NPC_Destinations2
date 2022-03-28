@@ -5,11 +5,11 @@ import org.bukkit.Location;
 public class Tile {
 
     // as offset from starting point
-    private final short  x, y, z;
+    private final short x, y, z;
 
-    private double       g      = -1, h = -1;
+    private double g = -1, h = -1;
 
-    private Tile         parent = null;
+    private Tile parent = null;
 
     private final String uid;
 
@@ -86,7 +86,7 @@ public class Tile {
 
     public void calculateH(int sx, int sy, int sz, int ex, int ey, int ez, boolean update) {
         // only update if h hasn't been calculated or if forced
-        if ((!update && h == -1) || update) {
+        if (update || h == -1) {
             int hx = sx + x, hy = sy + y, hz = sz + z;
             this.h = this.getEuclideanDistance(hx, hy, hz, ex, ey, ez);
         }
@@ -96,7 +96,7 @@ public class Tile {
     // on the grid, following the path generated to get there.
     public void calculateG(int sx, int sy, int sz, boolean update) {
 
-        if ((!update && g == -1) || update) {
+        if (update || g == -1) {
 
             // only update if g hasn't been calculated or if forced
             Tile currentParent = this.getParent(), currentTile = this;

@@ -20,21 +20,19 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
 
-public class Commands_NPC
-{
+public class Commands_NPC {
     @CommandInfo(
             name = "autoset",
             group = "NPC Config Commands",
             helpMessage = "command_autoset_help",
             languageFile = "destinations",
-            arguments = { "--npc","<npc>" },
-            permission = {"npcdestinations.editall.autoset","npcdestinations.editown.autoset"},
+            arguments = {"--npc", "<npc>"},
+            permission = {"npcdestinations.editall.autoset", "npcdestinations.editown.autoset"},
             allowConsole = true,
             minArguments = 0,
             maxArguments = 0
     )
-    public boolean npcDest_AutoSet(DestinationsPlugin destRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_AutoSet(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
             destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc");
             return true;
@@ -54,7 +52,7 @@ public class Commands_NPC
         // Setup the waypoint provider
         Waypoints waypoints = npc.getTrait(Waypoints.class);
         waypoints.setWaypointProvider("NPCDestinations");
-        destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+        destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
         return true;
 
     }
@@ -64,14 +62,13 @@ public class Commands_NPC
             group = "NPC Config Commands",
             languageFile = "destinations",
             helpMessage = "command_info_help",
-            arguments = { "--npc","<npc>" },
-            permission = {"npcdestinations.editall.info","npcdestinations.editown.info"},
+            arguments = {"--npc", "<npc>"},
+            permission = {"npcdestinations.editall.info", "npcdestinations.editown.info"},
             allowConsole = true,
             minArguments = 0,
             maxArguments = 0
     )
-    public boolean npcDest_Info(DestinationsPlugin destRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_Info(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
 
         if (npc == null) {
             destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc");
@@ -102,14 +99,13 @@ public class Commands_NPC
             group = "NPC Config Commands",
             languageFile = "destinations",
             helpMessage = "command_process_help",
-            arguments = { "--npc","<npc>" },
-            permission = {"npcdestinations.editall.process","npcdestinations.editown.process"},
+            arguments = {"--npc", "<npc>"},
+            permission = {"npcdestinations.editall.process", "npcdestinations.editown.process"},
             allowConsole = true,
             minArguments = 0,
             maxArguments = 0
     )
-    public boolean npcDest_Process(DestinationsPlugin destRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_Process(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
             destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc");
             return true;
@@ -127,14 +123,13 @@ public class Commands_NPC
             group = "NPC Config Commands",
             languageFile = "destinations",
             helpMessage = "command_citizens_help",
-            arguments = { "--npc|#","<npc>|#","#|Y|N","#|Y|N","Y|N","Y|N","Y|N","Y|N" },
-            permission = {"npcdestinations.editall.citizens","npcdestinations.editown.citizens"},
+            arguments = {"--npc|#", "<npc>|#", "#|Y|N", "#|Y|N", "Y|N", "Y|N", "Y|N", "Y|N"},
+            permission = {"npcdestinations.editall.citizens", "npcdestinations.editown.citizens"},
             allowConsole = true,
             minArguments = 0,
             maxArguments = 6
     )
-    public boolean npcDest_Citizens(DestinationsPlugin destRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_Citizens(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         // parse the commands
         if (inargs.length < 2) {
             destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_citizens_settings",
@@ -176,7 +171,7 @@ public class Commands_NPC
             destTrait.citizens_DefaultStuck = inargs[6].equalsIgnoreCase("y");
         }
 
-        destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+        destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
         return true;
     }
 
@@ -185,21 +180,19 @@ public class Commands_NPC
             group = "NPC Config Commands",
             languageFile = "destinations",
             helpMessage = "command_goloc_help",
-            arguments = { "--npc|#","<npc>","#" },
-            permission = {"npcdestinations.editall.goloc","npcdestinations.editown.goloc"},
+            arguments = {"--npc|#", "<npc>", "#"},
+            permission = {"npcdestinations.editall.goloc", "npcdestinations.editown.goloc"},
             allowConsole = true,
             minArguments = 1,
             maxArguments = 2
     )
-    public boolean npcDest_Goloc(DestinationsPlugin destRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_Goloc(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
             destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc");
             return true;
         }
 
-        if (!npc.isSpawned())
-        {
+        if (!npc.isSpawned()) {
             destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc");
             return true;
         }
@@ -262,8 +255,7 @@ public class Commands_NPC
                             StringWriter sw = new StringWriter();
                             err.printStackTrace(new PrintWriter(sw));
                             destRef.getMessageManager.consoleMessage(destRef, "destinations",
-                                    "Console_Messages.plugin_error", err.getMessage() + "\n" + sw
-                                            .toString());
+                                    "Console_Messages.plugin_error", err.getMessage() + "\n" + sw);
                         }
                     }
                 }
@@ -295,14 +287,13 @@ public class Commands_NPC
             group = "NPC Config Commands",
             languageFile = "destinations",
             helpMessage = "command_enableplugin_help",
-            arguments = { "--npc|<plugin>","<npc>","<plugin>" },
-            permission = {"npcdestinations.editall.enableplugin","npcdestinations.editown.enableplugin"},
+            arguments = {"--npc|<plugin>", "<npc>", "<plugin>"},
+            permission = {"npcdestinations.editall.enableplugin", "npcdestinations.editown.enableplugin"},
             allowConsole = true,
             minArguments = 1,
             maxArguments = 1
     )
-    public boolean npcDest_EnablePlugin(DestinationsPlugin destRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_EnablePlugin(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
             destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc");
             return true;
@@ -315,7 +306,7 @@ public class Commands_NPC
                     destRef.getPluginManager.getPluginByName(inargs[1].toUpperCase()).onEnableChanged(npc,
                             destTrait, true);
                 }
-                destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                 return true;
             }
             if (destTrait.enabledPlugins.contains(inargs[1].toUpperCase())) {
@@ -337,7 +328,7 @@ public class Commands_NPC
                     return true;
                 }
             }
-            destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+            destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
             return true;
         }
 
@@ -349,14 +340,13 @@ public class Commands_NPC
             group = "NPC Config Commands",
             languageFile = "destinations",
             helpMessage = "command_pauseplayer_help",
-            arguments = { "--npc|#","<npc>|#","#"},
-            permission = {"npcdestinations.editall.pauseplayer","npcdestinations.editown.pauseplayer"},
+            arguments = {"--npc|#", "<npc>|#", "#"},
+            permission = {"npcdestinations.editall.pauseplayer", "npcdestinations.editown.pauseplayer"},
             allowConsole = true,
             minArguments = 1,
             maxArguments = 3
     )
-    public boolean npcDest_PausePlayer(DestinationsPlugin destRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_PausePlayer(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
             destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc", destTrait, null);
             return true;
@@ -365,13 +355,13 @@ public class Commands_NPC
             destTrait.PauseForPlayers = -1;
             destTrait.PauseTimeout = -1;
             // V1.39 -- Event
-            destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+            destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
             return true;
         } else if (inargs.length == 2) {
             try {
                 destTrait.PauseForPlayers = Integer.parseInt(inargs[1]);
                 destTrait.PauseTimeout = -1;
-                destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
             } catch (Exception e) {
                 destRef.getMessageManager.sendMessage("destinations", sender,
                         "messages.commands_pauseplayer_badargs", destTrait);
@@ -381,7 +371,7 @@ public class Commands_NPC
             try {
                 destTrait.PauseForPlayers = Integer.parseInt(inargs[1]);
                 destTrait.PauseTimeout = Integer.parseInt(inargs[2]);
-                destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
             } catch (Exception e) {
                 destRef.getMessageManager.sendMessage("destinations", sender,
                         "messages.commands_pauseplayer_badargs", destTrait);
@@ -396,14 +386,13 @@ public class Commands_NPC
             group = "NPC Config Commands",
             languageFile = "destinations",
             helpMessage = "command_addblock_help",
-            arguments = { "--npc","<npc>" },
-            permission = {"npcdestinations.editall.addblock","npcdestinations.editown.addblock"},
+            arguments = {"--npc", "<npc>"},
+            permission = {"npcdestinations.editall.addblock", "npcdestinations.editown.addblock"},
             allowConsole = true,
             minArguments = 0,
             maxArguments = 0
     )
-    public boolean npcDest_AddBlock(DestinationsPlugin destRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_AddBlock(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
             destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc", destTrait);
             return true;
@@ -420,7 +409,7 @@ public class Commands_NPC
         } catch (Exception err) {
             return false;
         }
-        destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+        destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
         return true;
     }
 
@@ -430,14 +419,13 @@ public class Commands_NPC
             group = "NPC Config Commands",
             languageFile = "destinations",
             helpMessage = "command_removeblock_help",
-            arguments = { "--npc|<material>","<npc>","<material>" },
-            permission = {"npcdestinations.editall.removeblock","npcdestinations.editown.removeblock"},
+            arguments = {"--npc|<material>", "<npc>", "<material>"},
+            permission = {"npcdestinations.editall.removeblock", "npcdestinations.editown.removeblock"},
             allowConsole = true,
             minArguments = 0,
             maxArguments = 1
     )
-    public boolean npcDest_RemoveBlock(DestinationsPlugin destRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_RemoveBlock(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
             destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc", destTrait, null);
             return true;
@@ -445,7 +433,7 @@ public class Commands_NPC
 
         if (inargs.length > 1) {
             if (destRef.getUtilitiesClass.isNumeric(inargs[1])) {
-                destRef.getMessageManager.sendMessage("destinations", sender,"messages.commands_removeblock_badargs", destTrait);
+                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_removeblock_badargs", destTrait);
             } else {
                 Material material = null;
                 try {
@@ -459,7 +447,7 @@ public class Commands_NPC
                             "messages.commands_removeblock_notinlist", destTrait);
                 } else {
                     destTrait.AllowedPathBlocks.remove(material);
-                    destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                    destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                 }
             }
         } else {
@@ -470,13 +458,13 @@ public class Commands_NPC
                             "messages.commands_removeblock_notinlist", destTrait);
                 } else {
                     destTrait.AllowedPathBlocks.remove(player.getItemInHand().getType());
-                    destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+                    destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                 }
             } catch (Exception err) {
                 return false;
             }
         }
-        destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+        destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
         return true;
     }
 
@@ -485,21 +473,20 @@ public class Commands_NPC
             group = "NPC Config Commands",
             languageFile = "destinations",
             helpMessage = "command_removeallblocks_help",
-            arguments = { "--npc","<npc>" },
-            permission = {"npcdestinations.editall.removeallblocks","npcdestinations.editown.removeallblocks"},
+            arguments = {"--npc", "<npc>"},
+            permission = {"npcdestinations.editall.removeallblocks", "npcdestinations.editown.removeallblocks"},
             allowConsole = true,
             minArguments = 0,
             maxArguments = 0
     )
-    public boolean npcDest_RemoveAllBlocks(DestinationsPlugin destRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_RemoveAllBlocks(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
             destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc", destTrait, null);
             return true;
         }
 
         destTrait.AllowedPathBlocks.clear();
-        destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+        destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
         return true;
     }
 
@@ -508,21 +495,20 @@ public class Commands_NPC
             group = "NPC Config Commands",
             languageFile = "destinations",
             helpMessage = "command_opengates_help",
-            arguments = { "--npc","<npc>" },
-            permission = {"npcdestinations.editall.opengates","npcdestinations.editown.opengates"},
+            arguments = {"--npc", "<npc>"},
+            permission = {"npcdestinations.editall.opengates", "npcdestinations.editown.opengates"},
             allowConsole = true,
             minArguments = 0,
             maxArguments = 0
     )
-    public boolean npcDest_OpenGates(DestinationsPlugin destRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_OpenGates(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
             destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc", destTrait, null);
             return true;
         }
 
         destTrait.OpensGates = !destTrait.OpensGates;
-        destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+        destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
         return true;
     }
 
@@ -531,21 +517,20 @@ public class Commands_NPC
             group = "NPC Config Commands",
             languageFile = "destinations",
             helpMessage = "command_openwooddoors_help",
-            arguments = { "--npc","<npc>" },
-            permission = {"npcdestinations.editall.openwooddoors","npcdestinations.editown.openwooddoors"},
+            arguments = {"--npc", "<npc>"},
+            permission = {"npcdestinations.editall.openwooddoors", "npcdestinations.editown.openwooddoors"},
             allowConsole = true,
             minArguments = 0,
             maxArguments = 0
     )
-    public boolean npcDest_OpenWoodDoors(DestinationsPlugin destRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_OpenWoodDoors(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
             destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc", destTrait, null);
             return true;
         }
 
         destTrait.OpensWoodDoors = !destTrait.OpensWoodDoors;
-        destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+        destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
         return true;
     }
 
@@ -554,21 +539,20 @@ public class Commands_NPC
             group = "NPC Config Commands",
             languageFile = "destinations",
             helpMessage = "command_openmetaldoors_help",
-            arguments = { "--npc","<npc>" },
-            permission = {"npcdestinations.editall.openmetaldoors","npcdestinations.editown.openmetaldoors"},
+            arguments = {"--npc", "<npc>"},
+            permission = {"npcdestinations.editall.openmetaldoors", "npcdestinations.editown.openmetaldoors"},
             allowConsole = true,
             minArguments = 0,
             maxArguments = 0
     )
-    public boolean npcDest_OpenMetalDoors(DestinationsPlugin destRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_OpenMetalDoors(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
             destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc", destTrait, null);
             return true;
         }
 
         destTrait.OpensMetalDoors = !destTrait.OpensMetalDoors;
-        destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+        destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
         return true;
     }
 
@@ -577,14 +561,13 @@ public class Commands_NPC
             group = "NPC Config Commands",
             languageFile = "destinations",
             helpMessage = "command_blocksunder_help",
-            arguments = { "--npc","<npc>" },
-            permission = {"npcdestinations.editall.blocksunder","npcdestinations.editown.blocksunder"},
+            arguments = {"--npc", "<npc>"},
+            permission = {"npcdestinations.editall.blocksunder", "npcdestinations.editown.blocksunder"},
             allowConsole = true,
             minArguments = 0,
             maxArguments = 1
     )
-    public boolean npcDest_BlocksUnder(DestinationsPlugin destRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_BlocksUnder(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
             destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc", destTrait, null);
             return true;
@@ -598,7 +581,7 @@ public class Commands_NPC
             else
                 return false;
         }
-        destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+        destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
         return true;
     }
 
@@ -607,14 +590,13 @@ public class Commands_NPC
             group = "NPC Config Commands",
             languageFile = "destinations",
             helpMessage = "command_maxprocessing_help",
-            arguments = { "--npc","<npc>" },
-            permission = {"npcdestinations.editall.maxprocessing","npcdestinations.editown.maxprocessing"},
+            arguments = {"--npc", "<npc>"},
+            permission = {"npcdestinations.editall.maxprocessing", "npcdestinations.editown.maxprocessing"},
             allowConsole = true,
             minArguments = 0,
             maxArguments = 1
     )
-    public boolean npcDest_MaxProcessing(DestinationsPlugin destRef,CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait)
-    {
+    public boolean npcDest_MaxProcessing(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
             destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc", destTrait, null);
             return true;
@@ -628,7 +610,7 @@ public class Commands_NPC
             else
                 return false;
         }
-        destRef.getCommandManager.onCommand(sender, new String[] { "info", "--npc", Integer.toString(npc.getId()) });
+        destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
         return true;
     }
 }

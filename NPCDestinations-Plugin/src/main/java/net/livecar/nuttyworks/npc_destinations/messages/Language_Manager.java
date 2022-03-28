@@ -4,12 +4,11 @@ import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.util.HashMap;
 
 public class Language_Manager {
     public HashMap<String, FileConfiguration> languageStorage = new HashMap<>();
-    private DestinationsPlugin                destRef         = null;
+    private DestinationsPlugin destRef = null;
 
     public Language_Manager(DestinationsPlugin storageRef) {
         destRef = storageRef;

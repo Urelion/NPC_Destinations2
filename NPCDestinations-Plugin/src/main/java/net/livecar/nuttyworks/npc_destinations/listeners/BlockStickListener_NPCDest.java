@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class BlockStickListener_NPCDest implements org.bukkit.event.Listener {
     private PlayerInteractEvent lastClickEvent;
 
-    private DestinationsPlugin  destRef = null;
+    private DestinationsPlugin destRef = null;
 
     public BlockStickListener_NPCDest(DestinationsPlugin storageRef) {
         destRef = storageRef;
@@ -33,8 +33,7 @@ public class BlockStickListener_NPCDest implements org.bukkit.event.Listener {
             if (destRef.getMCUtils.getMainHand(player).getType() == Material.STICK
                     && destRef.getMCUtils.getMainHand(player).getItemMeta().getDisplayName() != null
                     && destRef.getMCUtils.getMainHand(player).getItemMeta().getDisplayName()
-                    .equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', "&eNPCDestinations &2[&fBlockStick&2]")))
-            {
+                    .equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', "&eNPCDestinations &2[&fBlockStick&2]"))) {
                 if (lastClickEvent == null) {
                     lastClickEvent = event;
                 } else if (lastClickEvent.getPlayer().equals(event.getPlayer()) && lastClickEvent.getClickedBlock().equals(event.getClickedBlock())) {

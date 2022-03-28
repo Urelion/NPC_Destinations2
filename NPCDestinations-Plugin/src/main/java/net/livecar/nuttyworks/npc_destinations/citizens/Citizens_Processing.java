@@ -43,8 +43,8 @@ import java.util.logging.Level;
 
 public class Citizens_Processing {
 
-    DestinationsPlugin         destRef            = null;
-    List<Material>             doorMaterials      = null;
+    DestinationsPlugin destRef = null;
+    List<Material> doorMaterials = null;
 
     static Citizens_Processing processingInstance = null;
 
@@ -114,7 +114,7 @@ public class Citizens_Processing {
 
         // 1.6: Random location support
         if (trait.getLocationLockUntil() != null && LocalDateTime.now().isBefore(trait.getLocationLockUntil()) && !noNull) {
-            DateTimeFormatter  dateFormat = DateTimeFormatter.ofPattern("yyyy-mm-dd hh:mm:ss");
+            DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-mm-dd hh:mm:ss");
             if (trait.currentLocation.destination == null) {
                 destRef.getMessageManager.debugMessage(Level.FINE, "NPC:" + trait.getNPC().getId() + "|Locked Location > Null|Lock: " + dateFormat.format(trait.getLocationLockUntil()) + ">" + dateFormat.format(LocalDateTime.now()));
             } else {
@@ -148,7 +148,7 @@ public class Citizens_Processing {
 
         Destination_Setting oCurrentLoc = null;
         int nMinDiff = Integer.MAX_VALUE;
-        int nTimeOfDay = ((Long)destRef.getTimeManager.getNPCTime(trait.getNPC())).intValue();
+        int nTimeOfDay = ((Long) destRef.getTimeManager.getNPCTime(trait.getNPC())).intValue();
 
         // Plotsquared, time of plot!
         if (destRef.getPlotSquared != null) {
@@ -174,7 +174,7 @@ public class Citizens_Processing {
                         StringWriter sw = new StringWriter();
                         err.printStackTrace(new PrintWriter(sw));
 
-                        destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.plugin_debug", err.getMessage() + "\n" + sw.toString());
+                        destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.plugin_debug", err.getMessage() + "\n" + sw);
                     }
                 }
             }
@@ -371,9 +371,9 @@ public class Citizens_Processing {
 
         processingInstance.destRef.getMessageManager.sendDebugMessage("destinations", "debug_messages.goal_reacheddestination", trait.getNPC(), trait);
         Location finalLoc = new Location(trait.currentLocation.destination.getWorld(),
-                trait.currentLocation.destination.getBlockX()+0.5D,
+                trait.currentLocation.destination.getBlockX() + 0.5D,
                 trait.currentLocation.destination.getBlockY(),
-                trait.currentLocation.destination.getBlockZ()+0.5D,
+                trait.currentLocation.destination.getBlockZ() + 0.5D,
                 trait.currentLocation.destination.getYaw(),
                 trait.currentLocation.destination.getPitch());
         Bukkit.getScheduler().scheduleSyncDelayedTask(destRef, () -> trait.getNPC().teleport(finalLoc, TeleportCause.PLUGIN), 1);
@@ -389,7 +389,7 @@ public class Citizens_Processing {
                 } catch (Exception err) {
                     StringWriter sw = new StringWriter();
                     err.printStackTrace(new PrintWriter(sw));
-                    destRef.getMessageManager.consoleMessage(destRef, "destinations", "console_Messages.plugin_error", err.getMessage() + "\n" + sw.toString());
+                    destRef.getMessageManager.consoleMessage(destRef, "destinations", "console_Messages.plugin_error", err.getMessage() + "\n" + sw);
                 }
             }
         }
@@ -400,12 +400,11 @@ public class Citizens_Processing {
         if (navReached.isCancelled() || cancelProcessing)
             return;
 
-        if (trait.getPendingLockSeconds() > 0)
-        {
+        if (trait.getPendingLockSeconds() > 0) {
             trait.setLocationLockUntil(LocalDateTime.now().plusSeconds(trait.getPendingLockSeconds()));
             trait.setLocationLockUntil(0);
         }
-        
+
         trait.last_Loc_Reached = trait.currentLocation.LocationIdent;
         destRef.getMessageManager.debugMessage(Level.FINE, "NPC:" + trait.getNPC().getId() + "|Destinations_Trait.LocationReached:" + trait.currentLocation.destination.toString());
 
@@ -457,13 +456,13 @@ public class Citizens_Processing {
         // Lighting V1.19 - Check for torches in either hand
         if (destRef.getLightPlugin != null) {
             boolean startLightTask = false;
-            if (locEquip.get(EquipmentSlot.HAND) != null && (destRef.getMCUtils.isHoldingTorch(locEquip.get(EquipmentSlot.HAND).getType()) != inHandLightSource.NOLIGHT )) {
+            if (locEquip.get(EquipmentSlot.HAND) != null && (destRef.getMCUtils.isHoldingTorch(locEquip.get(EquipmentSlot.HAND).getType()) != inHandLightSource.NOLIGHT)) {
                 startLightTask = true;
                 destRef.getMessageManager.debugMessage(Level.FINE, "NPC:" + trait.getNPC().getId() + "|Lighting");
 
             }
             if (destRef.Version >= 10900) {
-                if (locEquip.get(EquipmentSlot.OFF_HAND) != null && (destRef.getMCUtils.isHoldingTorch(locEquip.get(EquipmentSlot.OFF_HAND).getType()) != inHandLightSource.NOLIGHT )) {
+                if (locEquip.get(EquipmentSlot.OFF_HAND) != null && (destRef.getMCUtils.isHoldingTorch(locEquip.get(EquipmentSlot.OFF_HAND).getType()) != inHandLightSource.NOLIGHT)) {
                     destRef.getMessageManager.debugMessage(Level.FINE, "NPC:" + trait.getNPC().getId() + "|Lighting-1_10");
                     startLightTask = true;
                 }
@@ -491,8 +490,8 @@ public class Citizens_Processing {
                     !skinTrait.getTexture().equals(trait.currentLocation.player_Skin_Texture_Metadata)) {
 
                 skinTrait.setSkinPersistent(trait.currentLocation.player_Skin_Name
-                        ,trait.currentLocation.player_Skin_Texture_Signature
-                        ,trait.currentLocation.player_Skin_Texture_Metadata);
+                        , trait.currentLocation.player_Skin_Texture_Signature
+                        , trait.currentLocation.player_Skin_Texture_Metadata);
             }
         }
     }
@@ -504,7 +503,7 @@ public class Citizens_Processing {
                     if (((Player) debugOutput.targetSender).isOnline()) {
                         Player player = ((Player) debugOutput.targetSender);
                         if (player.getWorld().equals(pendDestination.getWorld())) {
-                            this.destRef.getMCUtils.sendClientBlock(player, pendDestination,null);
+                            this.destRef.getMCUtils.sendClientBlock(player, pendDestination, null);
                         }
                     }
                 }
@@ -517,9 +516,9 @@ public class Citizens_Processing {
             if (debugOutput.getTargets().size() == 0 || debugOutput.getTargets().contains(trait.getNPC().getId())) {
                 if (((Player) debugOutput.targetSender).isOnline()) {
                     Player player = ((Player) debugOutput.targetSender);
-                    if (trait.getPendingDestinations().size()>= index)
+                    if (trait.getPendingDestinations().size() >= index)
                         if (player.getWorld().equals(trait.getPendingDestinations().get(index).getWorld())) {
-                            this.destRef.getMCUtils.sendClientBlock(player, trait.getPendingDestinations().get(index),null);
+                            this.destRef.getMCUtils.sendClientBlock(player, trait.getPendingDestinations().get(index), null);
                         }
                 }
             }
@@ -542,7 +541,7 @@ public class Citizens_Processing {
         if (!npc.isSpawned()) {
             return false;
         }
-        
+
         if (destRef.getPathClass.pathQueue.containsKey(npc.getId()))
             return false;
 
@@ -579,13 +578,13 @@ public class Citizens_Processing {
         // Lighting V1.19 - Check for torches in either hand
         if (destRef.getLightPlugin != null) {
             boolean startLightTask = false;
-            if (locEquip.get(EquipmentSlot.HAND) != null && (destRef.getMCUtils.isHoldingTorch(locEquip.get(EquipmentSlot.HAND).getType()) != inHandLightSource.NOLIGHT )) {
+            if (locEquip.get(EquipmentSlot.HAND) != null && (destRef.getMCUtils.isHoldingTorch(locEquip.get(EquipmentSlot.HAND).getType()) != inHandLightSource.NOLIGHT)) {
                 startLightTask = true;
                 destRef.getMessageManager.debugMessage(Level.FINE, "NPC:" + trait.getNPC().getId() + "|Lighting");
 
             }
             if (destRef.Version >= 10900) {
-                if (locEquip.get(EquipmentSlot.OFF_HAND) != null && (destRef.getMCUtils.isHoldingTorch(locEquip.get(EquipmentSlot.OFF_HAND).getType()) != inHandLightSource.NOLIGHT )) {
+                if (locEquip.get(EquipmentSlot.OFF_HAND) != null && (destRef.getMCUtils.isHoldingTorch(locEquip.get(EquipmentSlot.OFF_HAND).getType()) != inHandLightSource.NOLIGHT)) {
                     destRef.getMessageManager.debugMessage(Level.FINE, "NPC:" + trait.getNPC().getId() + "|Lighting-1_10");
                     startLightTask = true;
                 }
@@ -688,7 +687,7 @@ public class Citizens_Processing {
         if (trait.getPendingDestinations().size() > 0 && trait.lastNavigationPoint != null) {
 
             Double distTarget = npc.getEntity().getLocation().distanceSquared(trait.lastNavigationPoint);
-            
+
             if (distTarget > 1 && speed > 0.00615)
                 return false;
         }
@@ -717,7 +716,7 @@ public class Citizens_Processing {
                     return false;
                 }
             }
-            
+
             //trait.processOpenableObjects();
             destRef.getMessageManager.debugMessage(Level.FINEST, "NPCDestinations_Goal.shouldExecute()|NPC:" + npc.getId() + "|NewTarget: " + trait.getPendingDestinations().get(0).toString());
 
@@ -795,10 +794,10 @@ public class Citizens_Processing {
             }
 
             Location tmpLocation = trait.getPendingDestinations().get(0).clone();
-            if (destRef.getPathClass.requiresOpening(tmpLocation) || destRef.getPathClass.requiresOpening(tmpLocation.clone().add(0,1,0))) {
+            if (destRef.getPathClass.requiresOpening(tmpLocation) || destRef.getPathClass.requiresOpening(tmpLocation.clone().add(0, 1, 0))) {
                 if (trait.runningDoor)
                     return false;
-    
+
                 if (npc.getEntity().getLocation().distanceSquared(tmpLocation.clone().add(0, 1, 0)) > 2) {
                     Vector v = tmpLocation.subtract(npc.getEntity().getLocation().clone()).toVector().normalize();
                     npc.getEntity().setVelocity(v.multiply(0.5));
@@ -806,27 +805,24 @@ public class Citizens_Processing {
                 } else {
                     net.citizensnpcs.util.Util.faceLocation(npc.getEntity(), tmpLocation.clone().add(0, 1, 0));
                 }
-        
+
                 //Runable to process the door/gate correctly
                 trait.runningDoor = true;
                 if (destRef.getPathClass.requiresOpening(tmpLocation))
-                    trait.lastOpenedObject = tmpLocation.clone().add(0,1,0).getBlock();
-                else if (destRef.getPathClass.requiresOpening(tmpLocation.clone().add(0,1,0)))
-                    trait.lastOpenedObject = tmpLocation.clone().add(0,2,0).getBlock();
-    
+                    trait.lastOpenedObject = tmpLocation.clone().add(0, 1, 0).getBlock();
+                else if (destRef.getPathClass.requiresOpening(tmpLocation.clone().add(0, 1, 0)))
+                    trait.lastOpenedObject = tmpLocation.clone().add(0, 2, 0).getBlock();
+
                 net.citizensnpcs.util.Util.faceLocation(npc.getEntity(), tmpLocation.clone().add(0, 1, 0));
-    
+
                 destRef.getServer().getScheduler().scheduleSyncDelayedTask(destRef, () -> {
                     this.processNPCThruOpenable(1, npc, trait);
-                },1L);
+                }, 1L);
                 return false;
 
             }
 
-            if (destRef.Version < 11699)
-                npc.getNavigator().getLocalParameters().useNewPathfinder(false);
-            else
-                npc.getNavigator().getLocalParameters().useNewPathfinder(true);
+            npc.getNavigator().getLocalParameters().useNewPathfinder(destRef.Version >= 11699);
 
             npc.getNavigator().getLocalParameters().avoidWater(true);
             npc.getNavigator().getLocalParameters().stuckAction(TeleportStuckAction.INSTANCE);
@@ -846,7 +842,7 @@ public class Citizens_Processing {
                     break;
                 if (trait.getPendingDestinations().size() == 0)
                     break;
-                
+
                 Vector locVect = lastLocation.toVector().subtract(trait.getPendingDestinations().get(0).toVector()).normalize();
                 Vector npcVect = npc.getEntity().getLocation().getDirection();
                 double angle = Math.acos(locVect.dot(npcVect));
@@ -878,10 +874,10 @@ public class Citizens_Processing {
                 trait.removePendingDestination(0);
             }
 
-            destRef.getMessageManager.debugMessage(Level.FINEST, "NPCDestinations_Goal.shouldExecute()|NPC:" + npc.getId() + "|Navigate: " + lastLocation.toString());
-    
-            
-            Location newLocation = new Location(npc.getEntity().getWorld(),lastLocation.getBlockX()+0.5,lastLocation.getBlockY()+0.0,lastLocation.getBlockZ()+0.0);
+            destRef.getMessageManager.debugMessage(Level.FINEST, "NPCDestinations_Goal.shouldExecute()|NPC:" + npc.getId() + "|Navigate: " + lastLocation);
+
+
+            Location newLocation = new Location(npc.getEntity().getWorld(), lastLocation.getBlockX() + 0.5, lastLocation.getBlockY() + 0.0, lastLocation.getBlockZ() + 0.0);
             npc.getNavigator().setTarget(newLocation);
             trait.lastNavigationPoint = newLocation;
             trait.lastPositionChange = LocalDateTime.now();
@@ -915,9 +911,7 @@ public class Citizens_Processing {
         }
 
         // Main movement thread
-        boolean processWander = false;
-        if (oLoc.getWanderingDistance() > 0 && !npc.getNavigator().isNavigating() && npc.getEntity().getLocation().distanceSquared(oLoc.destination) <= oLoc.getWanderingDistanceSquared())
-            processWander = true;
+        boolean processWander = oLoc.getWanderingDistance() > 0 && !npc.getNavigator().isNavigating() && npc.getEntity().getLocation().distanceSquared(oLoc.destination) <= oLoc.getWanderingDistanceSquared();
         if (!oLoc.Wandering_Region.equals("") && !npc.getNavigator().isNavigating() && destRef.getWorldGuardPlugin != null)
             processWander = true;
 
@@ -960,10 +954,10 @@ public class Citizens_Processing {
                             if (!destRef.getPlotSquared.locationInSamePlotAsNPC(npc, oNewDest))
                                 continue;
                         }
-                        int newY = trait.blocksUnderSurface==-1?0-oNewDest.getBlockY():trait.blocksUnderSurface>0?y-trait.blocksUnderSurface:y;
+                        int newY = trait.blocksUnderSurface == -1 ? 0 - oNewDest.getBlockY() : trait.blocksUnderSurface > 0 ? y - trait.blocksUnderSurface : y;
 
                         if (destRef.getWorldGuardPlugin.isInRegion(oNewDest, oLoc.Wandering_Region)) {
-                            if (destRef.getPathClass.isLocationWalkable(oNewDest.getBlock().getRelative(0, y, 0).getLocation(),trait.OpensGates,trait.OpensWoodDoors,trait.OpensMetalDoors)) {
+                            if (destRef.getPathClass.isLocationWalkable(oNewDest.getBlock().getRelative(0, y, 0).getLocation(), trait.OpensGates, trait.OpensWoodDoors, trait.OpensMetalDoors)) {
                                 if (oLoc.Wandering_UseBlocks && trait.AllowedPathBlocks != null && trait.AllowedPathBlocks.size() > 0) {
                                     if (trait.AllowedPathBlocks.contains(oNewDest.getBlock().getRelative(0, newY, 0).getLocation().getBlock().getType())) {
                                         trait.lastPositionChange = LocalDateTime.now();
@@ -1007,7 +1001,7 @@ public class Citizens_Processing {
                                 if (!destRef.getPlotSquared.locationInSamePlotAsNPC(npc, oNewDest))
                                     continue;
                             }
-                            int newY = trait.blocksUnderSurface==-1?0-oNewDest.getBlockY():trait.blocksUnderSurface>0?y-trait.blocksUnderSurface:y;
+                            int newY = trait.blocksUnderSurface == -1 ? 0 - oNewDest.getBlockY() : trait.blocksUnderSurface > 0 ? y - trait.blocksUnderSurface : y;
 
                             if (destRef.getPathClass.isLocationWalkable(oNewDest.getBlock().getRelative(0, y, 0).getLocation(), trait.OpensGates, trait.OpensWoodDoors, trait.OpensMetalDoors)) {
                                 if (oLoc.Wandering_UseBlocks && trait.AllowedPathBlocks != null && trait.AllowedPathBlocks.size() > 0) {
@@ -1080,7 +1074,7 @@ public class Citizens_Processing {
             int nCnt;
             if (npc.getEntity().getLocation().getBlock().isLiquid()) {
                 nCnt = 1;
-                for (;;) {
+                for (; ; ) {
                     if ((npc.getEntity().getLocation().add(0.0D, nCnt, 0.0D).getBlock().isEmpty()) && (npc.getEntity().getLocation().add(0.0D, nCnt + 1, 0.0D).getBlock().isEmpty())) {
                         teleportSurface(npc.getEntity(), npc.getEntity().getLocation().add(0.5D, nCnt, 0.5D));
                         break;
@@ -1174,7 +1168,7 @@ public class Citizens_Processing {
                 if (allowMat != null)
                     trait.AllowedPathBlocks.add(allowMat);
                 else
-                    this.destRef.getMessageManager.logToConsole(destRef,"Block conversion failure-" + materialType);
+                    this.destRef.getMessageManager.logToConsole(destRef, "Block conversion failure-" + materialType);
             } else {
                 break;
             }
@@ -1300,7 +1294,7 @@ public class Citizens_Processing {
                                 } catch (Exception err) {
                                     StringWriter sw = new StringWriter();
                                     err.printStackTrace(new PrintWriter(sw));
-                                    destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.plugin_debug", err.getMessage() + "\n" + sw.toString());
+                                    destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.plugin_debug", err.getMessage() + "\n" + sw);
                                 }
 
                                 for (DataKey storageKey : key.getRelative("Destinations." + nCnt + ".Sentinel").getSubKeys()) {
@@ -1313,7 +1307,7 @@ public class Citizens_Processing {
                                 } catch (Exception err) {
                                     StringWriter sw = new StringWriter();
                                     err.printStackTrace(new PrintWriter(sw));
-                                    destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.plugin_debug", err.getMessage() + "\n" + sw.toString());
+                                    destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.plugin_debug", err.getMessage() + "\n" + sw);
                                 }
                             }
                         } else if (plugin.getActionName().equalsIgnoreCase("jobsreborn")) {
@@ -1326,7 +1320,7 @@ public class Citizens_Processing {
                                 } catch (Exception err) {
                                     StringWriter sw = new StringWriter();
                                     err.printStackTrace(new PrintWriter(sw));
-                                    destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.plugin_debug", err.getMessage() + "\n" + sw.toString());
+                                    destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.plugin_debug", err.getMessage() + "\n" + sw);
                                 }
 
                                 for (DataKey storageKey : key.getRelative("Destinations." + nCnt + ".JobsReborn").getSubKeys()) {
@@ -1340,7 +1334,7 @@ public class Citizens_Processing {
                                 } catch (Exception err) {
                                     StringWriter sw = new StringWriter();
                                     err.printStackTrace(new PrintWriter(sw));
-                                    destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.plugin_debug", err.getMessage() + "\n" + sw.toString());
+                                    destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.plugin_debug", err.getMessage() + "\n" + sw);
                                 }
                             }
                         } else {
@@ -1397,7 +1391,7 @@ public class Citizens_Processing {
         for (int nCnt = 0; nCnt < trait.NPCLocations.size(); nCnt++) {
             // Do not save any managed locations!
             if (trait.NPCLocations.get(i).managed_Location.length() == 0) {
-                key.setString("Destinations." + i + ".locationid", trait.NPCLocations.get(i).LocationIdent == null ? UUID.randomUUID().toString():trait.NPCLocations.get(i).LocationIdent.toString());
+                key.setString("Destinations." + i + ".locationid", trait.NPCLocations.get(i).LocationIdent == null ? UUID.randomUUID().toString() : trait.NPCLocations.get(i).LocationIdent.toString());
                 key.setString("Destinations." + i + ".Location.world", trait.NPCLocations.get(i).destination.getWorld().getName());
                 key.setInt("Destinations." + i + ".Location.x", trait.NPCLocations.get(i).destination.getBlockX());
                 key.setInt("Destinations." + i + ".Location.y", trait.NPCLocations.get(i).destination.getBlockY());
@@ -1465,7 +1459,7 @@ public class Citizens_Processing {
                     } catch (Exception err) {
                         StringWriter sw = new StringWriter();
                         err.printStackTrace(new PrintWriter(sw));
-                        destRef.getMessageManager.logToConsole(destRef, err.getMessage() + "\n" + sw.toString());
+                        destRef.getMessageManager.logToConsole(destRef, err.getMessage() + "\n" + sw);
                     }
                 }
                 i++;
@@ -1523,7 +1517,7 @@ public class Citizens_Processing {
                 trait.lastLighting_Loc = trait.getNPC().getEntity().getLocation();
                 trait.lastLighting_Time = LocalDateTime.now();
                 destRef.getLightPlugin.CreateLight(trait.lastLighting_Loc, lightLevel);
-            } else if (trait.lastLighting_Loc != null && (Duration.between(trait.lastLighting_Time,LocalDateTime.now()).getSeconds() > 5)) {
+            } else if (trait.lastLighting_Loc != null && (Duration.between(trait.lastLighting_Time, LocalDateTime.now()).getSeconds() > 5)) {
                 if (trait.lastLighting_Loc != null)
                     destRef.getLightPlugin.DeleteLight(trait.lastLighting_Loc);
 
@@ -1567,7 +1561,7 @@ public class Citizens_Processing {
                 } catch (Exception err) {
                     StringWriter sw = new StringWriter();
                     err.printStackTrace(new PrintWriter(sw));
-                    destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.plugin_error", err.getMessage() + "\n" + sw.toString());
+                    destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.plugin_error", err.getMessage() + "\n" + sw);
                 }
             }
         }
@@ -1598,18 +1592,16 @@ public class Citizens_Processing {
     private void teleportSurface(Entity npc, Location loc) {
         teleportSurface(npc, loc, TeleportCause.PLUGIN);
     }
-    
-    private void processNPCThruOpenable(int lastOpenedStep, NPC npc, NPCDestinationsTrait trait)
-    {
+
+    private void processNPCThruOpenable(int lastOpenedStep, NPC npc, NPCDestinationsTrait trait) {
         if (npc.getEntity().getVelocity().lengthSquared() > 0.015) {
             destRef.getServer().getScheduler().scheduleSyncDelayedTask(destRef, () -> {
-                this.processNPCThruOpenable( lastOpenedStep, npc, trait);
-            },5L);
+                this.processNPCThruOpenable(lastOpenedStep, npc, trait);
+            }, 5L);
             return;
         }
-    
-        switch(lastOpenedStep)
-        {
+
+        switch (lastOpenedStep) {
             case 1:
                 // We need to look at the door
                 net.citizensnpcs.util.Util.faceLocation(npc.getEntity(), trait.lastOpenedObject.getLocation().clone().add(0, 1, 0));
@@ -1617,37 +1609,37 @@ public class Citizens_Processing {
                 newLoc.setYaw(npc.getEntity().getLocation().getYaw());
                 newLoc.setPitch(npc.getEntity().getLocation().getPitch());
                 //npc.teleport(newLoc, TeleportCause.PLUGIN);
-            
+
                 if (npc.getEntity() instanceof Player)
                     net.citizensnpcs.util.PlayerAnimation.ARM_SWING.play((Player) npc.getEntity());
-            
+
                 destRef.getServer().getScheduler().scheduleSyncDelayedTask(destRef, () -> {
-                    this.processNPCThruOpenable( 2, npc, trait);
-                },5L);
+                    this.processNPCThruOpenable(2, npc, trait);
+                }, 5L);
                 return;
             case 2:
                 destRef.getMCUtils.openOpenable(trait.lastOpenedObject);
                 destRef.getServer().getScheduler().scheduleSyncDelayedTask(destRef, () -> {
-                    this.processNPCThruOpenable( 3, npc, trait);
-                },5L);
+                    this.processNPCThruOpenable(3, npc, trait);
+                }, 5L);
                 return;
             case 3:
-                if (trait.getPendingDestinations().size()>1) {
+                if (trait.getPendingDestinations().size() > 1) {
                     Location newTPLocation = new Location(npc.getEntity().getLocation().getWorld(),
-                            trait.getPendingDestinations().get(1).getBlockX()+0.5,
-                            trait.getPendingDestinations().get(1).getBlockY()+1.1,
-                            trait.getPendingDestinations().get(1).getBlockZ()+0.5);
+                            trait.getPendingDestinations().get(1).getBlockX() + 0.5,
+                            trait.getPendingDestinations().get(1).getBlockY() + 1.1,
+                            trait.getPendingDestinations().get(1).getBlockZ() + 0.5);
                     npc.teleport(newTPLocation, TeleportCause.PLUGIN);
                 }
                 destRef.getServer().getScheduler().scheduleSyncDelayedTask(destRef, () -> {
-                    this.processNPCThruOpenable( 4, npc, trait);
-                },15L);
+                    this.processNPCThruOpenable(4, npc, trait);
+                }, 15L);
                 return;
             case 4:
                 net.citizensnpcs.util.Util.faceLocation(npc.getEntity(), trait.lastOpenedObject.getLocation().clone().add(0, 1, 0));
                 destRef.getServer().getScheduler().scheduleSyncDelayedTask(destRef, () -> {
-                    this.processNPCThruOpenable( 5, npc, trait);
-                },15L);
+                    this.processNPCThruOpenable(5, npc, trait);
+                }, 15L);
                 return;
             case 5:
                 if (npc.getEntity() instanceof Player)
@@ -1656,8 +1648,8 @@ public class Citizens_Processing {
                 trait.removePendingDestination(0);
                 DestinationsPlugin.Instance.getMCUtils.closeOpenable(trait.lastOpenedObject);
                 destRef.getServer().getScheduler().scheduleSyncDelayedTask(destRef, () -> {
-                    this.processNPCThruOpenable( 6, npc, trait);
-                },15L);
+                    this.processNPCThruOpenable(6, npc, trait);
+                }, 15L);
                 return;
             default:
                 trait.lastOpenedObject = null;

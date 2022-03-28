@@ -16,9 +16,9 @@ import java.util.UUID;
 
 public class Event_goloc extends QuestEvent {
     private UUID destUUID;
-    private int destID;
-    private int targetNPC;
-    private int duration;
+    private final int destID;
+    private final int targetNPC;
+    private final int duration;
 
     public Event_goloc(Instruction instruction) throws InstructionParseException {
         super(instruction, true);

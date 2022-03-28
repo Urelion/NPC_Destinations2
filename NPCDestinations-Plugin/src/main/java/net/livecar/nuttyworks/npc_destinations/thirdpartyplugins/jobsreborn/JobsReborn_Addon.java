@@ -48,7 +48,7 @@ public class JobsReborn_Addon extends DestinationsAddon {
                 JobsReborn_LocationSetting locSetting = pluginReference.npcSettings.get(npc.getId()).locations.get(locationSetting.LocationIdent);
 
                 if (message.toLowerCase().contains("<location.jobname>"))
-                    message = message.replaceAll("<location\\.jobname>", locSetting.jobs_Name==null?"Unset":locSetting.jobs_Name);
+                    message = message.replaceAll("<location\\.jobname>", locSetting.jobs_Name == null ? "Unset" : locSetting.jobs_Name);
                 if (message.toLowerCase().contains("<location.jobmax>")) {
                     if (locSetting.jobs_Name != null && locSetting.jobs_Name.trim().equalsIgnoreCase("")) {
                         message = message.replaceAll("<location\\.jobmax>", "Inactive, no job name");
@@ -56,13 +56,13 @@ public class JobsReborn_Addon extends DestinationsAddon {
                         if (locSetting.jobs_Max == -1) {
                             message = message.replaceAll("<location\\.jobmax>", "Job at max");
                         } else {
-                            message = message.replaceAll("<location\\.jobmax>", "More than " + Integer.toString(locSetting.jobs_Max) + " players.");
+                            message = message.replaceAll("<location\\.jobmax>", "More than " + locSetting.jobs_Max + " players.");
                         }
                     } else {
                         if (locSetting.jobs_Max == -1) {
                             message = message.replaceAll("<location\\.jobmax>", "Less the max users");
                         } else {
-                            message = message.replaceAll("<location\\.jobmax>", "Less than " + Integer.toString(locSetting.jobs_Max) + " players.");
+                            message = message.replaceAll("<location\\.jobmax>", "Less than " + locSetting.jobs_Max + " players.");
                         }
                     }
                 }
@@ -149,6 +149,6 @@ public class JobsReborn_Addon extends DestinationsAddon {
     }
 
     public void onEnableChanged(NPC npc, NPCDestinationsTrait npcTrait, boolean enabled) {
-    
+
     }
 }

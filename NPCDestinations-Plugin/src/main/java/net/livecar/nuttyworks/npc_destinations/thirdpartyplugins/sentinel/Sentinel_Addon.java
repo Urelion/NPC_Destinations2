@@ -16,8 +16,8 @@ import java.util.Map;
 import java.util.logging.Level;
 
 public class Sentinel_Addon extends DestinationsAddon {
-    public Sentinel_Plugin                   pluginReference = null;
-    public Map<Integer, Sentinel_NPCSetting> npcSettings     = new HashMap<Integer, Sentinel_NPCSetting>();
+    public Sentinel_Plugin pluginReference = null;
+    public Map<Integer, Sentinel_NPCSetting> npcSettings = new HashMap<Integer, Sentinel_NPCSetting>();
 
     public Sentinel_Addon(Sentinel_Plugin instanceRef) {
         pluginReference = instanceRef;
@@ -199,8 +199,7 @@ public class Sentinel_Addon extends DestinationsAddon {
         if (locationConfig.locationID != null) {
 
 
-            for (DataKey entry : locationConfig.sentinelSettings.getSubKeys())
-            {
+            for (DataKey entry : locationConfig.sentinelSettings.getSubKeys()) {
                 Object val = entry.getRaw(locationConfig.sentinelSettings.getPath());
                 storageKey.setRaw("Sentinel.raw." + entry.name(), val);
             }

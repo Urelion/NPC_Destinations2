@@ -11,29 +11,29 @@ import java.util.HashMap;
 import java.util.List;
 
 public class PathFindingQueue {
-    public String                requestedBy;
-    public NPC                   npc;
-    public NPCDestinationsTrait  npcTrait;
-    public List<Material>        allowedPathBlocks;
-    public Boolean               opensGates;
-    public Boolean               opensWoodDoors;
-    public Boolean               opensMetalDoors;
+    public String requestedBy;
+    public NPC npc;
+    public NPCDestinationsTrait npcTrait;
+    public List<Material> allowedPathBlocks;
+    public Boolean opensGates;
+    public Boolean opensWoodDoors;
+    public Boolean opensMetalDoors;
 
-    public int                   range;
-    public int                   start_X, start_Y, start_Z;
-    public int                   end_X, end_Y, end_Z;
-    public World                 world;
+    public int range;
+    public int start_X, start_Y, start_Z;
+    public int end_X, end_Y, end_Z;
+    public World world;
 
     public HashMap<String, Tile> open;
     public HashMap<String, Tile> closed;
 
-    private int                  blocksBelow;
+    private int blocksBelow;
 
-    public Long                  blocksProcessed;
-    public Long                  timeSpent;
-    public Date                  processingStarted = null;
+    public Long blocksProcessed;
+    public Long timeSpent;
+    public Date processingStarted = null;
 
-    public PathingResult         pathFindingResult;
+    public PathingResult pathFindingResult;
 
     public void setBlocksBelow(int depth) {
         blocksBelow = depth;

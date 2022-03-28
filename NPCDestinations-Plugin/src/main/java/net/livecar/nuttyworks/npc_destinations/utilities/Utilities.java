@@ -6,12 +6,13 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.logging.Level;
 
 public class Utilities {
 
-    private DestinationsPlugin destRef;
+    private final DestinationsPlugin destRef;
 
     public Utilities(DestinationsPlugin storageRef) {
         destRef = storageRef;
@@ -26,8 +27,8 @@ public class Utilities {
         Reader inputStreamReader = null;
         try {
             inputStream = new FileInputStream(file);
-            inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
-        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+            inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 

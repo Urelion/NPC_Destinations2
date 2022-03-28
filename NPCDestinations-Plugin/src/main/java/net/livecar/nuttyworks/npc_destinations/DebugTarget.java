@@ -10,8 +10,8 @@ import java.util.List;
 
 public class DebugTarget {
 
-    public CommandSender  targetSender;
-    private List<Integer> targetIDS;
+    public CommandSender targetSender;
+    private final List<Integer> targetIDS;
     public List<Location> debugBlocksSent;
 
     public DebugTarget(CommandSender sender, Integer npcID) {
