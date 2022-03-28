@@ -303,8 +303,8 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
         if (isEnabled()) {
             this.getMessagesManager().debugMessage(Level.CONFIG, "nuNPCDestinations.onDisable()|Stopping Internal Processes");
             Bukkit.getServer().getScheduler().cancelTasks(this);
-            this.aStarPathFinder.currentTask = null;
-            this.aStarPathFinder.pathQueue.clear();
+            this.aStarPathFinder.setCurrentTask(null);
+            this.aStarPathFinder.getPathQueue().clear();
             this.aStarPathFinder = null;
         }
     }

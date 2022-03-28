@@ -1,5 +1,7 @@
 package net.livecar.nuttyworks.npc_destinations.pathing;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.citizensnpcs.api.npc.NPC;
 import net.livecar.nuttyworks.npc_destinations.DebugTarget;
 import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
@@ -26,8 +28,10 @@ public class AStarPathFinder {
     private List<Player> playToPlayers;
     private Long last_Pause = 0L;
 
-    public PathFindingQueue currentTask = null;
-    public LinkedHashMap<Integer, PathFindingQueue> pathQueue = new LinkedHashMap<>();
+    @Getter @Setter
+    private PathFindingQueue currentTask = null;
+    @Getter
+    private LinkedHashMap<Integer, PathFindingQueue> pathQueue = new LinkedHashMap<>();
 
     public AStarPathFinder(DestinationsPlugin plugin) {
         this.plugin = plugin;

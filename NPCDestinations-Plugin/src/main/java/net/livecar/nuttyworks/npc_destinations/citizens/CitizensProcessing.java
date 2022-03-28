@@ -512,7 +512,7 @@ public class CitizensProcessing {
             return false;
         }
 
-        if (plugin.getAStarPathFinder().pathQueue.containsKey(npc.getId())) return false;
+        if (plugin.getAStarPathFinder().getPathQueue().containsKey(npc.getId())) return false;
 
         NPCDestinationsTrait trait = npc.getTrait(NPCDestinationsTrait.class);
 

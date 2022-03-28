@@ -320,13 +320,13 @@ public class MessagesManager {
             if (message.toLowerCase().contains("<setting.allowedpathblockscount>"))
                 message = replaceAll(message, "<setting.allowedpathblockscount>", npcTrait.AllowedPathBlocks == null ? "0" : Integer.toString(npcTrait.AllowedPathBlocks.size()));
             if (message.toLowerCase().contains("<setting.pathtime>")) {
-                if (this.destRef.getAStarPathFinder().currentTask != null && this.destRef.getAStarPathFinder().currentTask.npc.getId() == npc.getId()) {
-                    long nSeconds = Duration.ofMillis(this.destRef.getAStarPathFinder().pathQueue.get(npc.getId()).timeSpent).getSeconds();
+                if (this.destRef.getAStarPathFinder().getCurrentTask() != null && this.destRef.getAStarPathFinder().getCurrentTask().npc.getId() == npc.getId()) {
+                    long nSeconds = Duration.ofMillis(this.destRef.getAStarPathFinder().getPathQueue().get(npc.getId()).timeSpent).getSeconds();
                     message = replaceAll(message, "<setting.pathtime>", "&7* " + Math.abs(nSeconds));
-                } else if (!this.destRef.getAStarPathFinder().pathQueue.containsKey(npc.getId())) {
+                } else if (!this.destRef.getAStarPathFinder().getPathQueue().containsKey(npc.getId())) {
                     message = replaceAll(message, "<setting.pathtime>", "??");
                 } else {
-                    long nSeconds = Duration.ofMillis(this.destRef.getAStarPathFinder().pathQueue.get(npc.getId()).timeSpent).getSeconds();
+                    long nSeconds = Duration.ofMillis(this.destRef.getAStarPathFinder().getPathQueue().get(npc.getId()).timeSpent).getSeconds();
                     message = replaceAll(message, "<setting.pathtime>", String.valueOf(Math.abs(nSeconds)));
                 }
             }
@@ -646,14 +646,14 @@ public class MessagesManager {
 
         if (message.toLowerCase().contains("<pathengine.queue.count>"))
             if (destRef.getAStarPathFinder() != null) {
-                message = replaceAll(message, "<pathengine.queue.count>", Integer.toString(destRef.getAStarPathFinder().pathQueue.size()));
+                message = replaceAll(message, "<pathengine.queue.count>", Integer.toString(destRef.getAStarPathFinder().getPathQueue().size()));
             } else {
                 message = replaceAll(message, "<pathengine.queue.count>", "0");
             }
 
         if (message.toLowerCase().contains("<pathengine.currentnpc>"))
-            if (destRef.getAStarPathFinder() != null && destRef.getAStarPathFinder().currentTask != null) {
-                message = replaceAll(message, "<pathengine.currentnpc>", destRef.getAStarPathFinder().currentTask.npc.getFullName());
+            if (destRef.getAStarPathFinder() != null && destRef.getAStarPathFinder().getCurrentTask() != null) {
+                message = replaceAll(message, "<pathengine.currentnpc>", destRef.getAStarPathFinder().getCurrentTask().npc.getFullName());
             } else {
                 message = replaceAll(message, "<pathengine.queue.count>", "0");
             }
