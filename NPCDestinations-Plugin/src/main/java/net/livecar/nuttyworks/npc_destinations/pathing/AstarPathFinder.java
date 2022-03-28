@@ -50,11 +50,9 @@ public class AstarPathFinder {
         return destRef.getMCUtils.isLocationWalkable(l, opensGates, opensWoodDoors, opensMetalDoors);
     }
 
-    public boolean isLocationWalkable(Location l) {
+    public boolean isLocationWalkable(Location location) {
         if (currentTask == null) return false;
-
-        destRef.getMessageManager.debugMessage(Level.FINEST, "(Location " + l.toString() + ") " + Arrays.toString(Thread.currentThread().getStackTrace()));
-        return destRef.getMCUtils.isLocationWalkable(l, currentTask.opensGates, currentTask.opensWoodDoors, currentTask.opensMetalDoors);
+        return isLocationWalkable(location, currentTask.opensGates, currentTask.opensWoodDoors, currentTask.opensMetalDoors);
     }
 
     public boolean requiresOpening(Location l) {
@@ -68,37 +66,30 @@ public class AstarPathFinder {
 
         if (playToPlayers != null) playToPlayers.clear();
 
-        //Short pathing faults
+        //For Short pathing faults just teleport the NPC @fixme verify this behaviour why would NPC teleport to itself? shouldn't it just teleport to the end location?
         if (npc.getEntity().getLocation().distanceSquared(end) < 4) {
-            //Just teleport the npc
-            if (destRef.getMCUtils.isHalfBlock(npc.getEntity().getLocation().getBlock().getType())) {
-                npc.getEntity().teleport(new Location(npc.getEntity().getLocation().getWorld(), npc.getEntity().getLocation().getBlockX(), npc.getEntity().getLocation().getBlockY() + 1, npc.getEntity().getLocation().getBlockZ()));
-            } else {
-                npc.getEntity().teleport(new Location(npc.getEntity().getLocation().getWorld(), npc.getEntity().getLocation().getBlockX(), npc.getEntity().getLocation().getBlockY(), npc.getEntity().getLocation().getBlockZ()));
-            }
+            Location toLocation = new Location(npc.getEntity().getLocation().getWorld(), npc.getEntity().getLocation().getBlockX(), npc.getEntity().getLocation().getBlockY(), npc.getEntity().getLocation().getBlockZ());
+            if (destRef.getMCUtils.isHalfBlock(npc.getEntity().getLocation().getBlock().getType()))
+                toLocation.add(0, 1, 0);
+            npc.getEntity().teleport(toLocation);
             return;
         }
 
-
         if (destRef.debugTargets != null && destRef.debugTargets.size() > 0) {
-
-            playToPlayers = new ArrayList<Player>();
+            playToPlayers = new ArrayList<>();
             for (DebugTarget debugOutput : destRef.debugTargets) {
                 if ((debugOutput.targetSender instanceof Player) && (debugOutput.getTargets().size() == 0 || debugOutput.getTargets().contains(npc.getId())))
                     playToPlayers.add((Player) debugOutput.targetSender);
             }
         }
 
-        // 1.6 Queue System
-        if (pathQueue == null) pathQueue = new LinkedHashMap<Integer, PathFindingQueue>();
+        if (pathQueue == null) pathQueue = new LinkedHashMap<>();
 
         if (pathQueue.containsKey(npc.getId())) {
-            if (currentTask != null && currentTask.npc != null) {
-                return;
-            } else {
+            if (currentTask == null || currentTask.npc == null) {
                 if (last_Pause < new Date().getTime()) nextQueue();
-                return;
             }
+            return;
         }
 
         // Fix the start location
@@ -110,41 +101,40 @@ public class AstarPathFinder {
         if (!cleanEnd.clone().getBlock().getType().isSolid()) cleanEnd = findSurface(cleanEnd.clone());
 
         // Add to the queue
-        PathFindingQueue oQueueItem = new PathFindingQueue();
-        oQueueItem.world = cleanStart.getWorld();
-        oQueueItem.start_X = cleanStart.getBlockX();
-        oQueueItem.start_Y = cleanStart.getBlockY();
-        oQueueItem.start_Z = cleanStart.getBlockZ();
-        oQueueItem.end_X = cleanEnd.getBlockX();
-        oQueueItem.end_Y = cleanEnd.getBlockY();
-        oQueueItem.end_Z = cleanEnd.getBlockZ();
-        oQueueItem.range = range;
-        oQueueItem.npcTrait = npcTrait;
-        oQueueItem.npc = npc;
-        oQueueItem.opensGates = OpensGates;
-        oQueueItem.opensMetalDoors = OpensMetalDoors;
-        oQueueItem.opensWoodDoors = OpensWoodDoors;
-        oQueueItem.allowedPathBlocks = new ArrayList<Material>();
-        oQueueItem.allowedPathBlocks.addAll(AllowedPathBlocks);
-        oQueueItem.setBlocksBelow(blocksBelow);
-        oQueueItem.requestedBy = requestedBy;
-        oQueueItem.timeSpent = 0L;
-        oQueueItem.blocksProcessed = 0L;
-        oQueueItem.open = new HashMap<String, Tile>();
-        oQueueItem.closed = new HashMap<String, Tile>();
+        PathFindingQueue pathFindingQueue = new PathFindingQueue();
+        pathFindingQueue.world = cleanStart.getWorld();
+        pathFindingQueue.start_X = cleanStart.getBlockX();
+        pathFindingQueue.start_Y = cleanStart.getBlockY();
+        pathFindingQueue.start_Z = cleanStart.getBlockZ();
+        pathFindingQueue.end_X = cleanEnd.getBlockX();
+        pathFindingQueue.end_Y = cleanEnd.getBlockY();
+        pathFindingQueue.end_Z = cleanEnd.getBlockZ();
+        pathFindingQueue.range = range;
+        pathFindingQueue.npcTrait = npcTrait;
+        pathFindingQueue.npc = npc;
+        pathFindingQueue.opensGates = OpensGates;
+        pathFindingQueue.opensMetalDoors = OpensMetalDoors;
+        pathFindingQueue.opensWoodDoors = OpensWoodDoors;
+        pathFindingQueue.allowedPathBlocks = new ArrayList<Material>();
+        pathFindingQueue.allowedPathBlocks.addAll(AllowedPathBlocks);
+        pathFindingQueue.setBlocksBelow(blocksBelow);
+        pathFindingQueue.requestedBy = requestedBy;
+        pathFindingQueue.timeSpent = 0L;
+        pathFindingQueue.blocksProcessed = 0L;
+        pathFindingQueue.open = new HashMap<>();
+        pathFindingQueue.closed = new HashMap<>();
 
-        // 1/2 slab checks - V1.19
         // Check if the start location is a 1/2 slab
         if (destRef.getMCUtils.isHalfBlock(cleanStart.getBlock().getRelative(0, 1, 0).getType())) {
             if (!cleanStart.getBlock().getRelative(0, 2, 0).getType().isSolid() && !cleanStart.getBlock().getRelative(0, 3, 0).getType().isSolid()) {
-                oQueueItem.start_Y++;
+                pathFindingQueue.start_Y++;
             }
         }
 
         // Check if the end location is a 1/2 slab
         if (destRef.getMCUtils.isHalfBlock(cleanEnd.getBlock().getRelative(0, 1, 0).getType())) {
             if (!cleanEnd.getBlock().getRelative(0, 2, 0).getType().isSolid() && !cleanEnd.getBlock().getRelative(0, 3, 0).getType().isSolid()) {
-                oQueueItem.end_Y++;
+                pathFindingQueue.end_Y++;
             }
         }
 
@@ -162,28 +152,22 @@ public class AstarPathFinder {
             if (currentTask.npc.getId() == npc.getId()) {
                 return;
             }
-            pathQueue.put(npc.getId(), oQueueItem);
-            destRef.getMessageManager.debugMessage(Level.FINEST, "QUEUED NPC: " + oQueueItem.npc.getId() + "|" + oQueueItem.end_X + "," + oQueueItem.end_Y + "," + oQueueItem.end_Z);
+            pathQueue.put(npc.getId(), pathFindingQueue);
+            destRef.getMessageManager.debugMessage(Level.FINEST, "QUEUED NPC: " + pathFindingQueue.npc.getId() + "|" + pathFindingQueue.end_X + "," + pathFindingQueue.end_Y + "," + pathFindingQueue.end_Z);
         } else {
-            currentTask = oQueueItem;
+            currentTask = pathFindingQueue;
             currentTask.processingStarted = new Date();
             destRef.getMessageManager.debugMessage(Level.FINEST, "CurrentTask Idle, Processing " + currentTask.npc.getId());
             processQueueItem();
         }
     }
 
-    private void addToOpenList(Tile t, boolean modify) {
-        if (currentTask.open.containsKey(t.getUID())) {
-            if (modify) {
-                currentTask.open.put(t.getUID(), t);
-            }
-        } else {
-            currentTask.open.put(t.getUID(), t);
-        }
+    private void addToOpenList(Tile tile) {
+        currentTask.open.putIfAbsent(tile.getUID(), tile);
 
         if (playToPlayers != null && playToPlayers.size() > 0) {
             for (Player player : playToPlayers)
-                destRef.getParticleManager.PlayOutHeartParticle(t.getLocation(new Location(currentTask.world, currentTask.start_X, currentTask.start_Y, currentTask.start_Z).add(0.5, 0, 0.5)), player);
+                destRef.getParticleManager.PlayOutHeartParticle(tile.getLocation(new Location(currentTask.world, currentTask.start_X, currentTask.start_Y, currentTask.start_Z).add(0.5, 0, 0.5)), player);
         }
     }
 
@@ -684,7 +668,7 @@ public class AstarPathFinder {
             Tile openRef = null;
             if ((openRef = isOnOpenList(t)) == null) {
                 // not on open list, so add
-                addToOpenList(t, false);
+                addToOpenList(t);
             } else {
                 // is on open list, check if path to that square is better using
                 // G cost
