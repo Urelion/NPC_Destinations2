@@ -81,13 +81,13 @@ public class CommandListener_NPCDest {
                 destRef.getMessagesManager().sendMessage("destinations", sender, "messages.no_permissions");
                 return true;
             } else {
-                if ((destRef.getAStarPathFinder().getCurrentTask() == null || destRef.getAStarPathFinder().getCurrentTask().npc == null) && destRef.getAStarPathFinder().getPathQueue().size() == 0) {
+                if ((destRef.getAStarPathFinder().getCurrentTask() == null || destRef.getAStarPathFinder().getCurrentTask().getNpc() == null) && destRef.getAStarPathFinder().getPathQueue().size() == 0) {
                     destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_enginestatus_idle");
-                } else if ((destRef.getAStarPathFinder().getCurrentTask() == null || destRef.getAStarPathFinder().getCurrentTask().npc == null) && destRef.getAStarPathFinder().getPathQueue().size() > 0) {
+                } else if ((destRef.getAStarPathFinder().getCurrentTask() == null || destRef.getAStarPathFinder().getCurrentTask().getNpc() == null) && destRef.getAStarPathFinder().getPathQueue().size() > 0) {
                     destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_enginestatus_idle_queue");
-                } else if ((destRef.getAStarPathFinder().getCurrentTask() != null || destRef.getAStarPathFinder().getCurrentTask().npc != null) && destRef.getAStarPathFinder().getPathQueue().size() == 0) {
+                } else if ((destRef.getAStarPathFinder().getCurrentTask() != null || destRef.getAStarPathFinder().getCurrentTask().getNpc() != null) && destRef.getAStarPathFinder().getPathQueue().size() == 0) {
                     destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_enginestatus_processing_noqueue");
-                } else if ((destRef.getAStarPathFinder().getCurrentTask() != null || destRef.getAStarPathFinder().getCurrentTask().npc != null) && destRef.getAStarPathFinder().getPathQueue().size() > 0) {
+                } else if ((destRef.getAStarPathFinder().getCurrentTask() != null || destRef.getAStarPathFinder().getCurrentTask().getNpc() != null) && destRef.getAStarPathFinder().getPathQueue().size() > 0) {
                     destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_enginestatus_processing_queue");
                 }
             }
