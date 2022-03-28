@@ -51,7 +51,7 @@ public class CommandManager {
         NPC npc = null;
         if (npcid == -1) {
             // Now lets find the NPC this should run on.
-            npc = getStorageReference.getCitizensPlugin.getNPCSelector().getSelected(sender);
+            npc = getStorageReference.getCitizensPlugin().getNPCSelector().getSelected(sender);
             if (npc != null) {
                 // Gets NPC Selected for this sender
                 npcid = npc.getId();
@@ -90,10 +90,10 @@ public class CommandManager {
                     if (cmdRecord.groupName.equals(groupName)) {
                         if (getStorageReference.hasPermissions(sender, cmdRecord.commandPermission) && isPlayer(sender)) {
 
-                            String messageValue = getStorageReference.getMessageManager.buildMessage(cmdRecord.languageFile, sender, "command_jsonhelp." + cmdRecord.helpMessage, null, null, null, null, 0, "")[0];
+                            String messageValue = getStorageReference.getMessagesManager().buildMessage(cmdRecord.languageFile, sender, "command_jsonhelp." + cmdRecord.helpMessage, null, null, null, null, 0, "")[0];
 
                             if (messageValue.trim().equals("")) {
-                                getStorageReference.getMessageManager.logToConsole(getStorageReference, "Language Message Missing (" + cmdRecord.helpMessage + ")");
+                                getStorageReference.getMessagesManager().logToConsole(getStorageReference, "Language Message Missing (" + cmdRecord.helpMessage + ")");
                             } else {
                                 String permList = "";
                                 for (String perm : cmdRecord.commandPermission) {
@@ -111,12 +111,12 @@ public class CommandManager {
                     if (responseString.endsWith(",{\"text\":\" \"},")) {
                         responseString = responseString.substring(0, responseString.length() - 13);
                     }
-                    String groupHeader = getStorageReference.getMessageManager.buildMessage("destinations", sender, "command_jsonhelp.command_help_group", null, null, null, null, 0, groupName)[0];
+                    String groupHeader = getStorageReference.getMessagesManager().buildMessage("destinations", sender, "command_jsonhelp.command_help_group", null, null, null, null, 0, groupName)[0];
                     // groupHeader = groupHeader.replaceAll("<message>",
                     // groupName.toUpperCase());
                     groupHeader = groupHeader.replaceAll("<padding>", String.format("%" + (47 - groupName.length()) + "s", "").replace(' ', '-'));
-                    getStorageReference.getMessageManager.sendJsonRaw((Player) sender, groupHeader);
-                    getStorageReference.getMessageManager.sendJsonRaw((Player) sender, "[" + responseString + "{\"text\":\"\"}]");
+                    getStorageReference.getMessagesManager().sendJsonRaw((Player) sender, groupHeader);
+                    getStorageReference.getMessagesManager().sendJsonRaw((Player) sender, "[" + responseString + "{\"text\":\"\"}]");
                 } else if (!isPlayer(sender) && !response.toString().trim().equals("")) {
                     sender.sendMessage("---[" + groupName + "]--------------------");
                     sender.sendMessage(response.toString());
@@ -126,12 +126,12 @@ public class CommandManager {
         } else if (registeredCommands.containsKey(inargs[0])) {
             CommandRecord cmdRecord = registeredCommands.get(inargs[0].toLowerCase());
             if (!cmdRecord.allowConsole & !isPlayer(sender)) {
-                getStorageReference.getMessageManager.sendMessage("destinations", sender, "console_messages.command_noconsole");
+                getStorageReference.getMessagesManager().sendMessage("destinations", sender, "console_messages.command_noconsole");
                 return true;
             }
 
             if (!getStorageReference.hasPermissions(sender, cmdRecord.commandPermission)) {
-                getStorageReference.getMessageManager.sendMessage(cmdRecord.languageFile, sender, "messages.no_permissions");
+                getStorageReference.getMessagesManager().sendMessage(cmdRecord.languageFile, sender, "messages.no_permissions");
                 return true;
             }
 
@@ -140,9 +140,9 @@ public class CommandManager {
                     return true;
 
             if (isPlayer(sender)) {
-                String messageValue = getStorageReference.getMessageManager.buildMessage(cmdRecord.languageFile, sender, "command_jsonhelp." + cmdRecord.helpMessage, null, null, null, null, 0, "")[0];
+                String messageValue = getStorageReference.getMessagesManager().buildMessage(cmdRecord.languageFile, sender, "command_jsonhelp." + cmdRecord.helpMessage, null, null, null, null, 0, "")[0];
                 if (messageValue.trim().equals("")) {
-                    getStorageReference.getMessageManager.logToConsole(getStorageReference, "Language Message Missing (" + cmdRecord.helpMessage + ")");
+                    getStorageReference.getMessagesManager().logToConsole(getStorageReference, "Language Message Missing (" + cmdRecord.helpMessage + ")");
                 } else {
                     String permList = "";
                     for (String perm : cmdRecord.commandPermission) {
@@ -150,10 +150,10 @@ public class CommandManager {
                     }
                     messageValue = messageValue.replaceAll("<permission>", permList).replaceAll("<commandname>", cmdRecord.commandName);
                 }
-                getStorageReference.getMessageManager.sendMessage("destinations", sender, "messages.commands_invalidarguments", messageValue);
+                getStorageReference.getMessagesManager().sendMessage("destinations", sender, "messages.commands_invalidarguments", messageValue);
                 return true;
             } else
-                getStorageReference.getMessageManager.sendMessage(cmdRecord.languageFile, sender, "console_messages." + cmdRecord.helpMessage);
+                getStorageReference.getMessagesManager().sendMessage(cmdRecord.languageFile, sender, "console_messages." + cmdRecord.helpMessage);
         }
         return false;
     }
@@ -249,7 +249,7 @@ public class CommandManager {
                 }
             }
         } else if (item.equalsIgnoreCase("<plugin>") && (!priorArg.equalsIgnoreCase("--region") && !priorArg.equalsIgnoreCase("--npc"))) {
-            for (DestinationsAddon plugin : getStorageReference.getPluginManager.getPlugins()) {
+            for (DestinationsAddon plugin : getStorageReference.getPluginManager().getPlugins()) {
                 if (currentValue.length() > 0) {
                     if (String.valueOf(plugin.getActionName()).toLowerCase().startsWith(currentValue.toLowerCase()))
                         results.add(String.valueOf(plugin.getActionName()));
@@ -258,7 +258,7 @@ public class CommandManager {
                 }
             }
         } else if (item.equalsIgnoreCase("<npc>") && (!priorArg.equalsIgnoreCase("--region"))) {
-            for (NPC npc : getStorageReference.getCitizensPlugin.getNPCRegistry()) {
+            for (NPC npc : getStorageReference.getCitizensPlugin().getNPCRegistry()) {
                 if (currentValue.length() > 0) {
                     if (String.valueOf(npc.getId()).toLowerCase().startsWith(currentValue.toLowerCase()))
                         results.add(String.valueOf(npc.getId()));
@@ -267,20 +267,20 @@ public class CommandManager {
                 }
             }
         } else if (item.equalsIgnoreCase("<region>") && !priorArg.equalsIgnoreCase("--npc")) {
-            if (getStorageReference.getWorldGuardPlugin != null) {
+            if (getStorageReference.getWorldGuardPlugin() != null) {
                 for (World world : getStorageReference.getServer().getWorlds()) {
                     if (currentValue.length() > 0) {
-                        for (String regionname : getStorageReference.getWorldGuardPlugin.getRegionList(world)) {
+                        for (String regionname : getStorageReference.getWorldGuardPlugin().getRegionList(world)) {
                             if (String.valueOf(regionname).toLowerCase().startsWith(currentValue.toLowerCase()))
                                 results.add(regionname);
                         }
                     } else {
-                        results.addAll(getStorageReference.getWorldGuardPlugin.getRegionList(world));
+                        results.addAll(getStorageReference.getWorldGuardPlugin().getRegionList(world));
                     }
                 }
             }
         } else {
-            for (DestinationsAddon plugin : getStorageReference.getPluginManager.getPlugins()) {
+            for (DestinationsAddon plugin : getStorageReference.getPluginManager().getPlugins()) {
                 List<String> tabItems = plugin.parseTabItem(item, priorArg);
                 if (tabItems.size() > 0) {
                     if (currentValue.length() > 0) {

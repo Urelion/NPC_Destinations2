@@ -35,21 +35,21 @@ public class CommandsLocation {
     )
     public boolean npcDest_LocCommands(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (!npc.isSpawned()) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_info_notspawned");
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_info_notspawned");
         } else if (destTrait.NPCLocations.size() > 0) {
             if (inargs.length == 2) {
                 int nIndex = Integer.parseInt(inargs[1]);
                 if (nIndex > destTrait.NPCLocations.size() - 1) {
-                    destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
+                    destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
                     return true;
                 }
                 DestinationSetting oCurLoc = destTrait.NPCLocations.get(nIndex);
                 if (oCurLoc == null) {
-                    destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_info_nolocations");
+                    destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_info_nolocations");
                 } else {
-                    destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_header", destTrait, oCurLoc, 0);
+                    destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_commands_header", destTrait, oCurLoc, 0);
                     for (int nCnt = 0; nCnt < oCurLoc.arrival_Commands.size(); nCnt++) {
-                        destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_detail", destTrait, oCurLoc, nCnt);
+                        destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_commands_detail", destTrait, oCurLoc, nCnt);
                     }
                 }
             }
@@ -70,22 +70,22 @@ public class CommandsLocation {
     )
     public boolean npcDest_LocAddCmd(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc");
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.invalid_npc");
             return true;
         }
 
         if (!npc.isSpawned()) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_info_notspawned");
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_info_notspawned");
         } else if (destTrait.NPCLocations.size() > 0) {
             if (inargs.length == 2) {
                 int nIndex = Integer.parseInt(inargs[1]);
                 if (nIndex > destTrait.NPCLocations.size() - 1) {
-                    destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
+                    destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
                     return true;
                 }
                 DestinationSetting oCurLoc = destTrait.NPCLocations.get(nIndex);
                 if (!oCurLoc.managed_Location.equals("")) {
-                    destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_managed", destTrait, oCurLoc);
+                    destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_managed", destTrait, oCurLoc);
                     return true;
                 }
 
@@ -94,10 +94,10 @@ public class CommandsLocation {
 
                 Player plr = (Player) sender;
 
-                if (!destRef.getMCUtils.isHoldingBook(plr))
+                if (!destRef.getMcUtils().isHoldingBook(plr))
                     return false;
 
-                BookMeta meta = (BookMeta) destRef.getMCUtils.getMainHand(plr).getItemMeta();
+                BookMeta meta = (BookMeta) destRef.getMcUtils().getMainHand(plr).getItemMeta();
                 String commandString = "";
                 for (int pageNum = 1; pageNum <= meta.getPageCount(); pageNum++)
                     commandString += meta.getPage(1).trim();
@@ -105,21 +105,21 @@ public class CommandsLocation {
                 LocationUpdated changedLocation = new LocationUpdated(npc, destTrait.NPCLocations.get(nIndex));
                 Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
-                destRef.getCommandManager.onCommand(sender, new String[]{"loccommands", "--npc", Integer.toString(npc.getId()), inargs[1]});
+                destRef.getCommandManager().onCommand(sender, new String[]{"loccommands", "--npc", Integer.toString(npc.getId()), inargs[1]});
                 return true;
             } else if (inargs.length > 2) {
                 int nIndex = Integer.parseInt(inargs[1]);
                 if (nIndex > destTrait.NPCLocations.size() - 1) {
-                    destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_badargs");
+                    destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_commands_badargs");
                     return true;
                 }
                 DestinationSetting oCurLoc = destTrait.NPCLocations.get(nIndex);
                 if (oCurLoc == null) {
-                    destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_info_nolocations");
+                    destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_info_nolocations");
                 } else {
 
                     if (!oCurLoc.managed_Location.equals("")) {
-                        destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_managed", destTrait, oCurLoc);
+                        destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_managed", destTrait, oCurLoc);
                         return true;
                     }
 
@@ -131,7 +131,7 @@ public class CommandsLocation {
                     oCurLoc.arrival_Commands.add(commandString.trim());
                     LocationUpdated changedLocation = new LocationUpdated(npc, destTrait.NPCLocations.get(nIndex));
                     Bukkit.getServer().getPluginManager().callEvent(changedLocation);
-                    destRef.getCommandManager.onCommand(sender, new String[]{"loccommands", "--npc", Integer.toString(npc.getId()), inargs[1]});
+                    destRef.getCommandManager().onCommand(sender, new String[]{"loccommands", "--npc", Integer.toString(npc.getId()), inargs[1]});
                     return true;
                 }
             }
@@ -154,42 +154,42 @@ public class CommandsLocation {
     )
     public boolean npcDest_LocDelCommand(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc");
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.invalid_npc");
             return true;
         }
 
         if (!npc.isSpawned()) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_info_notspawned");
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_info_notspawned");
         } else if (destTrait.NPCLocations.size() > 0) {
             if (inargs.length == 3) {
                 int nIndex = Integer.parseInt(inargs[1]);
                 if (nIndex > destTrait.NPCLocations.size() - 1) {
-                    destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
+                    destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
                     return true;
                 }
                 DestinationSetting oCurLoc = destTrait.NPCLocations.get(nIndex);
                 if (oCurLoc == null) {
-                    destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_info_nolocations");
+                    destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_info_nolocations");
                 } else {
 
                     if (!oCurLoc.managed_Location.equals("")) {
-                        destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_managed", destTrait, oCurLoc);
+                        destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_managed", destTrait, oCurLoc);
                         return true;
                     }
 
                     int listIndex = Integer.parseInt(inargs[2]);
                     if (listIndex > oCurLoc.arrival_Commands.size() - 1) {
-                        destRef.getMessageManager.sendMessage("destinations", sender,
+                        destRef.getMessagesManager().sendMessage("destinations", sender,
                                 "messages.commands_commands_badargs");
                         return true;
                     }
-                    destRef.getMessageManager.sendMessage("destinations", sender,
+                    destRef.getMessagesManager().sendMessage("destinations", sender,
                             "messages.commands_commands_delete", destTrait, oCurLoc, 0);
                     oCurLoc.arrival_Commands.remove(listIndex);
                     LocationUpdated changedLocation = new LocationUpdated(npc, destTrait.NPCLocations.get(
                             nIndex));
                     Bukkit.getServer().getPluginManager().callEvent(changedLocation);
-                    destRef.getCommandManager.onCommand(sender, new String[]{"loccommands", "--npc", Integer.toString(npc.getId()), inargs[1]});
+                    destRef.getCommandManager().onCommand(sender, new String[]{"loccommands", "--npc", Integer.toString(npc.getId()), inargs[1]});
                     return true;
                 }
             }
@@ -211,19 +211,19 @@ public class CommandsLocation {
     )
     public boolean npcDest_LocWeather(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc");
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.invalid_npc");
             return true;
         }
 
         if (inargs.length > 2) {
             int nIndex = Integer.parseInt(inargs[1]);
             if (nIndex > destTrait.NPCLocations.size() - 1) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
                 return true;
             }
 
             if (!destTrait.NPCLocations.get(nIndex).managed_Location.equals("")) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_managed",
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_managed",
                         destTrait, destTrait.NPCLocations.get(nIndex));
                 return true;
             }
@@ -235,17 +235,17 @@ public class CommandsLocation {
             } else if (inargs[2].equalsIgnoreCase("any")) {
                 destTrait.NPCLocations.get(nIndex).WeatherFlag = 0;
             } else {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_locweather_badargs");
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_locweather_badargs");
                 return true;
             }
             // V1.39 -- Event
             LocationUpdated changedLocation = new LocationUpdated(npc, destTrait.NPCLocations.get(nIndex));
             Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
-            destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+            destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
             return true;
         } else {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_locweather_badargs");
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_locweather_badargs");
             return true;
         }
 
@@ -265,7 +265,7 @@ public class CommandsLocation {
     public boolean npcDest_LocAlias(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
 
         if (npc == null) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc");
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.invalid_npc");
             return true;
         }
 
@@ -274,25 +274,25 @@ public class CommandsLocation {
             for (DestinationSetting oDestination : destTrait.NPCLocations) {
                 if (oDestination.Alias_Name.equalsIgnoreCase(inargs[2])) {
                     // Exists
-                    destRef.getMessageManager.sendMessage("destinations", sender,
+                    destRef.getMessagesManager().sendMessage("destinations", sender,
                             "messages.commands_localias_duplicate");
                     return true;
                 }
             }
 
-            if (!destRef.getUtilitiesClass.isNumeric(inargs[1])) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_localias_badargs");
+            if (!destRef.getUtilities().isNumeric(inargs[1])) {
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_localias_badargs");
                 return true;
             }
 
             int nIndex = Integer.parseInt(inargs[1]);
             if (nIndex > destTrait.NPCLocations.size() - 1) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
                 return true;
             }
 
             if (!destTrait.NPCLocations.get(nIndex).managed_Location.equals("")) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_managed", destTrait, destTrait.NPCLocations.get(nIndex));
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_managed", destTrait, destTrait.NPCLocations.get(nIndex));
                 return true;
             }
 
@@ -302,7 +302,7 @@ public class CommandsLocation {
             LocationUpdated changedLocation = new LocationUpdated(npc, destTrait.NPCLocations.get(nIndex));
             Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
-            destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+            destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
             return true;
         }
         return false;
@@ -321,7 +321,7 @@ public class CommandsLocation {
     )
     public boolean npcDest_AddLocation(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc", destTrait);
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.invalid_npc", destTrait);
             return true;
         }
 
@@ -338,11 +338,11 @@ public class CommandsLocation {
                 if (inargs[1].matches("\\d+")) {
                     nTimeOfDay = Integer.parseInt(inargs[1]);
                     if (nTimeOfDay < 1 || nTimeOfDay > 24000) {
-                        destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
+                        destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
                         return true;
                     }
                 } else {
-                    destRef.getMessageManager.sendMessage("destinations", sender,
+                    destRef.getMessagesManager().sendMessage("destinations", sender,
                             "messages.commands_addlocation_badargs", destTrait);
                     return true;
                 }
@@ -378,16 +378,16 @@ public class CommandsLocation {
             oLoc.Pause_Type = "ALL";
 
 
-            if (destRef.getPlotSquared != null) {
+            if (destRef.getPlotSquaredPlugin() != null) {
                 //Validate that the user is in the same plot as the NPC to ensure they cannot have the NPC run into other plots
-                if (!destRef.getPlotSquared.playerHasPermissions(player)) {
-                    destRef.getMessageManager.sendMessage("destinations", sender,
+                if (!destRef.getPlotSquaredPlugin().playerHasPermissions(player)) {
+                    destRef.getMessagesManager().sendMessage("destinations", sender,
                             "messages.commands_plotquared_denied", destTrait);
                     return true;
                 }
 
-                if (!destRef.getPlotSquared.playerInPlotWithNPC(player, destTrait.getNPC())) {
-                    destRef.getMessageManager.sendMessage("destinations", sender,
+                if (!destRef.getPlotSquaredPlugin().playerInPlotWithNPC(player, destTrait.getNPC())) {
+                    destRef.getMessagesManager().sendMessage("destinations", sender,
                             "messages.commands_plotquared_npcdifferent", destTrait);
                     return true;
                 }
@@ -401,16 +401,16 @@ public class CommandsLocation {
             final LocationAdded newLocation = new LocationAdded(npc, oLoc);
             Bukkit.getServer().getPluginManager().callEvent(newLocation);
             if (newLocation.isCancelled()) {
-                destRef.getMessageManager.sendMessage("destinations", sender,
+                destRef.getMessagesManager().sendMessage("destinations", sender,
                         "messages.commands_addlocation_blocked", destTrait);
                 return true;
             }
             destTrait.NPCLocations.add(oLoc);
 
-            destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+            destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
             return true;
         } else {
-            destRef.getMessageManager.sendMessage("destinations", sender,
+            destRef.getMessagesManager().sendMessage("destinations", sender,
                     "messages.commands_addlocation_badargs", destTrait);
             return true;
         }
@@ -431,14 +431,14 @@ public class CommandsLocation {
     public boolean npcDest_RemoveLocation(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
 
         if (npc == null) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc", destTrait);
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.invalid_npc", destTrait);
             return true;
         }
         if (inargs.length > 1) {
             int nIndex = Integer.parseInt(inargs[1]);
             if (nIndex > -1 && nIndex <= destTrait.NPCLocations.size()) {
                 if (!destTrait.NPCLocations.get(nIndex).managed_Location.equals("")) {
-                    destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_managed",
+                    destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_managed",
                             destTrait, destTrait.NPCLocations.get(nIndex));
                     return true;
                 }
@@ -448,15 +448,15 @@ public class CommandsLocation {
                 LocationDeleted removeEvent = new LocationDeleted(npc, removedDest);
                 Bukkit.getServer().getPluginManager().callEvent(removeEvent);
                 if (removeEvent.isCancelled()) {
-                    destRef.getMessageManager.sendMessage("destinations", sender,
+                    destRef.getMessagesManager().sendMessage("destinations", sender,
                             "messages.commands_removelocation_blocked", destTrait);
                     return true;
                 }
                 destTrait.NPCLocations.remove(Integer.parseInt(inargs[1]));
-                destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+                destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                 return true;
             } else {
-                destRef.getMessageManager.sendMessage("destinations", sender,
+                destRef.getMessagesManager().sendMessage("destinations", sender,
                         "messages.commands_info_nolocations", destTrait);
                 return true;
             }
@@ -464,14 +464,14 @@ public class CommandsLocation {
             sender.sendMessage(ChatColor.GREEN + "Configured Locations: ");
             Location oCurLoc = destTrait.GetCurrentLocation().destination;
             if (oCurLoc == null) {
-                destRef.getMessageManager.sendMessage("destinations", sender,
+                destRef.getMessagesManager().sendMessage("destinations", sender,
                         "messages.commands_info_nolocations", destTrait);
             } else {
                 for (DestinationSetting oLoc : destTrait.NPCLocations) {
-                    destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_info_location", destTrait, oLoc);
+                    destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_info_location", destTrait, oLoc);
                 }
             }
-            destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+            destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
             return true;
         }
     }
@@ -491,15 +491,15 @@ public class CommandsLocation {
         try {
             int nLoc = Integer.parseInt(inargs[1]);
             if (nLoc > destTrait.NPCLocations.size() - 1) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
                 return true;
             }
 
             if (!destTrait.NPCLocations.get(nLoc).managed_Location.equals("")) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_managed", destTrait, destTrait.NPCLocations.get(nLoc));
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_managed", destTrait, destTrait.NPCLocations.get(nLoc));
                 return true;
             }
-            if (destRef.getUtilitiesClass.isNumeric(inargs[2])) {
+            if (destRef.getUtilities().isNumeric(inargs[2])) {
                 int nDist = Integer.parseInt(inargs[2]);
                 destTrait.NPCLocations.get(nLoc).setWanderingDistance(nDist);
                 destTrait.NPCLocations.get(nLoc).Wandering_Region = "";
@@ -524,9 +524,9 @@ public class CommandsLocation {
             LocationUpdated changedLocation = new LocationUpdated(npc, destTrait.NPCLocations.get(nLoc));
             Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
-            destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+            destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
         } catch (Exception e) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_locwand_badargs", destTrait);
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_locwand_badargs", destTrait);
         }
         return true;
 
@@ -545,19 +545,19 @@ public class CommandsLocation {
     )
     public boolean npcDest_LocSkin(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc");
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.invalid_npc");
             return true;
         }
 
         if (inargs.length > 1) {
             int nIndex = Integer.parseInt(inargs[1]);
             if (nIndex > destTrait.NPCLocations.size() - 1) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
                 return true;
             }
 
             if (!destTrait.NPCLocations.get(nIndex).managed_Location.equals("")) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_managed",
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_managed",
                         destTrait, destTrait.NPCLocations.get(nIndex));
                 return true;
             }
@@ -567,7 +567,7 @@ public class CommandsLocation {
             if (inargs[2].equalsIgnoreCase("show")) {
                 if (destTrait.NPCLocations.get(nIndex).player_Skin_Name.trim().isEmpty() || !(npc
                         .getEntity() instanceof Player)) {
-                    destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_locskin_notset");
+                    destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_locskin_notset");
                     return true;
                 } else {
 
@@ -575,7 +575,7 @@ public class CommandsLocation {
                             , destTrait.NPCLocations.get(nIndex).player_Skin_Texture_Signature
                             , destTrait.NPCLocations.get(nIndex).player_Skin_Texture_Metadata);
                     // Set the skin
-                    destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+                    destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
             } else if (inargs[2].equalsIgnoreCase("clear")) {
@@ -585,14 +585,14 @@ public class CommandsLocation {
                 // V1.39 -- Event
                 LocationUpdated changedLocation = new LocationUpdated(npc, destTrait.NPCLocations.get(nIndex));
                 Bukkit.getServer().getPluginManager().callEvent(changedLocation);
-                destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+                destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                 return true;
             } else if (inargs[2].equalsIgnoreCase("before")) {
                 destTrait.NPCLocations.get(nIndex).player_Skin_ApplyOnArrival = false;
             } else if (inargs[2].equalsIgnoreCase("after")) {
                 destTrait.NPCLocations.get(nIndex).player_Skin_ApplyOnArrival = true;
             } else {
-                destRef.getMessageManager.sendMessage("destinations", sender,
+                destRef.getMessagesManager().sendMessage("destinations", sender,
                         "messages.commands_locskin_badargs");
                 return true;
             }
@@ -604,7 +604,7 @@ public class CommandsLocation {
             // V1.39 -- Event
             LocationUpdated changedLocation = new LocationUpdated(npc, destTrait.NPCLocations.get(nIndex));
             Bukkit.getServer().getPluginManager().callEvent(changedLocation);
-            destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+            destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
             return true;
         }
 
@@ -624,24 +624,24 @@ public class CommandsLocation {
     )
     public boolean npcDest_LocInv(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc");
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.invalid_npc");
             return true;
         }
 
         if (inargs.length > 1) {
 
-            if (inargs.length < 2 || !destRef.getUtilitiesClass.isNumeric(inargs[1])) {
+            if (inargs.length < 2 || !destRef.getUtilities().isNumeric(inargs[1])) {
                 return false;
             }
 
             int nLoc = Integer.parseInt(inargs[1]);
             if (nLoc > destTrait.NPCLocations.size() - 1) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
                 return true;
             }
 
             if (!destTrait.NPCLocations.get(nLoc).managed_Location.equals("")) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_managed",
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_managed",
                         destTrait, destTrait.NPCLocations.get(nLoc));
                 return true;
             }
@@ -662,7 +662,7 @@ public class CommandsLocation {
             LocationUpdated changedLocation = new LocationUpdated(npc, destTrait.NPCLocations.get(nLoc));
             Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
-            destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+            destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
             return true;
         }
 
@@ -683,25 +683,25 @@ public class CommandsLocation {
     )
     public boolean npcDest_locmax(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc", destTrait, null);
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.invalid_npc", destTrait, null);
             return true;
         }
         if (inargs.length != 3) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_locmax_badargs",
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_locmax_badargs",
                     destTrait);
             return true;
         }
         try {
             int nLoc = Integer.parseInt(inargs[1]);
             if (nLoc > destTrait.NPCLocations.size() - 1) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
                 return true;
             }
 
             int nDist = Integer.parseInt(inargs[2]);
 
             if (!destTrait.NPCLocations.get(nLoc).managed_Location.equals("")) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_managed",
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_managed",
                         destTrait, destTrait.NPCLocations.get(nLoc));
                 return true;
             }
@@ -711,7 +711,7 @@ public class CommandsLocation {
             // V1.39 -- Event
             LocationUpdated changedLocation = new LocationUpdated(npc, destTrait.NPCLocations.get(nLoc));
             Bukkit.getServer().getPluginManager().callEvent(changedLocation);
-            destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+            destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
         } catch (Exception e) {
         }
         return false;
@@ -731,7 +731,7 @@ public class CommandsLocation {
     )
     public boolean npcDest_locpause(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc", destTrait, null);
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.invalid_npc", destTrait, null);
             return true;
         }
         if (inargs.length == 1) {
@@ -740,12 +740,12 @@ public class CommandsLocation {
 
         int nLoc = Integer.parseInt(inargs[1]);
         if (nLoc > destTrait.NPCLocations.size() - 1) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
             return true;
         }
 
         if (!destTrait.NPCLocations.get(nLoc).managed_Location.equals("")) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_managed", destTrait,
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_managed", destTrait,
                     destTrait.NPCLocations.get(nLoc));
             return true;
         }
@@ -758,7 +758,7 @@ public class CommandsLocation {
             // V1.39 -- Event
             LocationUpdated changedLocation = new LocationUpdated(npc, destTrait.NPCLocations.get(nLoc));
             Bukkit.getServer().getPluginManager().callEvent(changedLocation);
-            destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+            destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
             return true;
         } else if (inargs.length == 3) {
             try {
@@ -770,7 +770,7 @@ public class CommandsLocation {
                 // V1.39 -- Event
                 LocationUpdated changedLocation = new LocationUpdated(npc, destTrait.NPCLocations.get(nLoc));
                 Bukkit.getServer().getPluginManager().callEvent(changedLocation);
-                destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+                destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                 return true;
             } catch (Exception e) {
             }
@@ -783,7 +783,7 @@ public class CommandsLocation {
                 // V1.39 -- Event
                 LocationUpdated changedLocation = new LocationUpdated(npc, destTrait.NPCLocations.get(nLoc));
                 Bukkit.getServer().getPluginManager().callEvent(changedLocation);
-                destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+                destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                 return true;
             } catch (Exception e) {
             }
@@ -803,7 +803,7 @@ public class CommandsLocation {
                 // V1.39 -- Event
                 LocationUpdated changedLocation = new LocationUpdated(npc, destTrait.NPCLocations.get(nLoc));
                 Bukkit.getServer().getPluginManager().callEvent(changedLocation);
-                destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+                destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                 return true;
             } catch (Exception e) {
             }
@@ -825,7 +825,7 @@ public class CommandsLocation {
     )
     public boolean npcDest_locprob(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc", destTrait, null);
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.invalid_npc", destTrait, null);
             return true;
         }
 
@@ -836,12 +836,12 @@ public class CommandsLocation {
         try {
             int nLoc = Integer.parseInt(inargs[1]);
             if (nLoc > destTrait.NPCLocations.size() - 1) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
                 return true;
             }
 
             if (!destTrait.NPCLocations.get(nLoc).managed_Location.equals("")) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_managed", destTrait, destTrait.NPCLocations.get(nLoc));
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_managed", destTrait, destTrait.NPCLocations.get(nLoc));
                 return true;
             }
 
@@ -856,7 +856,7 @@ public class CommandsLocation {
             LocationUpdated changedLocation = new LocationUpdated(npc, destTrait.NPCLocations.get(nLoc));
             Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
-            destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+            destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
             return true;
         } catch (Exception e) {
         }
@@ -877,7 +877,7 @@ public class CommandsLocation {
     )
     public boolean npcDest_loctime(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc", destTrait, null);
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.invalid_npc", destTrait, null);
             return true;
         }
 
@@ -886,12 +886,12 @@ public class CommandsLocation {
         }
         int nLoc = Integer.parseInt(inargs[1]);
         if (nLoc > destTrait.NPCLocations.size() - 1) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
             return true;
         }
 
         if (!destTrait.NPCLocations.get(nLoc).managed_Location.equals("")) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_managed", destTrait, destTrait.NPCLocations.get(nLoc));
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_managed", destTrait, destTrait.NPCLocations.get(nLoc));
             return true;
         }
 
@@ -906,12 +906,12 @@ public class CommandsLocation {
             try {
                 nTimeOfDay = Integer.parseInt(inargs[2]);
                 if (nTimeOfDay < 0 || nTimeOfDay > 24000) {
-                    destRef.getMessageManager.sendMessage("destinations", sender,
+                    destRef.getMessagesManager().sendMessage("destinations", sender,
                             "messages.commands_loctime_badargs", destTrait);
                     return true;
                 }
             } catch (Exception err) {
-                destRef.getMessageManager.sendMessage("destinations", sender,
+                destRef.getMessagesManager().sendMessage("destinations", sender,
                         "messages.commands_loctime_badargs", destTrait);
                 return true;
             }
@@ -921,7 +921,7 @@ public class CommandsLocation {
         LocationUpdated changedLocation = new LocationUpdated(npc, destTrait.NPCLocations.get(nLoc));
         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
-        destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+        destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
         return true;
 
     }
@@ -939,12 +939,12 @@ public class CommandsLocation {
     )
     public boolean npcDest_locloc(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (npc == null) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc", destTrait, null);
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.invalid_npc", destTrait, null);
             return true;
         }
         int nLoc = Integer.parseInt(inargs[1]);
         if (!destTrait.NPCLocations.get(nLoc).managed_Location.equals("")) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_managed", destTrait,
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_managed", destTrait,
                     destTrait.NPCLocations.get(nLoc));
             return true;
         }
@@ -959,7 +959,7 @@ public class CommandsLocation {
             LocationUpdated changedLocation = new LocationUpdated(npc, destTrait.NPCLocations.get(nLoc));
             Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
-            destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+            destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
             return true;
         }
 
@@ -987,22 +987,22 @@ public class CommandsLocation {
             Location newLocation = new Location(destTrait.NPCLocations.get(nLoc).destination
                     .getWorld(), nX + 0.5, nY, nZ + 0.5, nYaw, nPitch);
 
-            if (destRef.getPlotSquared != null) {
+            if (destRef.getPlotSquaredPlugin() != null) {
                 //Validate that the user is in the same plot as the NPC to ensure they cannot have the NPC run into other plots
-                if (!destRef.getPlotSquared.playerHasPermissions((Player) sender)) {
-                    destRef.getMessageManager.sendMessage("destinations", sender,
+                if (!destRef.getPlotSquaredPlugin().playerHasPermissions((Player) sender)) {
+                    destRef.getMessagesManager().sendMessage("destinations", sender,
                             "messages.commands_plotquared_denied", destTrait);
                     return true;
                 }
 
-                if (!destRef.getPlotSquared.playerInPlotWithNPC((Player) sender, destTrait.getNPC())) {
-                    destRef.getMessageManager.sendMessage("destinations", sender,
+                if (!destRef.getPlotSquaredPlugin().playerInPlotWithNPC((Player) sender, destTrait.getNPC())) {
+                    destRef.getMessagesManager().sendMessage("destinations", sender,
                             "messages.commands_plotquared_npcdifferent", destTrait);
                     return true;
                 }
 
-                if (!destRef.getPlotSquared.locationInSamePlotAsNPC(destTrait.getNPC(), newLocation)) {
-                    destRef.getMessageManager.sendMessage("destinations", sender,
+                if (!destRef.getPlotSquaredPlugin().locationInSamePlotAsNPC(destTrait.getNPC(), newLocation)) {
+                    destRef.getMessagesManager().sendMessage("destinations", sender,
                             "messages.commands_plotquared_npcdifferent", destTrait);
                     return true;
                 }
@@ -1014,7 +1014,7 @@ public class CommandsLocation {
             LocationUpdated changedLocation = new LocationUpdated(npc, destTrait.NPCLocations.get(nLoc));
             Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
-            destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+            destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
             return true;
         } catch (Exception e) {
 

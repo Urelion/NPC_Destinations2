@@ -45,20 +45,20 @@ public class Condition_CurrentLocation extends Condition {
         NPC npc = CitizensAPI.getNPCRegistry().getById(targetNPC);
         if (npc == null) {
             // specified number doesn't exist.
-            BetonQuest_Plugin.destRef.getMessageManager.consoleMessage(BetonQuest_Plugin.destRef, "destinations", "Console_Messages.betonquest_error", "Condition_CurrentLoc references invalid NPC ID " + targetNPC);
+            BetonQuest_Plugin.destRef.getMessagesManager().consoleMessage(BetonQuest_Plugin.destRef, "destinations", "Console_Messages.betonquest_error", "Condition_CurrentLoc references invalid NPC ID " + targetNPC);
             return false;
         }
 
         NPCDestinationsTrait trait = null;
         if (!npc.hasTrait(NPCDestinationsTrait.class)) {
-            BetonQuest_Plugin.destRef.getMessageManager.consoleMessage(BetonQuest_Plugin.destRef, "destinations", "Console_Messages.betonquest_error", "Condition_CurrentLoc references NPC (" + targetNPC + "), but lacks the NPCDestination trait.");
+            BetonQuest_Plugin.destRef.getMessagesManager().consoleMessage(BetonQuest_Plugin.destRef, "destinations", "Console_Messages.betonquest_error", "Condition_CurrentLoc references NPC (" + targetNPC + "), but lacks the NPCDestination trait.");
             return false;
         } else
             trait = npc.getTrait(NPCDestinationsTrait.class);
 
         if (destID > -1) {
             if (destID >= trait.NPCLocations.size()) {
-                BetonQuest_Plugin.destRef.getMessageManager.consoleMessage(BetonQuest_Plugin.destRef, "destinations", "Console_Messages.betonquest_error", "Condition_CurrentLoc references NPC (" + targetNPC + ") but is missing location (" + destID + ")");
+                BetonQuest_Plugin.destRef.getMessagesManager().consoleMessage(BetonQuest_Plugin.destRef, "destinations", "Console_Messages.betonquest_error", "Condition_CurrentLoc references NPC (" + targetNPC + ") but is missing location (" + destID + ")");
                 return false;
             }
 

@@ -11,11 +11,11 @@ public class Sentinel_Commands {
             "npcdestinations.editall.locsentinel", "npcdestinations.editown.locsentinel"}, allowConsole = true, minArguments = 2, maxArguments = 2)
     public boolean npcDest_locSentinel(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (!sender.hasPermission("npcdestinations.editall.locsentinel") && !sender.isOp() && !(isOwner && sender.hasPermission("npcdestinations.editown.locsentinel"))) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.no_permissions");
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.no_permissions");
             return true;
         } else {
             if (npc == null) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc", destTrait, null);
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.invalid_npc", destTrait, null);
                 return true;
             }
 
@@ -25,18 +25,18 @@ public class Sentinel_Commands {
             if (inargs.length > 2) {
                 int nIndex = Integer.parseInt(inargs[1]);
                 if (nIndex > destTrait.NPCLocations.size() - 1) {
-                    destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
+                    destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
                     return true;
                 }
 
                 if (!destTrait.NPCLocations.get(nIndex).managed_Location.equals("")) {
-                    destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_managed", destTrait, destTrait.NPCLocations.get(nIndex));
+                    destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_managed", destTrait, destTrait.NPCLocations.get(nIndex));
                     return true;
                 }
 
                 // Get the location
                 Sentinel_LocationSetting locSetting = null;
-                Sentinel_Addon addonReference = (Sentinel_Addon) destRef.getPluginManager.getPluginByName("Sentinel");
+                Sentinel_Addon addonReference = (Sentinel_Addon) destRef.getPluginManager().getPluginByName("Sentinel");
 
                 if (!addonReference.npcSettings.containsKey(npc.getId()))
                     addonReference.npcSettings.put(npc.getId(), new Sentinel_NPCSetting());
@@ -48,7 +48,7 @@ public class Sentinel_Commands {
                     if (locSetting != null) {
                         addonReference.npcSettings.get(npc.getId()).locations.remove(destTrait.NPCLocations.get(nIndex).LocationIdent);
                     }
-                    destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+                    destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
 
@@ -57,7 +57,7 @@ public class Sentinel_Commands {
                     locSetting = addonReference.pluginReference.getCurrentSettings(npc);
                     locSetting.locationID = destTrait.NPCLocations.get(nIndex).LocationIdent;
                     addonReference.npcSettings.get(npc.getId()).locations.put(destTrait.NPCLocations.get(nIndex).LocationIdent, locSetting);
-                    destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+                    destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
 
@@ -69,7 +69,7 @@ public class Sentinel_Commands {
 
                 if (inargs[2].equalsIgnoreCase("get")) {
                     addonReference.pluginReference.setCurrentSettings(npc, locSetting);
-                    destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+                    destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
             }

@@ -63,7 +63,7 @@ public class MessagesManager {
         if (logHistory == null)
             logHistory = new ArrayList<LogDetail>();
 
-        if (destRef.debugLogLevel.intValue() <= debugLevel.intValue()) {
+        if (destRef.getDebugLogLevel().intValue() <= debugLevel.intValue()) {
             String className = new Exception().getStackTrace()[1].getClassName();
             logHistory.add(new LogDetail(debugLevel + "|" + className.substring(className.lastIndexOf(".")) + "|" + new Exception().getStackTrace()[1].getMethodName() + "|" + new Exception().getStackTrace()[1].getLineNumber() + "|" + extendedMessage));
 
@@ -82,7 +82,7 @@ public class MessagesManager {
     private void saveDebugMessages() {
         if (logHistory != null && logHistory.size() > 0) {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'.log'");
-            try (FileWriter fileOut = new FileWriter(new File(destRef.loggingPath, dateFormat.format(logHistory.get(0).logDateTime)), true)) {
+            try (FileWriter fileOut = new FileWriter(new File(destRef.getLoggingPath(), dateFormat.format(logHistory.get(0).logDateTime)), true)) {
                 for (LogDetail logLine : logHistory) {
                     SimpleDateFormat lnDateFormat = new SimpleDateFormat("hh:mm:ss:SSSSS");
 
@@ -216,7 +216,7 @@ public class MessagesManager {
     @SuppressWarnings("deprecation")
     private String parseMessage(CommandSender sender, String langFile, String message, NPCDestinationsTrait npcTrait, DestinationSetting locationSetting, Material blockMaterial, NPC npc, int ident) {
 
-        for (DestinationsAddon pluginReference : destRef.getPluginManager.getPlugins()) {
+        for (DestinationsAddon pluginReference : destRef.getPluginManager().getPlugins()) {
             message = pluginReference.parseLanguageLine(message, npcTrait, locationSetting, blockMaterial, npc, ident);
         }
 
@@ -264,11 +264,11 @@ public class MessagesManager {
                     message = replaceAll(message, "<setting.pausefortimeout>", Integer.toString(npcTrait.PauseTimeout));
             }
             if (message.toLowerCase().contains("<setting.enabledplugins>")) {
-                if (destRef.getPluginManager.getPlugins().size() == 0) {
+                if (destRef.getPluginManager().getPlugins().size() == 0) {
                     message = replaceAll(message, "<setting.enabledplugins>", "{\"text\":\"There are no plugins available\",\"color\":\"yellow\"}");
                 } else {
                     String pluginList = ""; // "{\"text\":\" \"},";
-                    for (DestinationsAddon pluginReference : destRef.getPluginManager.getPlugins()) {
+                    for (DestinationsAddon pluginReference : destRef.getPluginManager().getPlugins()) {
                         String pluginLine = "{\"text\":\"[\",\"color\":\"yellow\"},";
                         if (npcTrait.enabledPlugins.contains(pluginReference.getActionName().toUpperCase())) {
                             pluginLine += "{\"text\":\"" + pluginReference.getPluginIcon() + "\",\"color\":\"green\",";
@@ -320,13 +320,13 @@ public class MessagesManager {
             if (message.toLowerCase().contains("<setting.allowedpathblockscount>"))
                 message = replaceAll(message, "<setting.allowedpathblockscount>", npcTrait.AllowedPathBlocks == null ? "0" : Integer.toString(npcTrait.AllowedPathBlocks.size()));
             if (message.toLowerCase().contains("<setting.pathtime>")) {
-                if (this.destRef.getPathClass.currentTask != null && this.destRef.getPathClass.currentTask.npc.getId() == npc.getId()) {
-                    long nSeconds = Duration.ofMillis(this.destRef.getPathClass.pathQueue.get(npc.getId()).timeSpent).getSeconds();
+                if (this.destRef.getAStarPathFinder().currentTask != null && this.destRef.getAStarPathFinder().currentTask.npc.getId() == npc.getId()) {
+                    long nSeconds = Duration.ofMillis(this.destRef.getAStarPathFinder().pathQueue.get(npc.getId()).timeSpent).getSeconds();
                     message = replaceAll(message, "<setting.pathtime>", "&7* " + Math.abs(nSeconds));
-                } else if (!this.destRef.getPathClass.pathQueue.containsKey(npc.getId())) {
+                } else if (!this.destRef.getAStarPathFinder().pathQueue.containsKey(npc.getId())) {
                     message = replaceAll(message, "<setting.pathtime>", "??");
                 } else {
-                    long nSeconds = Duration.ofMillis(this.destRef.getPathClass.pathQueue.get(npc.getId()).timeSpent).getSeconds();
+                    long nSeconds = Duration.ofMillis(this.destRef.getAStarPathFinder().pathQueue.get(npc.getId()).timeSpent).getSeconds();
                     message = replaceAll(message, "<setting.pathtime>", String.valueOf(Math.abs(nSeconds)));
                 }
             }
@@ -447,7 +447,7 @@ public class MessagesManager {
                 boolean bFound = false;
                 for (int nCnt = 0; nCnt < npcTrait.NPCLocations.size(); nCnt++) {
                     boolean locationBlocked = false;
-                    for (DestinationsAddon plugin : destRef.getPluginManager.getPlugins()) {
+                    for (DestinationsAddon plugin : destRef.getPluginManager().getPlugins()) {
                         if (npcTrait.enabledPlugins.contains(plugin.getActionName())) {
                             try {
                                 if (!plugin.isDestinationEnabled(npcTrait.getNPC(), npcTrait, npcTrait.NPCLocations.get(nCnt))) {
@@ -458,7 +458,7 @@ public class MessagesManager {
                                 StringWriter sw = new StringWriter();
                                 err.printStackTrace(new PrintWriter(sw));
 
-                                destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.plugin_debug", err.getMessage() + "\n" + sw);
+                                destRef.getMessagesManager().consoleMessage(destRef, "destinations", "Console_Messages.plugin_debug", err.getMessage() + "\n" + sw);
                             }
                         }
                     }
@@ -496,7 +496,7 @@ public class MessagesManager {
             }
             if (message.toLowerCase().contains("<location.plugins>")) {
                 String pluginResponses = "";
-                for (DestinationsAddon plugin : destRef.getPluginManager.getPlugins()) {
+                for (DestinationsAddon plugin : destRef.getPluginManager().getPlugins()) {
                     if (npcTrait.enabledPlugins.contains(plugin.getActionName().toUpperCase())) {
                         String response = plugin.getDestinationHelp(npc, npcTrait, locationSetting);
                         if (!response.equals("")) {
@@ -645,15 +645,15 @@ public class MessagesManager {
         }
 
         if (message.toLowerCase().contains("<pathengine.queue.count>"))
-            if (destRef.getPathClass != null) {
-                message = replaceAll(message, "<pathengine.queue.count>", Integer.toString(destRef.getPathClass.pathQueue.size()));
+            if (destRef.getAStarPathFinder() != null) {
+                message = replaceAll(message, "<pathengine.queue.count>", Integer.toString(destRef.getAStarPathFinder().pathQueue.size()));
             } else {
                 message = replaceAll(message, "<pathengine.queue.count>", "0");
             }
 
         if (message.toLowerCase().contains("<pathengine.currentnpc>"))
-            if (destRef.getPathClass != null && destRef.getPathClass.currentTask != null) {
-                message = replaceAll(message, "<pathengine.currentnpc>", destRef.getPathClass.currentTask.npc.getFullName());
+            if (destRef.getAStarPathFinder() != null && destRef.getAStarPathFinder().currentTask != null) {
+                message = replaceAll(message, "<pathengine.currentnpc>", destRef.getAStarPathFinder().currentTask.npc.getFullName());
             } else {
                 message = replaceAll(message, "<pathengine.queue.count>", "0");
             }
@@ -663,24 +663,24 @@ public class MessagesManager {
     }
 
     private String[] getResultMessage(String langFile, String msgKey) {
-        String language = destRef.currentLanguage;
+        String language = destRef.getCurrentLanguage();
         msgKey = msgKey.toLowerCase();
         List<String> response = new ArrayList<String>();
 
-        if (!destRef.getLanguageManager.languageStorage.containsKey(language + "-" + langFile)) {
-            logToConsole(destRef, "Missing language [" + destRef.currentLanguage + "-" + langFile + "." + msgKey + "] check your language files.");
+        if (!destRef.getLanguageManager().languageStorage.containsKey(language + "-" + langFile)) {
+            logToConsole(destRef, "Missing language [" + destRef.getCurrentLanguage() + "-" + langFile + "." + msgKey + "] check your language files.");
             language = "en_def";
         }
 
-        if (!destRef.getLanguageManager.languageStorage.containsKey(language + "-" + langFile)) {
-            logToConsole(destRef, "Missing language [" + destRef.currentLanguage + "-" + langFile + "." + msgKey + "] check your language files.");
+        if (!destRef.getLanguageManager().languageStorage.containsKey(language + "-" + langFile)) {
+            logToConsole(destRef, "Missing language [" + destRef.getCurrentLanguage() + "-" + langFile + "." + msgKey + "] check your language files.");
             response.add("Language file failure. Contact the servers admin");
             return response.toArray(new String[response.size()]);
         }
 
-        if (!destRef.getLanguageManager.languageStorage.get(language + "-" + langFile).contains(msgKey)) {
-            if (!destRef.getLanguageManager.languageStorage.get(language + "-destinations").contains(msgKey)) {
-                logToConsole(destRef, "Missing language item [" + destRef.currentLanguage + "-" + langFile + "." + msgKey + "] check your language files.");
+        if (!destRef.getLanguageManager().languageStorage.get(language + "-" + langFile).contains(msgKey)) {
+            if (!destRef.getLanguageManager().languageStorage.get(language + "-destinations").contains(msgKey)) {
+                logToConsole(destRef, "Missing language item [" + destRef.getCurrentLanguage() + "-" + langFile + "." + msgKey + "] check your language files.");
                 response.add("Language file failure. Contact the servers admin");
                 return response.toArray(new String[response.size()]);
             } else {
@@ -688,10 +688,10 @@ public class MessagesManager {
             }
         }
 
-        if (destRef.getLanguageManager.languageStorage.get(language + "-" + langFile).isList(msgKey)) {
-            response.addAll(destRef.getLanguageManager.languageStorage.get(language + "-" + langFile).getStringList(msgKey));
+        if (destRef.getLanguageManager().languageStorage.get(language + "-" + langFile).isList(msgKey)) {
+            response.addAll(destRef.getLanguageManager().languageStorage.get(language + "-" + langFile).getStringList(msgKey));
         } else {
-            response.add(destRef.getLanguageManager.languageStorage.get(language + "-" + langFile).getString(msgKey));
+            response.add(destRef.getLanguageManager().languageStorage.get(language + "-" + langFile).getString(msgKey));
         }
         return response.toArray(new String[response.size()]);
     }

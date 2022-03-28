@@ -43,7 +43,7 @@ public class DebugTarget {
         debugBlocksSent.add(blockLocation);
 
         if (((Player) targetSender).isOnline()) {
-            DestinationsPlugin.getInstance().getMCUtils.sendClientBlock((Player) targetSender, blockLocation, material);
+            DestinationsPlugin.getInstance().getMcUtils().sendClientBlock((Player) targetSender, blockLocation, material);
         }
     }
 
@@ -52,14 +52,14 @@ public class DebugTarget {
             return;
         debugBlocksSent.remove(blockLocation);
         if (((Player) targetSender).isOnline()) {
-            DestinationsPlugin.getInstance().getMCUtils.sendClientBlock((Player) targetSender, blockLocation, null);
+            DestinationsPlugin.getInstance().getMcUtils().sendClientBlock((Player) targetSender, blockLocation, null);
         }
     }
 
     public void clearDebugBlocks() {
         for (Location blockLocation : debugBlocksSent) {
             if (((Player) targetSender).isOnline()) {
-                DestinationsPlugin.getInstance().getMCUtils.sendClientBlock((Player) targetSender, blockLocation, null);
+                DestinationsPlugin.getInstance().getMcUtils().sendClientBlock((Player) targetSender, blockLocation, null);
             }
         }
         debugBlocksSent.clear();

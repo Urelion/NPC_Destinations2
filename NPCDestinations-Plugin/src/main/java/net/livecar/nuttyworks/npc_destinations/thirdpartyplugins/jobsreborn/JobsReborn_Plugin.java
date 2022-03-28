@@ -17,8 +17,8 @@ public class JobsReborn_Plugin {
     public JobsReborn_Plugin(DestinationsPlugin storageRef) {
         destRef = storageRef;
         this.getJobsPlugin = new JobsReborn_Addon(this);
-        DestinationsPlugin.getInstance().getPluginManager.registerPlugin(getJobsPlugin);
-        destRef.getCommandManager.registerCommandClass(JobsReborn_Commands.class);
+        DestinationsPlugin.getInstance().getPluginManager().registerPlugin(getJobsPlugin);
+        destRef.getCommandManager().registerCommandClass(JobsReborn_Commands.class);
 
         new BukkitRunnable() {
             @Override

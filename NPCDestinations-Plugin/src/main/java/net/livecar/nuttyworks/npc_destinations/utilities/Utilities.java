@@ -38,7 +38,7 @@ public class Utilities {
             inputStream.close();
             return config;
         } catch (InvalidConfigurationException | IOException ex) {
-            destRef.getMessageManager.debugMessage(Level.SEVERE, "Utilities.loadConfiguration()|InvalidConfigurationException(" + file.getName() + ")|" + ex.getMessage());
+            destRef.getMessagesManager().debugMessage(Level.SEVERE, "Utilities.loadConfiguration()|InvalidConfigurationException(" + file.getName() + ")|" + ex.getMessage());
         }
 
         if (inputStreamReader != null)

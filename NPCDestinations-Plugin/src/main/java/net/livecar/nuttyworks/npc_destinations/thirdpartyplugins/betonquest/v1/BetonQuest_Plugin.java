@@ -17,11 +17,11 @@ public class BetonQuest_Plugin implements Listener, BetonQuest_Interface {
 
     private void onStart() {
         BetonQuest.getInstance().registerEvents("npcdest_goloc", Event_goloc.class);
-        destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.betonquest_events", "npcdest_goloc");
+        destRef.getMessagesManager().consoleMessage(destRef, "destinations", "Console_Messages.betonquest_events", "npcdest_goloc");
 
         BetonQuest.getInstance().registerConditions("npcdest_currentlocation", Condition_CurrentLocation.class);
-        destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.betonquest_conditions", "npcdest_currentlocation");
+        destRef.getMessagesManager().consoleMessage(destRef, "destinations", "Console_Messages.betonquest_conditions", "npcdest_currentlocation");
         BetonQuest.getInstance().registerConditions("npcdest_distancetolocation", Condition_DistanceToLocation.class);
-        destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.betonquest_conditions", "npcdest_distancetolocation");
+        destRef.getMessagesManager().consoleMessage(destRef, "destinations", "Console_Messages.betonquest_conditions", "npcdest_distancetolocation");
     }
 }

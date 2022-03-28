@@ -56,20 +56,20 @@ public class Event_goloc extends QuestEvent {
         NPC npc = CitizensAPI.getNPCRegistry().getById(targetNPC);
         if (npc == null) {
             // specified number doesn't exist.
-            BetonQuest_Plugin.destRef.getMessageManager.consoleMessage(BetonQuest_Plugin.destRef, "destinations", "Console_Messages.betonquest_error", "Event_GoLocation references invalid NPC ID " + targetNPC);
+            BetonQuest_Plugin.destRef.getMessagesManager().consoleMessage(BetonQuest_Plugin.destRef, "destinations", "Console_Messages.betonquest_error", "Event_GoLocation references invalid NPC ID " + targetNPC);
             return null;
         }
 
         NPCDestinationsTrait trait = null;
         if (!npc.hasTrait(NPCDestinationsTrait.class)) {
-            BetonQuest_Plugin.destRef.getMessageManager.consoleMessage(BetonQuest_Plugin.destRef, "destinations", "Console_Messages.betonquest_error", "Event_GoLocation references NPC (" + targetNPC + "), but lacks the NPCDestination trait.");
+            BetonQuest_Plugin.destRef.getMessagesManager().consoleMessage(BetonQuest_Plugin.destRef, "destinations", "Console_Messages.betonquest_error", "Event_GoLocation references NPC (" + targetNPC + "), but lacks the NPCDestination trait.");
         } else
             trait = npc.getTrait(NPCDestinationsTrait.class);
 
         DestinationSetting newDest = null;
         if (destID > -1) {
             if (destID > trait.NPCLocations.size()) {
-                BetonQuest_Plugin.destRef.getMessageManager.consoleMessage(BetonQuest_Plugin.destRef, "destinations", "Console_Messages.betonquest_error", "Event_GoLocation references NPC (" + targetNPC + ") but is missing location (" + destID + ")");
+                BetonQuest_Plugin.destRef.getMessagesManager().consoleMessage(BetonQuest_Plugin.destRef, "destinations", "Console_Messages.betonquest_error", "Event_GoLocation references NPC (" + targetNPC + ") but is missing location (" + destID + ")");
                 return null;
             }
             newDest = trait.NPCLocations.get(destID);

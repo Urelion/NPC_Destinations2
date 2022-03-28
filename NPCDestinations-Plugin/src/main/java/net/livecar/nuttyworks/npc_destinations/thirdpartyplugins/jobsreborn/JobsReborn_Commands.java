@@ -23,11 +23,11 @@ public class JobsReborn_Commands {
     )
     public boolean npcDest_locjobs(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (!sender.hasPermission("npcdestinations.editall.locjobs") && !sender.isOp() && !(isOwner && sender.hasPermission("npcdestinations.editown.locjobs"))) {
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.no_permissions");
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.no_permissions");
             return true;
         } else {
             if (npc == null) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.invalid_npc");
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.invalid_npc");
                 return true;
             }
 
@@ -35,19 +35,19 @@ public class JobsReborn_Commands {
             if (inargs.length > 2) {
                 int nIndex = Integer.parseInt(inargs[1]);
                 if (nIndex > destTrait.NPCLocations.size() - 1) {
-                    destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
+                    destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_commands_invalidloc");
                     return true;
                 }
 
                 if (!destTrait.NPCLocations.get(nIndex).managed_Location.equals("")) {
-                    destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_managed", destTrait, destTrait.NPCLocations.get(nIndex));
+                    destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_managed", destTrait, destTrait.NPCLocations.get(nIndex));
                     return true;
                 }
 
                 //Get the location
                 JobsReborn_LocationSetting locSetting = null;
 
-                JobsReborn_Addon addonReference = (JobsReborn_Addon) destRef.getPluginManager.getPluginByName("JOBSREBORN");
+                JobsReborn_Addon addonReference = (JobsReborn_Addon) destRef.getPluginManager().getPluginByName("JOBSREBORN");
 
                 if (!addonReference.pluginReference.npcSettings.containsKey(npc.getId()))
                     addonReference.pluginReference.npcSettings.put(npc.getId(), new JobsReborn_NPCSetting());
@@ -65,7 +65,7 @@ public class JobsReborn_Commands {
                         Bukkit.getServer().getPluginManager().callEvent(changeEvent);
                     }
 
-                    destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+                    destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
 
@@ -93,7 +93,7 @@ public class JobsReborn_Commands {
                 for (int i = 4; i < inargs.length; i++) {
                     sJobName += inargs[i] + " ";
                 }
-                if (destRef.getJobsRebornPlugin != null && destRef.getJobsRebornPlugin.JobExists(sJobName.trim())) {
+                if (destRef.getJobsRebornPlugin() != null && destRef.getJobsRebornPlugin().JobExists(sJobName.trim())) {
                     locSetting.jobs_Name = sJobName.trim();
                 } else {
                     return false;
@@ -103,7 +103,7 @@ public class JobsReborn_Commands {
                 LocationUpdated changedLocation = new LocationUpdated(npc, destTrait.NPCLocations.get(nIndex));
                 Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
-                destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
+                destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                 return true;
             }
         }

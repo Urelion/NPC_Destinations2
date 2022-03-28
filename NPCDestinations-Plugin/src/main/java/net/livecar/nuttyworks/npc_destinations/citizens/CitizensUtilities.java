@@ -39,7 +39,7 @@ public class CitizensUtilities {
             }
         }
         // Save the NPC file
-        destRef.getCitizensPlugin.storeNPCs();
+        destRef.getCitizensPlugin().storeNPCs();
 
         // Format the filename
         SimpleDateFormat fileDate = new SimpleDateFormat("MMddyyyy_HHmmss");
@@ -52,7 +52,7 @@ public class CitizensUtilities {
             FileOutputStream dest = new FileOutputStream(backupFile.toString());
             ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest));
             byte[] data = new byte[2048];
-            FileInputStream fi = new FileInputStream(destRef.getCitizensPlugin.getDataFolder() + "/saves.yml");
+            FileInputStream fi = new FileInputStream(destRef.getCitizensPlugin().getDataFolder() + "/saves.yml");
             origin = new BufferedInputStream(fi, 2048);
             ZipEntry entry = new ZipEntry("saves.yml");
             out.putNextEntry(entry);
@@ -71,7 +71,7 @@ public class CitizensUtilities {
         lastBackupTime = new Date().getTime();
 
         if (!forced) {
-            destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.citizens_backup");
+            destRef.getMessagesManager().consoleMessage(destRef, "destinations", "Console_Messages.citizens_backup");
         }
     }
 }

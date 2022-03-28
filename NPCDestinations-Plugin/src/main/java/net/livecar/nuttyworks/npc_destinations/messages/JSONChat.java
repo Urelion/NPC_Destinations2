@@ -29,7 +29,7 @@ public class JSONChat {
         try {
             player.spigot().sendMessage(ComponentSerializer.parse(jsonMsg));
         } catch (Exception error) {
-            destRef.getMessageManager.logToConsole(destRef, "Json Failure: " + error.getMessage() + "\n" + jsonMsg);
+            destRef.getMessagesManager().logToConsole(destRef, "Json Failure: " + error.getMessage() + "\n" + jsonMsg);
         }
     }
 
@@ -53,7 +53,7 @@ public class JSONChat {
             connection.getClass().getMethod("sendPacket", Class.forName("net.minecraft.server." + version + ".Packet")).invoke(connection, packetFinal);
 
         } catch (Exception ex) {
-            destRef.getMessageManager.logToConsole(destRef, "Json Failure: " + ex.getMessage() + "\n" + jsonMsg);
+            destRef.getMessagesManager().logToConsole(destRef, "Json Failure: " + ex.getMessage() + "\n" + jsonMsg);
         }
     }
 }

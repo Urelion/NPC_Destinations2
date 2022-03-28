@@ -28,18 +28,18 @@ public class Sentinel_Plugin {
 
         String[] versionSplit = verString.split("\\.");
 
-        if (versionSplit.length > 0 && storageRef.getUtilitiesClass.isNumeric(versionSplit[0]))
+        if (versionSplit.length > 0 && storageRef.getUtilities().isNumeric(versionSplit[0]))
             version[0] = Integer.parseInt(versionSplit[0]);
 
-        if (versionSplit.length > 1 && storageRef.getUtilitiesClass.isNumeric(versionSplit[1]))
+        if (versionSplit.length > 1 && storageRef.getUtilities().isNumeric(versionSplit[1]))
             version[1] = Integer.parseInt(versionSplit[1]);
 
-        if (versionSplit.length > 2 && storageRef.getUtilitiesClass.isNumeric(versionSplit[2]))
+        if (versionSplit.length > 2 && storageRef.getUtilities().isNumeric(versionSplit[2]))
             version[2] = Integer.parseInt(versionSplit[2]);
 
         this.getSentinelPlugin = new Sentinel_Addon(this);
-        DestinationsPlugin.getInstance().getPluginManager.registerPlugin(getSentinelPlugin);
-        destRef.getCommandManager.registerCommandClass(Sentinel_Commands.class);
+        DestinationsPlugin.getInstance().getPluginManager().registerPlugin(getSentinelPlugin);
+        destRef.getCommandManager().registerCommandClass(Sentinel_Commands.class);
 
         new BukkitRunnable() {
             @Override

@@ -26,13 +26,13 @@ public class JobsReborn_Addon extends DestinationsAddon {
 
     @Override
     public String getQuickDescription() {
-        String[] response = pluginReference.destRef.getMessageManager.buildMessage("jobsreborn", "jobs_reborn.plugin_description", "");
+        String[] response = pluginReference.destRef.getMessagesManager().buildMessage("jobsreborn", "jobs_reborn.plugin_description", "");
         return response[0];
     }
 
     @Override
     public String getDestinationHelp(NPC npc, NPCDestinationsTrait npcTrait, DestinationSetting location) {
-        String[] response = pluginReference.destRef.getMessageManager.buildMessage("jobsreborn", null, "jobs_reborn.plugin_destination", npcTrait, location, npc, null, 0, "");
+        String[] response = pluginReference.destRef.getMessagesManager().buildMessage("jobsreborn", null, "jobs_reborn.plugin_destination", npcTrait, location, npc, null, 0, "");
         return response[0];
     }
 

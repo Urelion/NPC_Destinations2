@@ -120,7 +120,7 @@ public class NPCDestinationsTrait extends Trait {
     public void unsetMonitoringPlugin(String reason) {
         if (DestinationsPlugin.getInstance().getDebugTargets() != null) {
             if (monitoringPlugin != null)
-                DestinationsPlugin.getInstance().getMessageManager.sendDebugMessage("destinations", "Debug_Messages.trait_unmonitored", npc, monitoringPlugin.getName() + (reason.equals("") ? "" : "(" + reason + ")"));
+                DestinationsPlugin.getInstance().getMessagesManager().sendDebugMessage("destinations", "Debug_Messages.trait_unmonitored", npc, monitoringPlugin.getName() + (reason.equals("") ? "" : "(" + reason + ")"));
         }
         monitoringPlugin = null;
         monitoredLocation = null;
@@ -134,7 +134,7 @@ public class NPCDestinationsTrait extends Trait {
         monitoringPlugin = plugin;
         monitoredLocation = monitoredDestination;
         if (monitoringPlugin != null)
-            DestinationsPlugin.getInstance().getMessageManager.sendDebugMessage("destinations", "Debug_Messages.trait_monitored", npc, monitoringPlugin.getName());
+            DestinationsPlugin.getInstance().getMessagesManager().sendDebugMessage("destinations", "Debug_Messages.trait_monitored", npc, monitoringPlugin.getName());
     }
 
     public DestinationSetting GetCurrentLocation() {
@@ -247,12 +247,12 @@ public class NPCDestinationsTrait extends Trait {
             }
         }
 
-        if (DestinationsPlugin.getInstance().getMCUtils.isOpenable(npc.getEntity().getLocation().getBlock())) {
+        if (DestinationsPlugin.getInstance().getMcUtils().isOpenable(npc.getEntity().getLocation().getBlock())) {
             if (!openedObjects.contains(npc.getEntity().getLocation().getBlock())) {
                 Block oBlock = npc.getEntity().getLocation().getBlock();
-                if (DestinationsPlugin.getInstance().getMCUtils.isOpenable(oBlock.getRelative(0, -1, 0))) {
+                if (DestinationsPlugin.getInstance().getMcUtils().isOpenable(oBlock.getRelative(0, -1, 0))) {
                     oBlock = oBlock.getRelative(0, -1, 0);
-                } else if (DestinationsPlugin.getInstance().getMCUtils.isOpenable(oBlock.getRelative(0, 1, 0))) {
+                } else if (DestinationsPlugin.getInstance().getMcUtils().isOpenable(oBlock.getRelative(0, 1, 0))) {
                     oBlock = oBlock.getRelative(0, 1, 0);
                 }
                 this.openOpenable(oBlock);
@@ -262,20 +262,20 @@ public class NPCDestinationsTrait extends Trait {
     }
 
     private void closeOpenable(Block oBlock) {
-        DestinationsPlugin.getInstance().getMCUtils.closeOpenable(oBlock);
+        DestinationsPlugin.getInstance().getMcUtils().closeOpenable(oBlock);
     }
 
     private void openOpenable(Block oBlock) {
-        if (DestinationsPlugin.getInstance().getMCUtils.isGate(oBlock.getType()) && OpensGates) {
-            if (DestinationsPlugin.getInstance().getMCUtils.openOpenable(oBlock)) {
+        if (DestinationsPlugin.getInstance().getMcUtils().isGate(oBlock.getType()) && OpensGates) {
+            if (DestinationsPlugin.getInstance().getMcUtils().openOpenable(oBlock)) {
                 this.openedObjects.add(oBlock);
             }
-        } else if (DestinationsPlugin.getInstance().getMCUtils.isWoodDoor(oBlock.getType()) && OpensWoodDoors) {
-            if (DestinationsPlugin.getInstance().getMCUtils.openOpenable(oBlock)) {
+        } else if (DestinationsPlugin.getInstance().getMcUtils().isWoodDoor(oBlock.getType()) && OpensWoodDoors) {
+            if (DestinationsPlugin.getInstance().getMcUtils().openOpenable(oBlock)) {
                 this.openedObjects.add(oBlock);
             }
-        } else if (DestinationsPlugin.getInstance().getMCUtils.isMetalDoor(oBlock.getType()) && OpensMetalDoors) {
-            if (DestinationsPlugin.getInstance().getMCUtils.openOpenable(oBlock)) {
+        } else if (DestinationsPlugin.getInstance().getMcUtils().isMetalDoor(oBlock.getType()) && OpensMetalDoors) {
+            if (DestinationsPlugin.getInstance().getMcUtils().openOpenable(oBlock)) {
                 this.openedObjects.add(oBlock);
             }
         }
@@ -291,8 +291,8 @@ public class NPCDestinationsTrait extends Trait {
 
     private void getOpenableInFront() {
         // Validate is the NPC is in the same block as an openable
-        if (DestinationsPlugin.getInstance().getMCUtils.openOpenable(npc.getEntity().getLocation().getBlock())) {
-            if (DestinationsPlugin.getInstance().getMCUtils.openOpenable(npc.getEntity().getLocation().getBlock())) {
+        if (DestinationsPlugin.getInstance().getMcUtils().openOpenable(npc.getEntity().getLocation().getBlock())) {
+            if (DestinationsPlugin.getInstance().getMcUtils().openOpenable(npc.getEntity().getLocation().getBlock())) {
                 this.openedObjects.add(npc.getEntity().getLocation().getBlock());
                 return;
             }
@@ -341,7 +341,7 @@ public class NPCDestinationsTrait extends Trait {
             final Location openableLocation = this.npc.getEntity().getLocation().add(xAxis, y, zAxis);
             final Block openableBlock = openableLocation.getBlock();
 
-            if (DestinationsPlugin.getInstance().getMCUtils.isOpenable(openableBlock)) {
+            if (DestinationsPlugin.getInstance().getMcUtils().isOpenable(openableBlock)) {
                 if (!openedObjects.contains(openableBlock)) {
                     this.openOpenable(openableBlock);
                 }

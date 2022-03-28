@@ -36,7 +36,7 @@ public class DestinationsTimeManager {
     private void loadWorldClocks() {
         File worldConfigFile = new File(DestinationsPlugin.getInstance().getDataFolder(), "worldclock_settings.yml");
 
-        YamlConfiguration worldSettings = DestinationsPlugin.getInstance().getUtilitiesClass.loadConfiguration(worldConfigFile);
+        YamlConfiguration worldSettings = DestinationsPlugin.getInstance().getUtilities().loadConfiguration(worldConfigFile);
 
         if (worldSettings != null) {
             for (World world : Bukkit.getServer().getWorlds()) {

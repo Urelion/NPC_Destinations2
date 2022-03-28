@@ -17,7 +17,7 @@ public class Plugin_Manager {
 
     public void registerPlugin(DestinationsAddon pluginClass) {
         if (pluginRegistration.containsKey(pluginClass.getActionName().toUpperCase())) {
-            destRef.getMessageManager.consoleMessage(destRef, "destinations", "console_messages.plugin_registration_exists", pluginClass.getActionName());
+            destRef.getMessagesManager().consoleMessage(destRef, "destinations", "console_messages.plugin_registration_exists", pluginClass.getActionName());
             return;
         }
         pluginRegistration.put(pluginClass.getActionName().toUpperCase(), pluginClass);

@@ -52,20 +52,20 @@ public class BStat_Metrics {
         try {
             metrics.addCustomChart(new AdvancedPie("addons_used", () -> {
                 Map<String, Integer> valueMap = new HashMap<>();
-                for (DestinationsAddon pluginReference : destRef.getPluginManager.getPlugins()) {
+                for (DestinationsAddon pluginReference : destRef.getPluginManager().getPlugins()) {
                     valueMap.put(pluginReference.getActionName(), Integer.valueOf(1));
                 }
 
-                if (destRef.getPlotSquared != null)
+                if (destRef.getPlotSquaredPlugin() != null)
                     valueMap.put("PlotSquared", Integer.valueOf(1));
 
-                if (destRef.getJobsRebornPlugin != null)
+                if (destRef.getJobsRebornPlugin() != null)
                     valueMap.put("JobsReborn", Integer.valueOf(1));
 
-                if (destRef.getLightPlugin != null)
+                if (destRef.getLightAPIPlugin() != null)
                     valueMap.put("LightAPI", Integer.valueOf(1));
 
-                if (destRef.getBetonQuestPlugin != null)
+                if (destRef.getBetonQuestPlugin() != null)
                     valueMap.put("BentonQuest", Integer.valueOf(1));
 
                 return valueMap;

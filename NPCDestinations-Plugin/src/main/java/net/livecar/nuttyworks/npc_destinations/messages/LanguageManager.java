@@ -23,12 +23,12 @@ public class LanguageManager {
             languageStorage = new HashMap<>();
         languageStorage.clear();
 
-        File[] languageFiles = destRef.languagePath.listFiles(file -> file.getName().endsWith(".yml"));
+        File[] languageFiles = destRef.getLanguagePath().listFiles(file -> file.getName().endsWith(".yml"));
 
         for (File ymlFile : languageFiles) {
-            FileConfiguration oConfig = destRef.getUtilitiesClass.loadConfiguration(ymlFile);
+            FileConfiguration oConfig = destRef.getUtilities().loadConfiguration(ymlFile);
             if (oConfig == null) {
-                destRef.getMessageManager.logToConsole(destRef, "Problem loading language file (" + ymlFile.getName().toLowerCase().replace(".yml", "") + ")");
+                destRef.getMessagesManager().logToConsole(destRef, "Problem loading language file (" + ymlFile.getName().toLowerCase().replace(".yml", "") + ")");
             } else {
                 languageStorage.put(ymlFile.getName().toLowerCase().replace(".yml", ""), oConfig);
                 if (!silent) {

@@ -35,13 +35,13 @@ public class Sentinel_Addon extends DestinationsAddon {
 
     @Override
     public String getQuickDescription() {
-        String[] response = pluginReference.destRef.getMessageManager.buildMessage("sentinel", "sentinel.plugin_description", "");
+        String[] response = pluginReference.destRef.getMessagesManager().buildMessage("sentinel", "sentinel.plugin_description", "");
         return response[0];
     }
 
     @Override
     public String getDestinationHelp(NPC npc, NPCDestinationsTrait npcTrait, DestinationSetting location) {
-        String[] response = pluginReference.destRef.getMessageManager.buildMessage("sentinel", null, "sentinel.plugin_destination", npcTrait, location, npc, null, 0);
+        String[] response = pluginReference.destRef.getMessagesManager().buildMessage("sentinel", null, "sentinel.plugin_destination", npcTrait, location, npc, null, 0);
         return response[0];
     }
 
@@ -259,7 +259,7 @@ public class Sentinel_Addon extends DestinationsAddon {
     public boolean onNavigationReached(NPC npc, NPCDestinationsTrait npcTrait, DestinationSetting location) {
         if (npcSettings.containsKey(npc.getId())) {
             if (npcSettings.get(npc.getId()).locations.containsKey(location.LocationIdent)) {
-                pluginReference.destRef.getMessageManager.debugMessage(Level.INFO, "DestinationsEventsListener.onNavigationReached|NPC:" + npc.getId() + "|Monitored location reached, setting sentinel settings");
+                pluginReference.destRef.getMessagesManager().debugMessage(Level.INFO, "DestinationsEventsListener.onNavigationReached|NPC:" + npc.getId() + "|Monitored location reached, setting sentinel settings");
                 pluginReference.setCurrentSettings(npc, npcSettings.get(npc.getId()).locations.get(location.LocationIdent));
             }
         }

@@ -1,6 +1,7 @@
 package net.livecar.nuttyworks.npc_destinations;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.citizensnpcs.Citizens;
 import net.citizensnpcs.api.event.CitizensDisableEvent;
 import net.livecar.nuttyworks.npc_destinations.bridges.MCUtil_1_18_R1R2;
@@ -19,11 +20,10 @@ import net.livecar.nuttyworks.npc_destinations.listeners.commands.Commands_Plugi
 import net.livecar.nuttyworks.npc_destinations.messages.JSONChat;
 import net.livecar.nuttyworks.npc_destinations.messages.LanguageManager;
 import net.livecar.nuttyworks.npc_destinations.messages.MessagesManager;
-import net.livecar.nuttyworks.npc_destinations.messages.JSONChat;
 import net.livecar.nuttyworks.npc_destinations.metrics.BStat_Metrics;
 import net.livecar.nuttyworks.npc_destinations.particles.PlayParticleInterface;
 import net.livecar.nuttyworks.npc_destinations.particles.PlayParticle_1_18_R1R2;
-import net.livecar.nuttyworks.npc_destinations.pathing.AstarPathFinder;
+import net.livecar.nuttyworks.npc_destinations.pathing.AStarPathFinder;
 import net.livecar.nuttyworks.npc_destinations.plugins.Plugin_Manager;
 import net.livecar.nuttyworks.npc_destinations.plugins.timemanager.DestinationsTimeManager;
 import net.livecar.nuttyworks.npc_destinations.plugins.timemanager.realworldtime.DestinationsRealWorldTimeManager;
@@ -55,52 +55,74 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
     @Getter
     private static DestinationsPlugin instance;
 
-    // For quick reference to this instance of the plugin.
-    private FileConfiguration defaultConfig;
-
-    // Variables
+    @Getter
+    private String currentLanguage = "en_def";
+    @Getter
+    @Setter
+    private Level debugLogLevel = Level.OFF;
     @Getter
     private List<DebugTarget> debugTargets;
     @Getter
-    public JSONChat jsonChat = null;
-    public AstarPathFinder getPathClass = null;
-    public String currentLanguage = "en_def";
-    public Level debugLogLevel = Level.OFF;
-    public int maxDistance = 500;
-    public int entityRadius = 47 * 47;
+    private JSONChat jsonChat = null;
+    @Getter
+    private int maxDistance = 500;
+    @Getter
+    private int entityRadius = 47 * 47;
 
-    // Storage locations
-    public File languagePath;
-    public File loggingPath;
+    private FileConfiguration defaultConfig;
+    @Getter
+    private File languagePath;
+    @Getter
+    private File loggingPath;
 
-    // Links to classes
-    public LanguageManager getLanguageManager = null;
-    public MessagesManager getMessageManager = null;
-    public Citizens getCitizensPlugin = null;
-    public BetonQuest_Interface getBetonQuestPlugin = null;
-    public LightAPI_Plugin getLightPlugin = null;
-    public JobsReborn_Plugin getJobsRebornPlugin = null;
-    public Sentinel_Plugin getSentinelPlugin = null;
-    public Plugin_Manager getPluginManager = null;
-    public WorldGuardInterface getWorldGuardPlugin = null;
-    public PlayParticleInterface getParticleManager = null;
-    public Utilities getUtilitiesClass = null;
-    public CommandManager getCommandManager = null;
-    public CitizensProcessing getCitizensProc = null;
-    public PlotSquared getPlotSquared = null;
-    public MCUtilsBridge getMCUtils = null;
-    public DestinationsTimeManager getTimeManager = null;
+    @Getter
+    private Plugin_Manager pluginManager = null;
+    @Getter
+    private LanguageManager languageManager = null;
+    @Getter
+    private MessagesManager messagesManager = null;
+    @Getter
+    private CommandManager commandManager = null;
+    @Getter
+    private AStarPathFinder aStarPathFinder = null;
+    @Getter
+    private CitizensProcessing citizensProcessing = null;
+    @Getter
+    private DestinationsTimeManager timeManager = null;
+    @Getter
+    private Utilities utilities = null;
+
+    @Getter
+    private MCUtilsBridge mcUtils = null;
+    @Getter
+    private PlayParticleInterface particleManager = null;
+
+    @Getter
+    private Citizens citizensPlugin = null;
+    @Getter
+    private PlotSquared plotSquaredPlugin = null;
+    @Getter
+    private BetonQuest_Interface betonQuestPlugin = null;
+    @Getter
+    private WorldGuardInterface worldGuardPlugin = null;
+    @Getter
+    private LightAPI_Plugin lightAPIPlugin = null;
+    @Getter
+    private JobsReborn_Plugin jobsRebornPlugin = null;
+    @Getter
+    private Sentinel_Plugin sentinelPlugin = null;
 
     public void onLoad() {
         instance = this;
-        getUtilitiesClass = new Utilities(this);
+        this.utilities = new Utilities(this);
 
+        // Register custom WorldGuard flags
         Plugin worldGuardPlugin = getServer().getPluginManager().getPlugin("WorldGuard");
         if (worldGuardPlugin == null) {
             getServer().getLogger().log(Level.WARNING, "WorldGuard not found, custom flags will not be enabled");
         } else {
-            this.getWorldGuardPlugin = new WorldGuard_7_0_7(this);
-            this.getWorldGuardPlugin.registerFlags();
+            this.worldGuardPlugin = new WorldGuard_7_0_7(this);
+            this.worldGuardPlugin.registerFlags();
         }
 
         if (getServer().getPluginManager().getPlugin("Quests") != null) {
@@ -113,11 +135,11 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
     public void onEnable() {
         // Setup defaults
         this.debugTargets = new ArrayList<>();
-        getLanguageManager = new LanguageManager(this);
-        getMessageManager = new MessagesManager(this);
-        getPluginManager = new Plugin_Manager(this);
-        getCommandManager = new CommandManager(this);
-        getCitizensProc = new CitizensProcessing(this);
+        this.languageManager = new LanguageManager(this);
+        this.messagesManager = new MessagesManager(this);
+        this.pluginManager = new Plugin_Manager(this);
+        this.commandManager = new CommandManager(this);
+        this.citizensProcessing = new CitizensProcessing(this);
 
         // Setup default paths in the storage folder.
         languagePath = new File(this.getDataFolder(), "/Languages/");
@@ -127,12 +149,12 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
         getDefaultConfigs();
 
         // Get languages
-        getLanguageManager.loadLanguages();
+        this.languageManager.loadLanguages();
 
         // Init Default settings
         if (this.defaultConfig.contains("language"))
             this.currentLanguage = this.defaultConfig.getString("language");
-        if (this.currentLanguage.equalsIgnoreCase("en-default")) this.currentLanguage = "en_def";
+        if (this.getCurrentLanguage().equalsIgnoreCase("en-default")) this.currentLanguage = "en_def";
 
         if (this.defaultConfig.contains("max-distance"))
             this.maxDistance = this.defaultConfig.getInt("max-distance", 500);
@@ -140,104 +162,102 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
             this.maxDistance = this.defaultConfig.getInt("max-distance", 500);
 
         // Register commands
-        getCommandManager.registerCommandClass(Commands_Plugin.class);
-        getCommandManager.registerCommandClass(CommandsNPC.class);
-        getCommandManager.registerCommandClass(CommandsLocation.class);
+        this.commandManager.registerCommandClass(Commands_Plugin.class);
+        this.commandManager.registerCommandClass(CommandsNPC.class);
+        this.commandManager.registerCommandClass(CommandsLocation.class);
 
+        // Right now I'm only going to support the latest Minecraft versions
         if (Bukkit.getServer().getClass().getPackage().getName().contains("v1_18")) {
-            getParticleManager = new PlayParticle_1_18_R1R2();
-            getMCUtils = new MCUtil_1_18_R1R2();
-            getMessageManager.consoleMessage(this, "destinations", "console_messages.plugin_version", getServer().getVersion().substring(getServer().getVersion().indexOf('(')));
+            this.particleManager = new PlayParticle_1_18_R1R2();
+            this.mcUtils = new MCUtil_1_18_R1R2();
+            this.messagesManager.consoleMessage(this, "destinations", "console_messages.plugin_version", getServer().getVersion().substring(getServer().getVersion().indexOf('(')));
         } else {
-            getMessageManager.consoleMessage(this, "destinations", "console_messages.plugin_unknownversion", Bukkit.getServer().getClass().getPackage().getName());
+            this.messagesManager.consoleMessage(this, "destinations", "console_messages.plugin_unknownversion", Bukkit.getServer().getClass().getPackage().getName());
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
-        //Determine the time engine
+        // Determine the time engine
         String timePlugin = this.getConfig().getString("timeplugin", "default");
-
         if ("REALWORLD".equals(timePlugin.toUpperCase())) {
-            this.getTimeManager = new DestinationsRealWorldTimeManager();
+            this.timeManager = new DestinationsRealWorldTimeManager();
         } else {
-            this.getTimeManager = new DestinationsTimeManager();
+            this.timeManager = new DestinationsTimeManager();
         }
 
-        getPathClass = new AstarPathFinder(this);
+        this.aStarPathFinder = new AStarPathFinder(this);
 
         // Init links to other plugins
         if (getServer().getPluginManager().getPlugin("Citizens") == null || getServer().getPluginManager().getPlugin("Citizens").isEnabled() == false || !(getServer().getPluginManager().getPlugin("Citizens") instanceof Citizens)) {
-            this.getMessageManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|CitizensNotFound");
-            getMessageManager.consoleMessage(this, "destinations", "Console_Messages.citizens_notfound");
+            this.messagesManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|CitizensNotFound");
+            this.messagesManager.consoleMessage(this, "destinations", "Console_Messages.citizens_notfound");
             getServer().getPluginManager().disablePlugin(this);
             return;
         } else {
-            getCitizensPlugin = (Citizens) getServer().getPluginManager().getPlugin("Citizens");
-            getMessageManager.consoleMessage(this, "destinations", "Console_Messages.citizens_found", getCitizensPlugin.getDescription().getVersion());
+            this.citizensPlugin = (Citizens) getServer().getPluginManager().getPlugin("Citizens");
+            this.messagesManager.consoleMessage(this, "destinations", "Console_Messages.citizens_found", getCitizensPlugin().getDescription().getVersion());
         }
 
         if (getServer().getPluginManager().getPlugin("BetonQuest") == null) {
-            this.getMessageManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|BetonQuest_NotFound");
-            getMessageManager.consoleMessage(this, "destinations", "Console_Messages.betonquest_notfound");
+            this.messagesManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|BetonQuest_NotFound");
+            this.messagesManager.consoleMessage(this, "destinations", "Console_Messages.betonquest_notfound");
         } else {
             String versionString = getServer().getPluginManager().getPlugin("BetonQuest").getDescription().getVersion();
             if (versionString.startsWith("1.")) {
-                getBetonQuestPlugin = new net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.betonquest.v1.BetonQuest_Plugin(this);
+                this.betonQuestPlugin = new net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.betonquest.v1.BetonQuest_Plugin(this);
             } else {
-                getBetonQuestPlugin = new net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.betonquest.v2.BetonQuest_Plugin(this);
+                this.betonQuestPlugin = new net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.betonquest.v2.BetonQuest_Plugin(this);
             }
-            getMessageManager.consoleMessage(this, "destinations", "Console_Messages.betonquest_found", versionString);
-            this.getMessageManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|BetonQuestFound");
+            this.messagesManager.consoleMessage(this, "destinations", "Console_Messages.betonquest_found", versionString);
+            this.messagesManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|BetonQuestFound");
         }
 
         if (getServer().getPluginManager().getPlugin("LightAPI") == null) {
-            this.getMessageManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|LightAPI_NotFound");
-            getMessageManager.consoleMessage(this, "destinations", "Console_Messages.lightapi_notfound");
+            this.messagesManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|LightAPI_NotFound");
+            this.messagesManager.consoleMessage(this, "destinations", "Console_Messages.lightapi_notfound");
         } else {
-            getLightPlugin = new LightAPI_Plugin(this);
-            this.getMessageManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|LightAPI_Found");
-            getMessageManager.consoleMessage(this, "destinations", "Console_Messages.lightapi_found", getServer().getPluginManager().getPlugin("LightAPI").getDescription().getVersion());
+            this.lightAPIPlugin = new LightAPI_Plugin(this);
+            this.messagesManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|LightAPI_Found");
+            this.messagesManager.consoleMessage(this, "destinations", "Console_Messages.lightapi_found", getServer().getPluginManager().getPlugin("LightAPI").getDescription().getVersion());
         }
 
         // 1.31 - Jobs Reborn
         if (getServer().getPluginManager().getPlugin("Jobs") == null) {
-            this.getMessageManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|JobsReborn_NotFound");
-            getMessageManager.consoleMessage(this, "destinations", "Console_Messages.jobsreborn_notfound");
+            this.messagesManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|JobsReborn_NotFound");
+            this.messagesManager.consoleMessage(this, "destinations", "Console_Messages.jobsreborn_notfound");
         } else {
-            getJobsRebornPlugin = new JobsReborn_Plugin(this);
-            this.getMessageManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|JobsReborn_Found");
-            getMessageManager.consoleMessage(this, "destinations", "Console_Messages.jobsreborn_found");
+            this.jobsRebornPlugin = new JobsReborn_Plugin(this);
+            this.messagesManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|JobsReborn_Found");
+            this.messagesManager.consoleMessage(this, "destinations", "Console_Messages.jobsreborn_found");
         }
 
         // 1.39 - Sentinel!
         if (getServer().getPluginManager().getPlugin("Sentinel") == null) {
-            this.getMessageManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|Sentinel_NotFound");
-            getMessageManager.consoleMessage(this, "sentinel", "Console_Messages.sentinel_notfound");
+            this.messagesManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|Sentinel_NotFound");
+            this.messagesManager.consoleMessage(this, "sentinel", "Console_Messages.sentinel_notfound");
         } else {
-            this.getSentinelPlugin = new Sentinel_Plugin(this);
-            getMessageManager.consoleMessage(this, "sentinel", "Console_Messages.sentinel_found", getSentinelPlugin.getVersionString());
+            this.sentinelPlugin = new Sentinel_Plugin(this);
+            this.messagesManager.consoleMessage(this, "sentinel", "Console_Messages.sentinel_found", sentinelPlugin.getVersionString());
         }
 
         // 2.1.8 - Plotsquared compliance
         if (getServer().getPluginManager().getPlugin("PlotSquared") == null) {
-            this.getMessageManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|plotsquared_NotFound");
-            getMessageManager.consoleMessage(this, "destinations", "Console_Messages.plotsquared_notfound");
+            this.messagesManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|plotsquared_NotFound");
+            this.messagesManager.consoleMessage(this, "destinations", "Console_Messages.plotsquared_notfound");
         } else {
-
-            if (getPlotSquared == null) {
+            if (this.plotSquaredPlugin == null) {
                 try {
                     Class.forName("com.github.intellectualsites.plotsquared.plot.flag.Flag");
-                    this.getPlotSquared = new PlotSquared_Plugin_V6();
-                    getMessageManager.consoleMessage(this, "destinations", "Console_Messages.plotsquared_found", "V4-" + getServer().getPluginManager().getPlugin("PlotSquared").getDescription().getVersion());
-                } catch (Exception e) {
+                    this.plotSquaredPlugin = new PlotSquared_Plugin_V6();
+                    this.messagesManager.consoleMessage(this, "destinations", "Console_Messages.plotsquared_found", "V4-" + getServer().getPluginManager().getPlugin("PlotSquared").getDescription().getVersion());
+                } catch (Exception ignored) {
                 }
             }
-
-            this.getMessageManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|plotsquared_Found");
+            this.messagesManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|plotsquared_Found");
         }
 
         if (getServer().getPluginManager().getPlugin("WorldGuard") == null) {
-            getMessageManager.consoleMessage(this, "destinations", "console_messages.worldguard_notfound");
+            this.messagesManager.consoleMessage(this, "destinations", "console_messages.worldguard_notfound");
         } else {
             String wgVer = getServer().getPluginManager().getPlugin("WorldGuard").getDescription().getVersion();
             if (wgVer.contains(";")) wgVer = wgVer.substring(0, wgVer.indexOf(";"));
@@ -248,11 +268,11 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
 
             boolean goodVersion = false;
             Integer[] verPart = new Integer[3];
-            if (getUtilitiesClass.isNumeric(parts[0])) {
+            if (getUtilities().isNumeric(parts[0])) {
                 verPart[0] = Integer.parseInt(parts[0]);
             }
 
-            if (getUtilitiesClass.isNumeric(parts[1])) {
+            if (getUtilities().isNumeric(parts[1])) {
                 verPart[1] = Integer.parseInt(parts[1]);
             }
 
@@ -260,7 +280,7 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
                 goodVersion = false;
             } else {
 
-                if (parts.length > 2 && getUtilitiesClass.isNumeric(parts[2])) {
+                if (parts.length > 2 && getUtilities().isNumeric(parts[2])) {
                     verPart[2] = Integer.parseInt(parts[2]);
                 }
 
@@ -274,10 +294,10 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
             }
 
             if (!goodVersion) {
-                getMessageManager.consoleMessage(this, "destinations", "console_messages.worldguard_unsupported", getServer().getPluginManager().getPlugin("WorldGuard").getDescription().getVersion());
+                this.messagesManager.consoleMessage(this, "destinations", "console_messages.worldguard_unsupported", getServer().getPluginManager().getPlugin("WorldGuard").getDescription().getVersion());
             } else {
-                getMessageManager.consoleMessage(this, "destinations", "console_messages.worldguard_found", getServer().getPluginManager().getPlugin("WorldGuard").getDescription().getVersion());
-                this.getWorldGuardPlugin.registerEvents();
+                this.messagesManager.consoleMessage(this, "destinations", "console_messages.worldguard_found", getServer().getPluginManager().getPlugin("WorldGuard").getDescription().getVersion());
+                this.worldGuardPlugin.registerEvents();
             }
         }
 
@@ -294,13 +314,10 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
 
         net.citizensnpcs.trait.waypoint.Waypoints.registerWaypointProvider(CitizensWaypointProvider.class, "npcdestinations");
 
-        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    getPathClass.checkStatus();
-                } catch (Exception e) {
-                }
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
+            try {
+                aStarPathFinder.checkStatus();
+            } catch (Exception ignored) {
             }
         }, 30L, 5L);
 
@@ -310,7 +327,7 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
             try {
                 backupClass.BackupConfig(false);
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }, 1200L, 1200L);
 
@@ -321,19 +338,18 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
 
     public void onDisable() {
         if (isEnabled()) {
-
-            this.getMessageManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onDisable()|Stopping Internal Processes");
+            this.getMessagesManager().debugMessage(Level.CONFIG, "nuNPCDestinations.onDisable()|Stopping Internal Processes");
             Bukkit.getServer().getScheduler().cancelTasks(this);
-            getPathClass.currentTask = null;
-            getPathClass.pathQueue.clear();
-            getPathClass = null;
+            this.aStarPathFinder.currentTask = null;
+            this.aStarPathFinder.pathQueue.clear();
+            this.aStarPathFinder = null;
         }
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String cmdLabel, String[] inargs) {
         if (cmd.getName().equalsIgnoreCase("npcdest") | cmd.getName().equalsIgnoreCase("nd")) {
-            return getCommandManager.onCommand(sender, inargs);
+            return getCommandManager().onCommand(sender, inargs);
         }
         return true;
     }
@@ -341,16 +357,16 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String cmdLabel, String[] inargs) {
         if (cmd.getName().equalsIgnoreCase("npcdest") | cmd.getName().equalsIgnoreCase("nd")) {
-            return getCommandManager.onTabComplete(sender, inargs);
+            return getCommandManager().onTabComplete(sender, inargs);
         }
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 
     @EventHandler
     public void CitizensDisabled(final CitizensDisableEvent event) {
         Bukkit.getServer().getScheduler().cancelTasks(this);
-        getPathClass = null;
-        getMessageManager.consoleMessage(this, "destinations", "Console_Messages.plugin_ondisable");
+        this.aStarPathFinder = null;
+        getMessagesManager().consoleMessage(this, "destinations", "Console_Messages.plugin_ondisable");
         getServer().getPluginManager().disablePlugin(this);
     }
 
@@ -389,20 +405,20 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
         exportFile(languagePath, "en_def-jobsreborn.yml", true);
         exportFile(languagePath, "en_def-sentinel.yml", true);
 
-        this.defaultConfig = getUtilitiesClass.loadConfiguration(new File(this.getDataFolder(), "config.yml"));
+        this.defaultConfig = this.utilities.loadConfiguration(new File(this.getDataFolder(), "config.yml"));
     }
 
     private void exportFile(File path, String filename, boolean overwrite) {
-        if (getMessageManager != null)
-            this.getMessageManager.debugMessage(Level.FINEST, "nuDestinationsPlugin.exportFile()|");
+        if (this.messagesManager != null)
+            this.messagesManager.debugMessage(Level.FINEST, "nuDestinationsPlugin.exportFile()|");
         File fileConfig = new File(path, filename);
         if (!fileConfig.isDirectory()) {
             try {
                 exportFile(filename, fileConfig, overwrite);
             } catch (IOException e1) {
-                if (getMessageManager != null) {
-                    getMessageManager.debugMessage(Level.SEVERE, "nuDestinationsPlugin.exportFile()|FailedToExtractFile(" + filename + ")");
-                    getMessageManager.logToConsole(this, " Failed to extract default file (" + filename + ")");
+                if (this.messagesManager != null) {
+                    this.messagesManager.debugMessage(Level.SEVERE, "nuDestinationsPlugin.exportFile()|FailedToExtractFile(" + filename + ")");
+                    this.messagesManager.logToConsole(this, " Failed to extract default file (" + filename + ")");
                 }
             }
         }

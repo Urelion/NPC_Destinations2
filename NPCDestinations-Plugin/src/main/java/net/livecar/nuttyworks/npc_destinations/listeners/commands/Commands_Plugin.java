@@ -30,11 +30,11 @@ public class Commands_Plugin {
             maxArguments = 0
     )
     public boolean npcDest_ReloadConfig(DestinationsPlugin destinationsRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
-        destinationsRef.getLanguageManager.loadLanguages(true);
+        destinationsRef.getLanguageManager().loadLanguages(true);
         if (sender instanceof Player)
-            destinationsRef.getMessageManager.sendMessage("destinations", sender, "messages.configs_reloaded", ((Player) sender).getDisplayName());
+            destinationsRef.getMessagesManager().sendMessage("destinations", sender, "messages.configs_reloaded", ((Player) sender).getDisplayName());
         if (!(sender instanceof Player))
-            destinationsRef.getMessageManager.sendMessage("destinations", sender, "console_messages.configs_reloaded");
+            destinationsRef.getMessagesManager().sendMessage("destinations", sender, "console_messages.configs_reloaded");
         return true;
     }
 
@@ -52,9 +52,9 @@ public class Commands_Plugin {
     public boolean npcDest_CurrentVersion(DestinationsPlugin destinationsRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         // Configuration Commands
         if (sender instanceof Player) {
-            destinationsRef.getMessageManager.sendJsonRaw((Player) sender, "[{\"text\":\"--\",\"color\":\"gold\"},{\"text\":\"[\",\"color\":\"white\"},{\"text\":\"NPC Destinations By Nutty101\",\"color\":\"green\"},{\"text\":\"]\",\"color\":\"white\"},{\"text\":\"-----------------------\",\"color\":\"gold\"}]");
-            destinationsRef.getMessageManager.sendJsonRaw((Player) sender, "[{\"text\":\"Version\",\"color\":\"green\"},{\"text\":\":\",\"color\":\"yellow\"},{\"text\":\" " + destinationsRef.getDescription().getVersion() + " \",\"color\":\"white\"}]");
-            destinationsRef.getMessageManager.sendJsonRaw((Player) sender, "[{\"text\":\"Plugin Link\",\"color\":\"dark_green\"},{\"text\":\": \",\"color\":\"yellow\"},{\"text\":\"https://www.spigotmc.org/resources/nunpcdestinations-create-living-npcs-1-8-3-1-11.13863/\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://www.spigotmc.org/resources/nunpcdestinations-create-living-npcs-1-8-3-1-11.13863/\",\"color\":\"white\"}}]");
+            destinationsRef.getMessagesManager().sendJsonRaw((Player) sender, "[{\"text\":\"--\",\"color\":\"gold\"},{\"text\":\"[\",\"color\":\"white\"},{\"text\":\"NPC Destinations By Nutty101\",\"color\":\"green\"},{\"text\":\"]\",\"color\":\"white\"},{\"text\":\"-----------------------\",\"color\":\"gold\"}]");
+            destinationsRef.getMessagesManager().sendJsonRaw((Player) sender, "[{\"text\":\"Version\",\"color\":\"green\"},{\"text\":\":\",\"color\":\"yellow\"},{\"text\":\" " + destinationsRef.getDescription().getVersion() + " \",\"color\":\"white\"}]");
+            destinationsRef.getMessagesManager().sendJsonRaw((Player) sender, "[{\"text\":\"Plugin Link\",\"color\":\"dark_green\"},{\"text\":\": \",\"color\":\"yellow\"},{\"text\":\"https://www.spigotmc.org/resources/nunpcdestinations-create-living-npcs-1-8-3-1-11.13863/\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://www.spigotmc.org/resources/nunpcdestinations-create-living-npcs-1-8-3-1-11.13863/\",\"color\":\"white\"}}]");
         } else {
             sender.sendMessage("--[NPC Destinations By Nutty101]-----------------------");
             sender.sendMessage("Version: " + destinationsRef.getDescription().getVersion());
@@ -77,7 +77,7 @@ public class Commands_Plugin {
     public boolean npcDest_Backup(DestinationsPlugin destinationsRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         CitizensUtilities citizensUtils = new CitizensUtilities(destinationsRef);
         citizensUtils.BackupConfig(true);
-        destinationsRef.getMessageManager.sendMessage("destinations", sender, "messages.backup_command");
+        destinationsRef.getMessagesManager().sendMessage("destinations", sender, "messages.backup_command");
         return true;
 
     }
@@ -94,18 +94,18 @@ public class Commands_Plugin {
             maxArguments = 0
     )
     public boolean npcDest_EngineStatus(DestinationsPlugin destinationsRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
-        if ((destinationsRef.getPathClass.currentTask == null || destinationsRef.getPathClass.currentTask.npc == null)
-                && destinationsRef.getPathClass.pathQueue.size() == 0) {
-            destinationsRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_enginestatus_idle");
-        } else if ((destinationsRef.getPathClass.currentTask == null || destinationsRef.getPathClass.currentTask.npc == null)
-                && destinationsRef.getPathClass.pathQueue.size() > 0) {
-            destinationsRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_enginestatus_idle_queue");
-        } else if ((destinationsRef.getPathClass.currentTask != null || destinationsRef.getPathClass.currentTask.npc != null)
-                && destinationsRef.getPathClass.pathQueue.size() == 0) {
-            destinationsRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_enginestatus_processing_noqueue");
-        } else if ((destinationsRef.getPathClass.currentTask != null || destinationsRef.getPathClass.currentTask.npc != null)
-                && destinationsRef.getPathClass.pathQueue.size() > 0) {
-            destinationsRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_enginestatus_processing_queue");
+        if ((destinationsRef.getAStarPathFinder().currentTask == null || destinationsRef.getAStarPathFinder().currentTask.npc == null)
+                && destinationsRef.getAStarPathFinder().pathQueue.size() == 0) {
+            destinationsRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_enginestatus_idle");
+        } else if ((destinationsRef.getAStarPathFinder().currentTask == null || destinationsRef.getAStarPathFinder().currentTask.npc == null)
+                && destinationsRef.getAStarPathFinder().pathQueue.size() > 0) {
+            destinationsRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_enginestatus_idle_queue");
+        } else if ((destinationsRef.getAStarPathFinder().currentTask != null || destinationsRef.getAStarPathFinder().currentTask.npc != null)
+                && destinationsRef.getAStarPathFinder().pathQueue.size() == 0) {
+            destinationsRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_enginestatus_processing_noqueue");
+        } else if ((destinationsRef.getAStarPathFinder().currentTask != null || destinationsRef.getAStarPathFinder().currentTask.npc != null)
+                && destinationsRef.getAStarPathFinder().pathQueue.size() > 0) {
+            destinationsRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_enginestatus_processing_queue");
         }
         return true;
     }
@@ -141,7 +141,7 @@ public class Commands_Plugin {
                 }
 
                 if (!npcItem.isSpawned()) {
-                    destinationsRef.getMessageManager.sendMessage("destinations", sender,
+                    destinationsRef.getMessagesManager().sendMessage("destinations", sender,
                             messageLevel + ".commands_allstatus_notspawned", npcItem);
                 } else {
                     NPCDestinationsTrait oCurTrait = npcItem.getTrait(NPCDestinationsTrait.class);
@@ -149,41 +149,41 @@ public class Commands_Plugin {
                         case NORMAL_PROCESSING:
                             switch (oCurTrait.getCurrentAction()) {
                                 case IDLE:
-                                    destinationsRef.getMessageManager.sendMessage("destinations", sender,
+                                    destinationsRef.getMessagesManager().sendMessage("destinations", sender,
                                             messageLevel + ".commands_allstatus_idle", oCurTrait);
                                     break;
                                 case IDLE_FAILED:
-                                    destinationsRef.getMessageManager.sendMessage("destinations", sender,
+                                    destinationsRef.getMessagesManager().sendMessage("destinations", sender,
                                             messageLevel + ".commands_allstatus_idle_failure", oCurTrait);
                                     break;
                                 case PATH_HUNTING:
-                                    destinationsRef.getMessageManager.sendMessage("destinations", sender,
+                                    destinationsRef.getMessagesManager().sendMessage("destinations", sender,
                                             messageLevel + ".commands_allstatus_hunting", oCurTrait);
                                     break;
                                 case RANDOM_MOVEMENT:
-                                    destinationsRef.getMessageManager.sendMessage("destinations", sender,
+                                    destinationsRef.getMessagesManager().sendMessage("destinations", sender,
                                             messageLevel + ".commands_allstatus_random", oCurTrait);
                                     break;
                                 case TRAVELING:
-                                    destinationsRef.getMessageManager.sendMessage("destinations", sender,
+                                    destinationsRef.getMessagesManager().sendMessage("destinations", sender,
                                             messageLevel + ".commands_allstatus_pending", oCurTrait);
                                     break;
                                 case PATH_FOUND:
-                                    destinationsRef.getMessageManager.sendMessage("destinations", sender,
+                                    destinationsRef.getMessagesManager().sendMessage("destinations", sender,
                                             messageLevel + ".commands_allstatus_path_found", oCurTrait);
                                     break;
                                 default:
-                                    destinationsRef.getMessageManager.sendMessage("destinations", sender,
+                                    destinationsRef.getMessagesManager().sendMessage("destinations", sender,
                                             messageLevel + ".commands_allstatus_pending", oCurTrait);
                                     break;
                             }
                             break;
                         case NO_PROCESSING:
-                            destinationsRef.getMessageManager.sendMessage("destinations", sender,
+                            destinationsRef.getMessagesManager().sendMessage("destinations", sender,
                                     messageLevel + ".commands_allstatus_noprocessing", oCurTrait);
                             break;
                         case SET_LOCATION:
-                            destinationsRef.getMessageManager.sendMessage("destinations", sender,
+                            destinationsRef.getMessagesManager().sendMessage("destinations", sender,
                                     messageLevel + ".commands_allstatus_setlocation", oCurTrait);
                             break;
                         default:
@@ -209,19 +209,19 @@ public class Commands_Plugin {
             maxArguments = 1
     )
     public boolean npcDest_DebugLog(DestinationsPlugin destinationsRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
-        if (Level.parse(inargs[1]) != null && !destinationsRef.getUtilitiesClass.isNumeric(inargs[1])) {
+        if (Level.parse(inargs[1]) != null && !destinationsRef.getUtilities().isNumeric(inargs[1])) {
 
             if (!"OFF SEVERE WARNING INFO CONFIG FINE FINER FINEST ALL".contains(inargs[1].toUpperCase())) {
-                destinationsRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_off");
-                destinationsRef.debugLogLevel = Level.OFF;
+                destinationsRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_debug_off");
+                destinationsRef.setDebugLogLevel(Level.OFF);
                 return true;
             }
-            destinationsRef.debugLogLevel = Level.parse(inargs[1].toUpperCase());
+            destinationsRef.setDebugLogLevel(Level.parse(inargs[1].toUpperCase()));
 
-            if (destinationsRef.debugLogLevel == Level.OFF)
-                destinationsRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_off");
+            if (destinationsRef.getDebugLogLevel() == Level.OFF)
+                destinationsRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_debug_off");
             else
-                destinationsRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_on");
+                destinationsRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_debug_on");
 
             return true;
         }
@@ -242,19 +242,19 @@ public class Commands_Plugin {
     public boolean npcDest_Debug(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
         if (inargs.length > 1) {
             if (!sender.hasPermission("npcdestinations.debug.set") && Level.parse(inargs[1]) == null) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.no_permissions");
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.no_permissions");
                 return true;
             }
 
             if (!sender.hasPermission("npcdestinations.debug.own") && inargs[1].equalsIgnoreCase("*")) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.no_permissions");
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.no_permissions");
                 return true;
             }
 
             if (inargs[1].equalsIgnoreCase("*")) {
                 for (DebugTarget debugOutput : destRef.getDebugTargets()) {
                     if ((debugOutput.targetSender instanceof Player) && debugOutput.targetSender.equals(sender)) {
-                        destRef.getMessageManager.sendMessage("destinations", sender,
+                        destRef.getMessagesManager().sendMessage("destinations", sender,
                                 "messages.commands_debug_removed", "*");
                         for (DebugTarget debugTarget : destRef.getDebugTargets())
                             debugTarget.clearDebugBlocks();
@@ -262,29 +262,29 @@ public class Commands_Plugin {
                         return true;
                     }
                 }
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_added", "*");
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_debug_added", "*");
                 destRef.getDebugTargets().add(new DebugTarget(sender, -1));
                 return true;
             }
 
             if (inargs[1].equalsIgnoreCase("list")) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_listing", npc);
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_debug_listing", npc);
                 return true;
             }
 
             NPC selectedNPC = null;
-            if (destRef.getUtilitiesClass.isNumeric(inargs[1])) {
+            if (destRef.getUtilities().isNumeric(inargs[1])) {
                 // Adding an NPC by ID
                 selectedNPC = CitizensAPI.getNPCRegistry().getById(Integer.parseInt(inargs[1]));
             }
 
             if (selectedNPC == null) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_invalid");
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_debug_invalid");
                 return true;
             }
             Owner ownerTrait = selectedNPC.getTrait(Owner.class);
             if (!ownerTrait.isOwnedBy(sender) && !sender.hasPermission("npcdestinations.debug.all")) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_invalid");
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_debug_invalid");
                 return true;
             }
 
@@ -295,12 +295,12 @@ public class Commands_Plugin {
                         if (debugOutput.getTargets().get(cnt).equals(selectedNPC.getId())) {
                             debugOutput.removeNPCTarget(selectedNPC.getId());
                             if (debugOutput.getTargets().size() == 0) {
-                                destRef.getMessageManager.sendMessage("destinations", sender,
+                                destRef.getMessagesManager().sendMessage("destinations", sender,
                                         "messages.commands_debug_off");
                                 debugOutput.clearDebugBlocks();
                                 destRef.getDebugTargets().remove(debugOutput);
                             } else {
-                                destRef.getMessageManager.sendMessage("destinations", sender,
+                                destRef.getMessagesManager().sendMessage("destinations", sender,
                                         "messages.commands_debug_removed", selectedNPC.getFullName());
                             }
                             return true;
@@ -308,20 +308,20 @@ public class Commands_Plugin {
                     }
 
                     debugOutput.addNPCTarget(selectedNPC.getId());
-                    destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_added",
+                    destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_debug_added",
                             selectedNPC.getFullName());
                     return true;
                 }
             }
             DebugTarget dbgTarget = new DebugTarget(sender, selectedNPC.getId());
             destRef.getDebugTargets().add(dbgTarget);
-            destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_added",
+            destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_debug_added",
                     selectedNPC.getFullName());
             return true;
 
         } else {
             if (!sender.hasPermission("npcdestinations.debug.all") && !sender.isOp() && npc == null) {
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.no_permissions");
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.no_permissions");
                 return true;
             }
 
@@ -329,7 +329,7 @@ public class Commands_Plugin {
                 for (int target = 0; target < destRef.getDebugTargets().size(); target++) {
                     DebugTarget debugOutput = destRef.getDebugTargets().get(target);
                     if (debugOutput.targetSender.equals(sender)) {
-                        destRef.getMessageManager.sendMessage("destinations", sender,
+                        destRef.getMessagesManager().sendMessage("destinations", sender,
                                 "messages.commands_debug_off");
                         destRef.getDebugTargets().get(target).clearDebugBlocks();
                         destRef.getDebugTargets().remove(target);
@@ -338,7 +338,7 @@ public class Commands_Plugin {
                 }
                 DebugTarget dbgTarget = new DebugTarget(sender, -1);
                 destRef.getDebugTargets().add(dbgTarget);
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_added", "*");
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_debug_added", "*");
                 return true;
             } else {
                 for (int target = 0; target < destRef.getDebugTargets().size(); target++) {
@@ -348,7 +348,7 @@ public class Commands_Plugin {
                             for (int cnt = 0; cnt < debugOutput.getTargets().size(); cnt++) {
                                 if (debugOutput.getTargets().get(cnt).equals(npc.getId())) {
                                     if (debugOutput.getTargets().size() == 0) {
-                                        destRef.getMessageManager.sendMessage("destinations", sender,
+                                        destRef.getMessagesManager().sendMessage("destinations", sender,
                                                 "messages.commands_debug_off");
                                         destRef.getDebugTargets().get(target).clearDebugBlocks();
                                         destRef.getDebugTargets().remove(target);
@@ -356,12 +356,12 @@ public class Commands_Plugin {
                                     } else {
                                         debugOutput.getTargets().remove(cnt);
                                         if (debugOutput.getTargets().size() == 0) {
-                                            destRef.getMessageManager.sendMessage("destinations", sender,
+                                            destRef.getMessagesManager().sendMessage("destinations", sender,
                                                     "messages.commands_debug_off");
                                             destRef.getDebugTargets().get(target).clearDebugBlocks();
                                             destRef.getDebugTargets().remove(target);
                                         } else {
-                                            destRef.getMessageManager.sendMessage("destinations", sender,
+                                            destRef.getMessagesManager().sendMessage("destinations", sender,
                                                     "messages.commands_debug_removed", npc.getFullName());
                                         }
                                         return true;
@@ -369,13 +369,13 @@ public class Commands_Plugin {
                                 }
                             }
                         } else if (debugOutput.getTargets().size() == 0) {
-                            destRef.getMessageManager.sendMessage("destinations", sender,
+                            destRef.getMessagesManager().sendMessage("destinations", sender,
                                     "messages.commands_debug_removed", "*");
                             destRef.getDebugTargets().get(target).clearDebugBlocks();
                             destRef.getDebugTargets().remove(target);
                             return true;
                         } else {
-                            destRef.getMessageManager.sendMessage("destinations", sender,
+                            destRef.getMessagesManager().sendMessage("destinations", sender,
                                     "messages.commands_debug_added", npc.getFullName());
                             DebugTarget debugger = new DebugTarget(sender, npc.getId());
                             destRef.getDebugTargets().add(debugger);
@@ -383,7 +383,7 @@ public class Commands_Plugin {
                         }
                     }
                 }
-                destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_added", npc
+                destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_debug_added", npc
                         .getFullName());
                 DebugTarget debugOutput = new DebugTarget(sender, npc.getId());
                 destRef.getDebugTargets().add(debugOutput);
@@ -413,7 +413,7 @@ public class Commands_Plugin {
                         .translateAlternateColorCodes('&', "&fShift-Right Click to remove")));
         stack.setItemMeta(im);
         player.getInventory().addItem(new ItemStack(stack));
-        destinationsRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_blockstick");
+        destinationsRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_blockstick");
         return true;
     }
 }
