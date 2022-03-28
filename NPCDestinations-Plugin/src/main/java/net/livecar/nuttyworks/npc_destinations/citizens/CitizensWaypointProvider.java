@@ -37,24 +37,18 @@ public class CitizensWaypointProvider implements WaypointProvider {
 
     public void onSpawn(NPC npc) {
         this.npc = npc;
-        NPCDestinationsTrait trait = null;
+        NPCDestinationsTrait trait;
         if (!npc.hasTrait(NPCDestinationsTrait.class)) {
-            // Npc has not been assigned a location
+            // NPC has not been assigned a location
             Bukkit.getLogger().log(java.util.logging.Level.INFO, "NPC [" + npc.getId() + "/" + npc.getName() + "] auto adding the NPCDestinations trait as the waypoint provider was added");
             npc.addTrait(NPCDestinationsTrait.class);
-            trait = npc.getTrait(NPCDestinationsTrait.class);
-        } else {
-            trait = npc.getTrait(NPCDestinationsTrait.class);
         }
+        trait = npc.getTrait(NPCDestinationsTrait.class);
 
-        if (trait.TeleportOnFailedStartLoc == null)
-            trait.TeleportOnFailedStartLoc = true;
-        if (trait.TeleportOnNoPath == null)
-            trait.TeleportOnNoPath = true;
+        if (trait.TeleportOnFailedStartLoc == null) trait.TeleportOnFailedStartLoc = true;
+        if (trait.TeleportOnNoPath == null) trait.TeleportOnNoPath = true;
 
-        if (this.currentGoal == null) {
-            this.currentGoal = CitizensGoal.createWithNPC(npc);
-        }
+        if (this.currentGoal == null) this.currentGoal = CitizensGoal.createWithNPC(npc);
         npc.getDefaultGoalController().addGoal(this.currentGoal, 1);
     }
 

@@ -712,19 +712,6 @@ public class CitizensProcessing {
                         break;
                 }
 
-                /*
-                 * 1.25 - Removed. Stick with the old pathfinder.
-                 *
-                 *
-                 * switch (oCurDest.citizens_NewPathFinder) { case False:
-                 * npc.getNavigator().getLocalParameters().useNewPathfinder(
-                 * false); break; case NotSet:
-                 * npc.getNavigator().getLocalParameters().useNewPathfinder(
-                 * trait.citizens_NewPathFinder); break; case True:
-                 * npc.getNavigator().getLocalParameters().useNewPathfinder(true
-                 * ); break; }
-                 */
-
                 switch (oCurDest.citizens_DefaultStuck) {
                     case False:
                     case NotSet:
@@ -782,7 +769,6 @@ public class CitizensProcessing {
                     this.processNPCThruOpenable(1, npc, trait);
                 }, 1L);
                 return false;
-
             }
 
             npc.getNavigator().getLocalParameters().useNewPathfinder(true);

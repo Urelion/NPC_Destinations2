@@ -47,9 +47,9 @@ public class NPCDestinationsTrait extends Trait {
         NORMAL_PROCESSING, NO_PROCESSING, SET_LOCATION,
     }
 
-    public List<DestinationSetting> NPCLocations = new ArrayList<DestinationSetting>();
+    public List<DestinationSetting> NPCLocations = new ArrayList<>();
     public String lastResult = "Idle";
-    public List<Material> AllowedPathBlocks = new ArrayList<Material>();
+    public List<Material> AllowedPathBlocks = new ArrayList<>();
     public LocalDateTime lastPositionChange;
     public LocalDateTime lastPlayerPause;
     public Location lastPauseLocation;
@@ -59,7 +59,7 @@ public class NPCDestinationsTrait extends Trait {
     public DestinationSetting lastLocation = new DestinationSetting();
     public DestinationSetting monitoredLocation = null;
 
-    public List<String> enabledPlugins = new ArrayList<String>();
+    public List<String> enabledPlugins = new ArrayList<>();
     public Boolean citizens_Swim = true;
     public Boolean citizens_NewPathFinder = true;
     public Boolean citizens_AvoidWater = true;
@@ -71,9 +71,9 @@ public class NPCDestinationsTrait extends Trait {
     public LocalDateTime lastLighting_Time = null;
     public Integer lightTask = 0;
 
-    public LocalDateTime processingStarted = null;
-    public Long totalProcessingTime = 0L;
-    public Long totalProcessedBlocks = 0L;
+    public LocalDateTime processingStarted;
+    public Long totalProcessingTime;
+    public Long totalProcessedBlocks;
     public Long lastProcessingTime = 0L;
     public Long lastBlocksPerSec = 0L;
 
@@ -82,8 +82,8 @@ public class NPCDestinationsTrait extends Trait {
     public String lastDebugMessage = "";
 
     // Inner namespace variables
-    ArrayList<Location> pendingDestinations = new ArrayList<Location>();
-    ArrayList<Location> processedDestinations = new ArrayList<Location>();
+    ArrayList<Location> pendingDestinations = new ArrayList<>();
+    ArrayList<Location> processedDestinations = new ArrayList<>();
     ArrayList<Block> openedObjects = new ArrayList<Block>();
     en_CurrentAction currentAction = en_CurrentAction.IDLE;
     en_RequestedAction requestedAction = en_RequestedAction.NORMAL_PROCESSING;
@@ -230,13 +230,11 @@ public class NPCDestinationsTrait extends Trait {
                 this.currentLocation = location;
                 this.locationReached();
             }
-        } else
-            this.currentLocation = location;
+        } else this.currentLocation = location;
     }
 
     public DestinationSetting getCurrentLocation() {
-        if (this.currentLocation == null)
-            return new DestinationSetting();
+        if (this.currentLocation == null) return new DestinationSetting();
         return this.currentLocation;
     }
 
@@ -350,5 +348,4 @@ public class NPCDestinationsTrait extends Trait {
             }
         }
     }
-
 }
