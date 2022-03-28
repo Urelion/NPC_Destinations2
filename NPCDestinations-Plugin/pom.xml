@@ -175,6 +175,7 @@
                                 <exclude>**/*.java</exclude>
                                 <exclude>**/*.SF</exclude>
                                 <exclude>**/*.DSA</exclude>
+                                <exclude>**/*.MF</exclude>
                             </excludes>
                         </filter>
                     </filters>
