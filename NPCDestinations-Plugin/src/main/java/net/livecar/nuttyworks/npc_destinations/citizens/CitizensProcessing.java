@@ -36,17 +36,14 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Level;
 
 public class CitizensProcessing {
+    static CitizensProcessing processingInstance = null;
 
     private final DestinationsPlugin plugin;
-    List<Material> doorMaterials = null;
-
-    static CitizensProcessing processingInstance = null;
 
     public CitizensProcessing(DestinationsPlugin plugin) {
         this.plugin = plugin;
@@ -519,7 +516,7 @@ public class CitizensProcessing {
 
         NPCDestinationsTrait trait = npc.getTrait(NPCDestinationsTrait.class);
 
-        // Timeout the path finding it's taking to long or stalled
+        // Timeout the path finding because it's taking too long or stalled
         if ((trait.getCurrentAction() == en_CurrentAction.PATH_HUNTING) && (trait.getPendingDestinations().size() == 0)) {
             if (trait.getLastPathCalc() != null) {
                 long nSeconds = Duration.between(trait.getLastPathCalc(), LocalDateTime.now()).getSeconds();
