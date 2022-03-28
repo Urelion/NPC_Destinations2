@@ -21,6 +21,6 @@ public class PlayerJoinListener_NPCDest implements org.bukkit.event.Listener {
     @EventHandler
     public void onPlayerLeaveEvent(PlayerQuitEvent event) {
         // Remove this player from the debug if they are in it
-        destRef.debugTargets.remove(event.getPlayer());
+        destRef.getDebugTargets().remove(event.getPlayer());
     }
 }

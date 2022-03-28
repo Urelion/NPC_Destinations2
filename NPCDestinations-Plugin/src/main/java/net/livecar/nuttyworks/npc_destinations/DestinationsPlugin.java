@@ -1,5 +1,6 @@
 package net.livecar.nuttyworks.npc_destinations;
 
+import lombok.Getter;
 import net.citizensnpcs.Citizens;
 import net.citizensnpcs.api.event.CitizensDisableEvent;
 import net.livecar.nuttyworks.npc_destinations.bridges.MCUtil_1_18_R1R2;
@@ -15,6 +16,7 @@ import net.livecar.nuttyworks.npc_destinations.listeners.commands.CommandManager
 import net.livecar.nuttyworks.npc_destinations.listeners.commands.CommandsLocation;
 import net.livecar.nuttyworks.npc_destinations.listeners.commands.CommandsNPC;
 import net.livecar.nuttyworks.npc_destinations.listeners.commands.Commands_Plugin;
+import net.livecar.nuttyworks.npc_destinations.messages.JSONChat;
 import net.livecar.nuttyworks.npc_destinations.messages.LanguageManager;
 import net.livecar.nuttyworks.npc_destinations.messages.MessagesManager;
 import net.livecar.nuttyworks.npc_destinations.messages.JSONChat;
@@ -50,13 +52,16 @@ import java.util.logging.Level;
 
 public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implements org.bukkit.event.Listener {
 
+    @Getter
     private static DestinationsPlugin instance;
 
     // For quick reference to this instance of the plugin.
-    public FileConfiguration getDefaultConfig;
+    private FileConfiguration defaultConfig;
 
-    // variables
-    public List<DebugTarget> debugTargets = null;
+    // Variables
+    @Getter
+    private List<DebugTarget> debugTargets;
+    @Getter
     public JSONChat jsonChat = null;
     public AstarPathFinder getPathClass = null;
     public String currentLanguage = "en_def";
@@ -107,7 +112,7 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
 
     public void onEnable() {
         // Setup defaults
-        debugTargets = new ArrayList<>();
+        this.debugTargets = new ArrayList<>();
         getLanguageManager = new LanguageManager(this);
         getMessageManager = new MessagesManager(this);
         getPluginManager = new Plugin_Manager(this);
@@ -125,14 +130,14 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
         getLanguageManager.loadLanguages();
 
         // Init Default settings
-        if (this.getDefaultConfig.contains("language"))
-            this.currentLanguage = this.getDefaultConfig.getString("language");
+        if (this.defaultConfig.contains("language"))
+            this.currentLanguage = this.defaultConfig.getString("language");
         if (this.currentLanguage.equalsIgnoreCase("en-default")) this.currentLanguage = "en_def";
 
-        if (this.getDefaultConfig.contains("max-distance"))
-            this.maxDistance = this.getDefaultConfig.getInt("max-distance", 500);
-        if (this.getDefaultConfig.contains("max-distance"))
-            this.maxDistance = this.getDefaultConfig.getInt("max-distance", 500);
+        if (this.defaultConfig.contains("max-distance"))
+            this.maxDistance = this.defaultConfig.getInt("max-distance", 500);
+        if (this.defaultConfig.contains("max-distance"))
+            this.maxDistance = this.defaultConfig.getInt("max-distance", 500);
 
         // Register commands
         getCommandManager.registerCommandClass(Commands_Plugin.class);
@@ -276,7 +281,7 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
             }
         }
 
-        jsonChat = new JSONChat(this);
+        this.jsonChat = new JSONChat(this);
 
         // Register your trait with Citizens.
         net.citizensnpcs.api.CitizensAPI.getTraitFactory().registerTrait(net.citizensnpcs.api.trait.TraitInfo.create(NPCDestinationsTrait.class).withName("npcdestinations"));
@@ -384,7 +389,7 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
         exportFile(languagePath, "en_def-jobsreborn.yml", true);
         exportFile(languagePath, "en_def-sentinel.yml", true);
 
-        this.getDefaultConfig = getUtilitiesClass.loadConfiguration(new File(this.getDataFolder(), "config.yml"));
+        this.defaultConfig = getUtilitiesClass.loadConfiguration(new File(this.getDataFolder(), "config.yml"));
     }
 
     private void exportFile(File path, String filename, boolean overwrite) {
@@ -436,9 +441,5 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
         } catch (Exception error) {
             throw new IOException("Failure exporting file");
         }
-    }
-
-    public static DestinationsPlugin getInstance() {
-        return instance;
     }
 }

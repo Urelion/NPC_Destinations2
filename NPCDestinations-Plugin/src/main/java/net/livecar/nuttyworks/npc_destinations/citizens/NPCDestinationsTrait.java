@@ -118,7 +118,7 @@ public class NPCDestinationsTrait extends Trait {
     }
 
     public void unsetMonitoringPlugin(String reason) {
-        if (DestinationsPlugin.getInstance().debugTargets != null) {
+        if (DestinationsPlugin.getInstance().getDebugTargets() != null) {
             if (monitoringPlugin != null)
                 DestinationsPlugin.getInstance().getMessageManager.sendDebugMessage("destinations", "Debug_Messages.trait_unmonitored", npc, monitoringPlugin.getName() + (reason.equals("") ? "" : "(" + reason + ")"));
         }

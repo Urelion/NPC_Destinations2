@@ -41,9 +41,9 @@ public class MessagesManager {
 
     public void consoleMessage(Plugin callingPlugin, String langFile, String msgKey, String extendedMessage) {
         if (msgKey.equals("console_messages.plugin_debug")) {
-            if (destRef.debugTargets == null)
+            if (destRef.getDebugTargets() == null)
                 return;
-            for (DebugTarget debugOutput : destRef.debugTargets) {
+            for (DebugTarget debugOutput : destRef.getDebugTargets()) {
                 if (!(debugOutput.targetSender instanceof Player)) {
                     for (String message : buildMessage(langFile, msgKey.toLowerCase(), extendedMessage))
                         logToConsole(callingPlugin, message);
@@ -190,8 +190,8 @@ public class MessagesManager {
     }
 
     public void sendDebugMessage(String langFile, String msgKey, NPC npc, NPCDestinationsTrait npcTrait, String message) {
-        if (destRef.debugTargets != null) {
-            for (DebugTarget debugOutput : destRef.debugTargets) {
+        if (destRef.getDebugTargets() != null) {
+            for (DebugTarget debugOutput : destRef.getDebugTargets()) {
                 if (debugOutput.getTargets().size() == 0 || debugOutput.getTargets().contains(npc.getId())) {
                     if (((Player) debugOutput.targetSender).isOnline()) {
                         String[] messages = buildMessage(langFile, debugOutput.targetSender, msgKey, npcTrait, npcTrait.currentLocation, npcTrait.getNPC(), null, 0, message);
@@ -232,7 +232,7 @@ public class MessagesManager {
             message = replaceAll(message, "<plugin.language>", destRef.getConfig().getString("language", "en-dafault"));
 
         if (message.toLowerCase().contains("<debug.targetlist>")) {
-            for (DebugTarget debugOutput : destRef.debugTargets) {
+            for (DebugTarget debugOutput : destRef.getDebugTargets()) {
                 if (sender == null)
                     message = replaceAll(message, "<debug.targetlist>", "Invalid player");
                 else {

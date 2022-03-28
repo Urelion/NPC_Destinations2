@@ -470,7 +470,7 @@ public class CitizensProcessing {
 
     private void clearPendingDestinations(NPCDestinationsTrait trait) {
         for (Location pendDestination : trait.getPendingDestinations()) {
-            for (DebugTarget debugOutput : plugin.debugTargets) {
+            for (DebugTarget debugOutput : plugin.getDebugTargets()) {
                 if (debugOutput.getTargets().size() == 0 || debugOutput.getTargets().contains(trait.getNPC().getId())) {
                     if (((Player) debugOutput.targetSender).isOnline()) {
                         Player player = ((Player) debugOutput.targetSender);
@@ -484,7 +484,7 @@ public class CitizensProcessing {
     }
 
     private void removePendingDestination(NPCDestinationsTrait trait, int index) {
-        for (DebugTarget debugOutput : plugin.debugTargets) {
+        for (DebugTarget debugOutput : plugin.getDebugTargets()) {
             if (debugOutput.getTargets().size() == 0 || debugOutput.getTargets().contains(trait.getNPC().getId())) {
                 if (((Player) debugOutput.targetSender).isOnline()) {
                     Player player = ((Player) debugOutput.targetSender);
@@ -674,7 +674,7 @@ public class CitizensProcessing {
                     trait.setCurrentAction(en_CurrentAction.IDLE);
                     trait.lastResult = "Destination changed, recalc";
                     trait.lastPositionChange = LocalDateTime.now();
-                    if (plugin.debugTargets != null)
+                    if (plugin.getDebugTargets() != null)
                         plugin.getMessageManager.sendDebugMessage("destinations", "Debug_Messages.goal_newdestination", npc, trait);
                     plugin.getMessageManager.debugMessage(Level.FINE, "NPCDestinations_Goal.shouldExecute()|NPC:" + npc.getId() + "|NewDestination>IDLE");
                     return false;
@@ -735,7 +735,7 @@ public class CitizensProcessing {
                 npc.getNavigator().getLocalParameters().pathDistanceMargin(trait.citizens_PathDistanceMargin);
             }
 
-            for (DebugTarget debugOutput : plugin.debugTargets) {
+            for (DebugTarget debugOutput : plugin.getDebugTargets()) {
                 if (debugOutput.getTargets().size() == 0 || debugOutput.getTargets().contains(npc.getId())) {
                     Player debugTarget = (Player) debugOutput.targetSender;
                     if (debugTarget.isOnline()) {
@@ -836,7 +836,7 @@ public class CitizensProcessing {
                 int nWaitTime = random.nextInt((trait.currentLocation.Time_Maximum - trait.currentLocation.Time_Minimum) + 1) + trait.currentLocation.Time_Minimum;
                 trait.setLocationLockUntil(LocalDateTime.now().plusSeconds(nWaitTime));
                 trait.setCurrentAction(en_CurrentAction.IDLE);
-                if (plugin.debugTargets != null) {
+                if (plugin.getDebugTargets() != null) {
                     plugin.getMessageManager.sendDebugMessage("destinations", "Debug_Messages.goal_timeddestination", npc, trait);
                 }
             }
@@ -989,7 +989,7 @@ public class CitizensProcessing {
                     citGoal.nFailedPathCount = 0;
                     teleportSurface(npc.getEntity(), oLoc.destination.clone().add(0, 1, 0));
                     trait.locationReached();
-                    if (plugin.debugTargets != null)
+                    if (plugin.getDebugTargets() != null)
                         plugin.getMessageManager.sendDebugMessage("destinations", "Debug_Messages.path_novalidpath", npc, trait);
                     plugin.getMessageManager.debugMessage(Level.FINEST, "NPCDestinations_Goal.shouldExecute()|NPC:" + npc.getId() + "|NoValidPath");
                     trait.setLastPathCalc();

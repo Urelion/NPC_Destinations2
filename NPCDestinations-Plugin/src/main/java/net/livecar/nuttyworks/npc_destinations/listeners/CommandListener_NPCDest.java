@@ -191,17 +191,17 @@ public class CommandListener_NPCDest {
                     }
 
                     if (inargs[1].equalsIgnoreCase("*")) {
-                        for (DebugTarget debugOutput : destRef.debugTargets) {
+                        for (DebugTarget debugOutput : destRef.getDebugTargets()) {
                             if ((debugOutput.targetSender instanceof Player) && debugOutput.targetSender.equals(sender)) {
                                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_removed", "*");
-                                for (DebugTarget debugTarget : destRef.debugTargets)
+                                for (DebugTarget debugTarget : destRef.getDebugTargets())
                                     debugTarget.clearDebugBlocks();
-                                destRef.debugTargets.clear();
+                                destRef.getDebugTargets().clear();
                                 return true;
                             }
                         }
                         destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_added", "*");
-                        destRef.debugTargets.add(new DebugTarget(sender, -1));
+                        destRef.getDebugTargets().add(new DebugTarget(sender, -1));
                         return true;
                     }
 
@@ -226,7 +226,7 @@ public class CommandListener_NPCDest {
                         return true;
                     }
 
-                    for (DebugTarget debugOutput : destRef.debugTargets) {
+                    for (DebugTarget debugOutput : destRef.getDebugTargets()) {
                         if ((debugOutput.targetSender instanceof Player) && ((Player) debugOutput.targetSender).getUniqueId().equals(((Player) sender).getUniqueId())) {
                             for (int cnt = 0; cnt < debugOutput.getTargets().size(); cnt++) {
                                 if (debugOutput.getTargets().get(cnt).equals(selectedNPC.getId())) {
@@ -234,7 +234,7 @@ public class CommandListener_NPCDest {
                                     if (debugOutput.getTargets().size() == 0) {
                                         destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_off");
                                         debugOutput.clearDebugBlocks();
-                                        destRef.debugTargets.remove(debugOutput);
+                                        destRef.getDebugTargets().remove(debugOutput);
                                     } else {
                                         destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_removed", selectedNPC.getFullName());
                                     }
@@ -248,7 +248,7 @@ public class CommandListener_NPCDest {
                         }
                     }
                     DebugTarget dbgTarget = new DebugTarget(sender, selectedNPC.getId());
-                    destRef.debugTargets.add(dbgTarget);
+                    destRef.getDebugTargets().add(dbgTarget);
                     destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_added", selectedNPC.getFullName());
                     return true;
 
@@ -259,37 +259,37 @@ public class CommandListener_NPCDest {
                     }
 
                     if (npc == null) {
-                        for (int target = 0; target < destRef.debugTargets.size(); target++) {
-                            DebugTarget debugOutput = destRef.debugTargets.get(target);
+                        for (int target = 0; target < destRef.getDebugTargets().size(); target++) {
+                            DebugTarget debugOutput = destRef.getDebugTargets().get(target);
                             if (debugOutput.targetSender.equals(sender)) {
                                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_off");
-                                destRef.debugTargets.get(target).clearDebugBlocks();
-                                destRef.debugTargets.remove(target);
+                                destRef.getDebugTargets().get(target).clearDebugBlocks();
+                                destRef.getDebugTargets().remove(target);
                                 return true;
                             }
                         }
                         DebugTarget dbgTarget = new DebugTarget(sender, -1);
-                        destRef.debugTargets.add(dbgTarget);
+                        destRef.getDebugTargets().add(dbgTarget);
                         destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_added", "*");
                         return true;
                     } else {
-                        for (int target = 0; target < destRef.debugTargets.size(); target++) {
-                            DebugTarget debugOutput = destRef.debugTargets.get(target);
+                        for (int target = 0; target < destRef.getDebugTargets().size(); target++) {
+                            DebugTarget debugOutput = destRef.getDebugTargets().get(target);
                             if (debugOutput.targetSender.equals(sender)) {
                                 if (debugOutput.getTargets().contains(npc.getId())) {
                                     for (int cnt = 0; cnt < debugOutput.getTargets().size(); cnt++) {
                                         if (debugOutput.getTargets().get(cnt).equals(npc.getId())) {
                                             if (debugOutput.getTargets().size() == 0) {
                                                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_off");
-                                                destRef.debugTargets.get(target).clearDebugBlocks();
-                                                destRef.debugTargets.remove(target);
+                                                destRef.getDebugTargets().get(target).clearDebugBlocks();
+                                                destRef.getDebugTargets().remove(target);
                                                 return true;
                                             } else {
                                                 debugOutput.getTargets().remove(cnt);
                                                 if (debugOutput.getTargets().size() == 0) {
                                                     destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_off");
-                                                    destRef.debugTargets.get(target).clearDebugBlocks();
-                                                    destRef.debugTargets.remove(target);
+                                                    destRef.getDebugTargets().get(target).clearDebugBlocks();
+                                                    destRef.getDebugTargets().remove(target);
                                                 } else {
                                                     destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_removed", npc.getFullName());
                                                 }
@@ -299,20 +299,20 @@ public class CommandListener_NPCDest {
                                     }
                                 } else if (debugOutput.getTargets().size() == 0) {
                                     destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_removed", "*");
-                                    destRef.debugTargets.get(target).clearDebugBlocks();
-                                    destRef.debugTargets.remove(target);
+                                    destRef.getDebugTargets().get(target).clearDebugBlocks();
+                                    destRef.getDebugTargets().remove(target);
                                     return true;
                                 } else {
                                     destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_added", npc.getFullName());
                                     DebugTarget debugger = new DebugTarget(sender, npc.getId());
-                                    destRef.debugTargets.add(debugOutput);
+                                    destRef.getDebugTargets().add(debugOutput);
                                     return true;
                                 }
                             }
                         }
                         destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_debug_added", npc.getFullName());
                         DebugTarget debugOutput = new DebugTarget(sender, npc.getId());
-                        destRef.debugTargets.add(debugOutput);
+                        destRef.getDebugTargets().add(debugOutput);
                         return true;
                     }
                 }

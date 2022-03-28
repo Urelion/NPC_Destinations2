@@ -74,9 +74,9 @@ public class AstarPathFinder {
             return;
         }
 
-        if (plugin.debugTargets != null && plugin.debugTargets.size() > 0) {
+        if (plugin.getDebugTargets() != null && plugin.getDebugTargets().size() > 0) {
             playToPlayers = new ArrayList<>();
-            for (DebugTarget debugOutput : plugin.debugTargets) {
+            for (DebugTarget debugOutput : plugin.getDebugTargets()) {
                 if ((debugOutput.targetSender instanceof Player) && (debugOutput.getTargets().size() == 0 || debugOutput.getTargets().contains(npc.getId())))
                     playToPlayers.add((Player) debugOutput.targetSender);
             }
@@ -346,7 +346,7 @@ public class AstarPathFinder {
                 return;
             }
 
-            if (plugin.debugTargets != null && currentTask.timeSpent == 0L) {
+            if (plugin.getDebugTargets() != null && currentTask.timeSpent == 0L) {
                 currentTask.timeSpent = 1L;
                 currentTask.processingStarted = new Date();
                 trait.processingStarted = LocalDateTime.now();
@@ -453,9 +453,9 @@ public class AstarPathFinder {
             plugin.getMessageManager.debugMessage(Level.INFO, "astarpath.iterate()|NPC:" + currentTask.npc.getId() + "|Path Found (" + locationArray.size() + ")|Requested: " + currentTask.requestedBy);
             plugin.getMessageManager.sendDebugMessage("destinations", "debug_messages.path_found", currentTask.npc, currentTask.npcTrait);
 
-            if (plugin.debugTargets.size() > 0) {
+            if (plugin.getDebugTargets().size() > 0) {
                 final ArrayList<Location> debugTrace = (ArrayList<Location>) locationArray.clone();
-                for (DebugTarget debugOutput : plugin.debugTargets) {
+                for (DebugTarget debugOutput : plugin.getDebugTargets()) {
                     if (debugOutput.getTargets().size() == 0 || debugOutput.getTargets().contains(currentTask.npc.getId())) {
                         if (((Player) debugOutput.targetSender).isOnline()) {
                             Player player = ((Player) debugOutput.targetSender);
