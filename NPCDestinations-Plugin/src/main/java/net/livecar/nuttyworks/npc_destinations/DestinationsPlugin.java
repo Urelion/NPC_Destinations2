@@ -256,50 +256,13 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
             this.messagesManager.debugMessage(Level.CONFIG, "nuNPCDestinations.onEnable()|plotsquared_Found");
         }
 
-        if (getServer().getPluginManager().getPlugin("WorldGuard") == null) {
-            this.messagesManager.consoleMessage(this, "destinations", "console_messages.worldguard_notfound");
-        } else {
-            String wgVer = getServer().getPluginManager().getPlugin("WorldGuard").getDescription().getVersion();
-            if (wgVer.contains(";")) wgVer = wgVer.substring(0, wgVer.indexOf(";"));
-            if (wgVer.contains("-SNAPSHOT")) wgVer = wgVer.substring(0, wgVer.indexOf("-"));
-            if (wgVer.startsWith("v")) wgVer = wgVer.substring(1);
-
-            String[] parts = wgVer.split("[.]");
-
-            boolean goodVersion = false;
-            Integer[] verPart = new Integer[3];
-            if (getUtilities().isNumeric(parts[0])) {
-                verPart[0] = Integer.parseInt(parts[0]);
-            }
-
-            if (getUtilities().isNumeric(parts[1])) {
-                verPart[1] = Integer.parseInt(parts[1]);
-            }
-
-            if (parts.length < 3) {
-                goodVersion = false;
-            } else {
-
-                if (parts.length > 2 && getUtilities().isNumeric(parts[2])) {
-                    verPart[2] = Integer.parseInt(parts[2]);
-                }
-
-                if (verPart[0] == 6 && verPart[1] == 1 && verPart[2] >= 3) {
-                    goodVersion = true;
-                } else if (verPart[0] == 6 && verPart[1] > 1) {
-                    goodVersion = true;
-                } else if (verPart[0] > 6) {
-                    goodVersion = true;
-                }
-            }
-
-            if (!goodVersion) {
-                this.messagesManager.consoleMessage(this, "destinations", "console_messages.worldguard_unsupported", getServer().getPluginManager().getPlugin("WorldGuard").getDescription().getVersion());
-            } else {
-                this.messagesManager.consoleMessage(this, "destinations", "console_messages.worldguard_found", getServer().getPluginManager().getPlugin("WorldGuard").getDescription().getVersion());
-                this.worldGuardPlugin.registerEvents();
-            }
-        }
+        // Currently this actually does nothing lol, because there's no events in the WorldGuard interface implementation
+//        if (getServer().getPluginManager().getPlugin("WorldGuard") == null) {
+//            this.messagesManager.consoleMessage(this, "destinations", "console_messages.worldguard_notfound");
+//        } else {
+//                this.messagesManager.consoleMessage(this, "destinations", "console_messages.worldguard_found", getServer().getPluginManager().getPlugin("WorldGuard").getDescription().getVersion());
+//                this.worldGuardPlugin.registerEvents();
+//        }
 
         this.jsonChat = new JSONChat(this);
 

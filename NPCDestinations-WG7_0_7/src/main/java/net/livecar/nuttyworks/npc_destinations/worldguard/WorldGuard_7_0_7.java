@@ -17,13 +17,13 @@ public class WorldGuard_7_0_7 implements WorldGuardInterface, Listener {
 
     private Plugin destRef;
 
+    // FIXME: 3/28/2022 Lazy only going to support the latest and greatest right now; should work with WG 7.0.0 and up!
     public static boolean isValidVersion() {
         return true;
     }
 
     public WorldGuard_7_0_7(Plugin storageRef) {
         destRef = storageRef;
-
     }
 
     public RegionManager getRegionManager(World world) {
