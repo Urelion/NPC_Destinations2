@@ -4,7 +4,7 @@ import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.livecar.nuttyworks.npc_destinations.DebugTarget;
 import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
-import net.livecar.nuttyworks.npc_destinations.api.Destination_Setting;
+import net.livecar.nuttyworks.npc_destinations.api.DestinationSetting;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
 import net.livecar.nuttyworks.npc_destinations.plugins.DestinationsAddon;
 import org.bukkit.Bukkit;
@@ -25,14 +25,14 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 
-public class Messages_Manager {
+public class MessagesManager {
     private List<LogDetail> logHistory;
-    private final jsonChat jsonManager;
+    private final JSONChat jsonManager;
     private DestinationsPlugin destRef = null;
 
-    public Messages_Manager(DestinationsPlugin storageRef) {
+    public MessagesManager(DestinationsPlugin storageRef) {
         destRef = storageRef;
-        jsonManager = new jsonChat(destRef);
+        jsonManager = new JSONChat(destRef);
     }
 
     public void consoleMessage(Plugin callingPlugin, String langFile, String msgKey) {
@@ -108,11 +108,11 @@ public class Messages_Manager {
         return messages;
     }
 
-    public String[] buildMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, Destination_Setting locationSetting, NPC npc, Material material, int ident) {
+    public String[] buildMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, DestinationSetting locationSetting, NPC npc, Material material, int ident) {
         return buildMessage(langFile, sender, msgKey, npcTrait, locationSetting, npc, material, ident, "");
     }
 
-    public String[] buildMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, Destination_Setting locationSetting, NPC npc, Material material, int ident, String rawMessage) {
+    public String[] buildMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, DestinationSetting locationSetting, NPC npc, Material material, int ident, String rawMessage) {
         List<String> processedMessages = new ArrayList<String>();
 
         String[] messages = this.getResultMessage(langFile, msgKey.toLowerCase());
@@ -129,15 +129,15 @@ public class Messages_Manager {
         sendMessage(sender, buildMessage(langFile, sender, msgKey, null, null, null, null, 0, ""));
     }
 
-    public void sendMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, Destination_Setting locationSetting) {
+    public void sendMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, DestinationSetting locationSetting) {
         sendMessage(sender, buildMessage(langFile, sender, msgKey, npcTrait, locationSetting, npcTrait.getNPC(), null, 0, ""));
     }
 
-    public void sendMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, Destination_Setting locationSetting, String message) {
+    public void sendMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, DestinationSetting locationSetting, String message) {
         sendMessage(sender, buildMessage(langFile, sender, msgKey, npcTrait, locationSetting, npcTrait.getNPC(), null, 0, message));
     }
 
-    public void sendMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, Destination_Setting locationSetting, int ident) {
+    public void sendMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, DestinationSetting locationSetting, int ident) {
         sendMessage(sender, buildMessage(langFile, sender, msgKey, npcTrait, locationSetting, npcTrait.getNPC(), null, ident, ""));
     }
 
@@ -157,7 +157,7 @@ public class Messages_Manager {
         sendMessage(sender, buildMessage(langFile, sender, msgKey, null, null, null, material, 0, ""));
     }
 
-    public void sendMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, Destination_Setting locationSetting, Material material) {
+    public void sendMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, DestinationSetting locationSetting, Material material) {
         sendMessage(sender, buildMessage(langFile, sender, msgKey, npcTrait, locationSetting, npcTrait.getNPC(), material, 0, ""));
     }
 
@@ -214,7 +214,7 @@ public class Messages_Manager {
     }
 
     @SuppressWarnings("deprecation")
-    private String parseMessage(CommandSender sender, String langFile, String message, NPCDestinationsTrait npcTrait, Destination_Setting locationSetting, Material blockMaterial, NPC npc, int ident) {
+    private String parseMessage(CommandSender sender, String langFile, String message, NPCDestinationsTrait npcTrait, DestinationSetting locationSetting, Material blockMaterial, NPC npc, int ident) {
 
         for (DestinationsAddon pluginReference : destRef.getPluginManager.getPlugins()) {
             message = pluginReference.parseLanguageLine(message, npcTrait, locationSetting, blockMaterial, npc, ident);

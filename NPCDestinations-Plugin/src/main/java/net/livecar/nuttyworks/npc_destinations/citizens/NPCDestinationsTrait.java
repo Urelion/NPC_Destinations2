@@ -4,7 +4,7 @@ import net.citizensnpcs.api.persistence.Persist;
 import net.citizensnpcs.api.trait.Trait;
 import net.citizensnpcs.api.util.DataKey;
 import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
-import net.livecar.nuttyworks.npc_destinations.api.Destination_Setting;
+import net.livecar.nuttyworks.npc_destinations.api.DestinationSetting;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -47,17 +47,17 @@ public class NPCDestinationsTrait extends Trait {
         NORMAL_PROCESSING, NO_PROCESSING, SET_LOCATION,
     }
 
-    public List<Destination_Setting> NPCLocations = new ArrayList<Destination_Setting>();
+    public List<DestinationSetting> NPCLocations = new ArrayList<DestinationSetting>();
     public String lastResult = "Idle";
     public List<Material> AllowedPathBlocks = new ArrayList<Material>();
     public LocalDateTime lastPositionChange;
     public LocalDateTime lastPlayerPause;
     public Location lastPauseLocation;
     public Location lastNavigationPoint;
-    public Destination_Setting currentLocation = new Destination_Setting();
-    public Destination_Setting setLocation = new Destination_Setting();
-    public Destination_Setting lastLocation = new Destination_Setting();
-    public Destination_Setting monitoredLocation = null;
+    public DestinationSetting currentLocation = new DestinationSetting();
+    public DestinationSetting setLocation = new DestinationSetting();
+    public DestinationSetting lastLocation = new DestinationSetting();
+    public DestinationSetting monitoredLocation = null;
 
     public List<String> enabledPlugins = new ArrayList<String>();
     public Boolean citizens_Swim = true;
@@ -130,19 +130,19 @@ public class NPCDestinationsTrait extends Trait {
         unsetMonitoringPlugin("");
     }
 
-    public void setMonitoringPlugin(Plugin plugin, Destination_Setting monitoredDestination) {
+    public void setMonitoringPlugin(Plugin plugin, DestinationSetting monitoredDestination) {
         monitoringPlugin = plugin;
         monitoredLocation = monitoredDestination;
         if (monitoringPlugin != null)
             DestinationsPlugin.Instance.getMessageManager.sendDebugMessage("destinations", "Debug_Messages.trait_monitored", npc, monitoringPlugin.getName());
     }
 
-    public Destination_Setting GetCurrentLocation() {
+    public DestinationSetting GetCurrentLocation() {
         return GetCurrentLocation(false);
     }
 
-    public Destination_Setting GetCurrentLocation(Boolean noNull) {
-        return Citizens_Processing.trait_getCurLocation(this, noNull);
+    public DestinationSetting GetCurrentLocation(Boolean noNull) {
+        return CitizensProcessing.traitGetCurrentLocation(this, noNull);
     }
 
 
@@ -152,7 +152,7 @@ public class NPCDestinationsTrait extends Trait {
 
     public void setLocationLockUntil(LocalDateTime lockUntil) {
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-mm-dd hh:mm:ss");
-        Citizens_Processing.debugMessage(Level.FINE, "NPC:" + this.npc.getId() + "|" + (lockUntil == null ? "Clear" : dateFormat.format(lockUntil)) + "|" + Arrays.toString(Thread.currentThread().getStackTrace()));
+        CitizensProcessing.debugMessage(Level.FINE, "NPC:" + this.npc.getId() + "|" + (lockUntil == null ? "Clear" : dateFormat.format(lockUntil)) + "|" + Arrays.toString(Thread.currentThread().getStackTrace()));
         this.locationLockUntil = lockUntil;
     }
 
@@ -165,7 +165,7 @@ public class NPCDestinationsTrait extends Trait {
     }
 
     public void setRequestedAction(en_RequestedAction action) {
-        Citizens_Processing.debugMessage(Level.FINE, "NPCDestinations_Trait.setRequestedAction()|NPC:" + this.npc.getId() + "|" + action.toString());
+        CitizensProcessing.debugMessage(Level.FINE, "NPCDestinations_Trait.setRequestedAction()|NPC:" + this.npc.getId() + "|" + action.toString());
         this.requestedAction = action;
     }
 
@@ -182,7 +182,7 @@ public class NPCDestinationsTrait extends Trait {
     }
 
     public void removePendingDestination(int index) {
-        Citizens_Processing.trait_removePendingDestination(this, index);
+        CitizensProcessing.traitRemovePendingDestination(this, index);
         if (this.pendingDestinations.size() > index) {
             this.processedDestinations.add(this.pendingDestinations.get(index));
             this.pendingDestinations.remove(index);
@@ -190,19 +190,19 @@ public class NPCDestinationsTrait extends Trait {
     }
 
     public void clearPendingDestinations() {
-        Citizens_Processing.trait_clearPendingDestinations(this);
+        CitizensProcessing.traitClearPendingDestinations(this);
         this.pendingDestinations.clear();
         this.processedDestinations.clear();
     }
 
     @Override
     public void load(DataKey key) {
-        Citizens_Processing.trait_loadSettings(this, key);
+        CitizensProcessing.traitLoadSettings(this, key);
     }
 
     @Override
     public void save(DataKey key) {
-        Citizens_Processing.trait_saveSettings(this, key);
+        CitizensProcessing.traitSaveSettings(this, key);
     }
 
     public en_RequestedAction getRequestedAction() {
@@ -210,7 +210,7 @@ public class NPCDestinationsTrait extends Trait {
     }
 
     public void setCurrentAction(en_CurrentAction action) {
-        Citizens_Processing.debugMessage(Level.FINE, "NPCDestinations_Trait.setCurrentAction()|NPC:" + this.npc.getId() + "|" + action.toString() + Arrays.toString(Thread.currentThread().getStackTrace()));
+        CitizensProcessing.debugMessage(Level.FINE, "NPCDestinations_Trait.setCurrentAction()|NPC:" + this.npc.getId() + "|" + action.toString() + Arrays.toString(Thread.currentThread().getStackTrace()));
         this.currentAction = action;
     }
 
@@ -219,10 +219,10 @@ public class NPCDestinationsTrait extends Trait {
     }
 
     public void locationReached() {
-        Citizens_Processing.trait_locationReached(this);
+        CitizensProcessing.traitLocationReached(this);
     }
 
-    public void setCurrentLocation(Destination_Setting location) {
+    public void setCurrentLocation(DestinationSetting location) {
         if (this.currentLocation.destination == null) {
             if (location.destination.distanceSquared(this.npc.getEntity().getLocation()) > 5) {
                 this.currentLocation = location;
@@ -234,9 +234,9 @@ public class NPCDestinationsTrait extends Trait {
             this.currentLocation = location;
     }
 
-    public Destination_Setting getCurrentLocation() {
+    public DestinationSetting getCurrentLocation() {
         if (this.currentLocation == null)
-            return new Destination_Setting();
+            return new DestinationSetting();
         return this.currentLocation;
     }
 

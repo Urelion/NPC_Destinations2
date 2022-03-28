@@ -10,12 +10,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class Citizens_Utilities {
+public class CitizensUtilities {
     public static long lastBackupTime;
 
     private final DestinationsPlugin destRef;
 
-    public Citizens_Utilities(DestinationsPlugin storageRef) {
+    public CitizensUtilities(DestinationsPlugin storageRef) {
         destRef = storageRef;
     }
 

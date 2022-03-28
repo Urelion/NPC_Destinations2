@@ -9,7 +9,7 @@ import net.citizensnpcs.trait.waypoint.WaypointProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
-public class Citizens_WaypointProvider implements WaypointProvider {
+public class CitizensWaypointProvider implements WaypointProvider {
     private Goal currentGoal;
     private NPC npc;
     private volatile boolean paused;
@@ -53,7 +53,7 @@ public class Citizens_WaypointProvider implements WaypointProvider {
             trait.TeleportOnNoPath = true;
 
         if (this.currentGoal == null) {
-            this.currentGoal = Citizens_Goal.createWithNPC(npc);
+            this.currentGoal = CitizensGoal.createWithNPC(npc);
         }
         npc.getDefaultGoalController().addGoal(this.currentGoal, 1);
     }

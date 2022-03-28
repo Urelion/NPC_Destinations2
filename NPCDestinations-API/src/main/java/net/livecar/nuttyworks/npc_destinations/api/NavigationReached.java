@@ -5,16 +5,16 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class Location_Deleted extends Event implements Cancellable {
+public class NavigationReached extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
 
-    private Destination_Setting      destinationChanged;
+    private DestinationSetting targetDestination;
     private NPC                      owningNPC;
     private boolean                  cancelEvent;
 
-    public Location_Deleted(NPC referencedNPC, final Destination_Setting removedDestination) {
-        destinationChanged = removedDestination;
-        owningNPC = referencedNPC;
+    public NavigationReached(NPC npc, DestinationSetting newDestination) {
+        targetDestination = newDestination;
+        owningNPC = npc;
     }
 
     @Override
@@ -24,10 +24,6 @@ public class Location_Deleted extends Event implements Cancellable {
 
     public static HandlerList getHandlerList() {
         return handlers;
-    }
-
-    public NPC getNPC() {
-        return owningNPC;
     }
 
     @Override
@@ -40,7 +36,11 @@ public class Location_Deleted extends Event implements Cancellable {
         return cancelEvent;
     }
 
-    public Destination_Setting getDestination() {
-        return destinationChanged;
+    public NPC getNPC() {
+        return owningNPC;
+    }
+
+    public DestinationSetting getDestination() {
+        return targetDestination;
     }
 }

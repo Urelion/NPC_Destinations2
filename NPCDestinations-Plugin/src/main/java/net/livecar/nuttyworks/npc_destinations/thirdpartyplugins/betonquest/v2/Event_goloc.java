@@ -2,7 +2,7 @@ package net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.betonquest.v2;
 
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
-import net.livecar.nuttyworks.npc_destinations.api.Destination_Setting;
+import net.livecar.nuttyworks.npc_destinations.api.DestinationSetting;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait.en_RequestedAction;
 import org.apache.commons.lang.math.NumberUtils;
@@ -66,7 +66,7 @@ public class Event_goloc extends QuestEvent {
         } else
             trait = npc.getTrait(NPCDestinationsTrait.class);
 
-        Destination_Setting newDest = null;
+        DestinationSetting newDest = null;
         if (destID > -1) {
             if (destID > trait.NPCLocations.size()) {
                 BetonQuest_Plugin.destRef.getMessageManager.consoleMessage(BetonQuest_Plugin.destRef, "destinations", "Console_Messages.betonquest_error", "Event_GoLocation references NPC (" + targetNPC + ") but is missing location (" + destID + ")");
@@ -74,7 +74,7 @@ public class Event_goloc extends QuestEvent {
             }
             newDest = trait.NPCLocations.get(destID);
         } else {
-            for (Destination_Setting destLoc : trait.NPCLocations) {
+            for (DestinationSetting destLoc : trait.NPCLocations) {
                 if (destLoc.LocationIdent.toString().equalsIgnoreCase(destUUID.toString())) {
                     newDest = destLoc;
                     break;

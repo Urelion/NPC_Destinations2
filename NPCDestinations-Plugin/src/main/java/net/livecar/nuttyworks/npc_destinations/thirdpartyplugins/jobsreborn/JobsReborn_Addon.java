@@ -2,7 +2,7 @@ package net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.jobsreborn;
 
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.util.DataKey;
-import net.livecar.nuttyworks.npc_destinations.api.Destination_Setting;
+import net.livecar.nuttyworks.npc_destinations.api.DestinationSetting;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
 import net.livecar.nuttyworks.npc_destinations.plugins.DestinationsAddon;
 import org.bukkit.Material;
@@ -31,12 +31,12 @@ public class JobsReborn_Addon extends DestinationsAddon {
     }
 
     @Override
-    public String getDestinationHelp(NPC npc, NPCDestinationsTrait npcTrait, Destination_Setting location) {
+    public String getDestinationHelp(NPC npc, NPCDestinationsTrait npcTrait, DestinationSetting location) {
         String[] response = pluginReference.destRef.getMessageManager.buildMessage("jobsreborn", null, "jobs_reborn.plugin_destination", npcTrait, location, npc, null, 0, "");
         return response[0];
     }
 
-    public String parseLanguageLine(String message, NPCDestinationsTrait npcTrait, Destination_Setting locationSetting, Material blockMaterial, NPC npc, int ident) {
+    public String parseLanguageLine(String message, NPCDestinationsTrait npcTrait, DestinationSetting locationSetting, Material blockMaterial, NPC npc, int ident) {
         if (locationSetting != null) {
             if (!pluginReference.npcSettings.containsKey(npc.getId())) {
                 message = message.replaceAll("<location\\.jobname>", "");
@@ -74,7 +74,7 @@ public class JobsReborn_Addon extends DestinationsAddon {
         return message;
     }
 
-    public boolean isDestinationEnabled(NPC npc, NPCDestinationsTrait npcTrait, Destination_Setting location) {
+    public boolean isDestinationEnabled(NPC npc, NPCDestinationsTrait npcTrait, DestinationSetting location) {
         if (location != null) {
             if (!pluginReference.npcSettings.containsKey(npc.getId()))
                 return true;
@@ -99,7 +99,7 @@ public class JobsReborn_Addon extends DestinationsAddon {
         return true;
     }
 
-    public void onLocationLoading(NPC npc, NPCDestinationsTrait npcTrait, Destination_Setting location, DataKey storageKey) {
+    public void onLocationLoading(NPC npc, NPCDestinationsTrait npcTrait, DestinationSetting location, DataKey storageKey) {
         if (!storageKey.keyExists("JobsReborn"))
             return;
 
@@ -126,7 +126,7 @@ public class JobsReborn_Addon extends DestinationsAddon {
         npcSetting.locations.put(location.LocationIdent, locationConfig);
     }
 
-    public void onLocationSaving(NPC npc, NPCDestinationsTrait npcTrait, Destination_Setting location, DataKey storageKey) {
+    public void onLocationSaving(NPC npc, NPCDestinationsTrait npcTrait, DestinationSetting location, DataKey storageKey) {
         if (!pluginReference.npcSettings.containsKey(npc.getId()))
             return;
         if (!pluginReference.npcSettings.get(npc.getId()).locations.containsKey(location.LocationIdent))
@@ -140,11 +140,11 @@ public class JobsReborn_Addon extends DestinationsAddon {
         }
     }
 
-    public boolean onNavigationReached(NPC npc, NPCDestinationsTrait npcTrait, Destination_Setting location) {
+    public boolean onNavigationReached(NPC npc, NPCDestinationsTrait npcTrait, DestinationSetting location) {
         return false;
     }
 
-    public boolean onNewDestination(NPC npc, NPCDestinationsTrait npcTrait, Destination_Setting location) {
+    public boolean onNewDestination(NPC npc, NPCDestinationsTrait npcTrait, DestinationSetting location) {
         return false;
     }
 

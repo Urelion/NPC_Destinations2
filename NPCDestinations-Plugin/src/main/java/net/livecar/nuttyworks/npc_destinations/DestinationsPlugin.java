@@ -4,20 +4,20 @@ import net.citizensnpcs.Citizens;
 import net.citizensnpcs.api.event.CitizensDisableEvent;
 import net.livecar.nuttyworks.npc_destinations.bridges.MCUtil_1_18_R1R2;
 import net.livecar.nuttyworks.npc_destinations.bridges.MCUtilsBridge;
-import net.livecar.nuttyworks.npc_destinations.citizens.Citizens_Processing;
-import net.livecar.nuttyworks.npc_destinations.citizens.Citizens_Utilities;
-import net.livecar.nuttyworks.npc_destinations.citizens.Citizens_WaypointProvider;
+import net.livecar.nuttyworks.npc_destinations.citizens.CitizensProcessing;
+import net.livecar.nuttyworks.npc_destinations.citizens.CitizensUtilities;
+import net.livecar.nuttyworks.npc_destinations.citizens.CitizensWaypointProvider;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
 import net.livecar.nuttyworks.npc_destinations.lightapi.LightAPI_Plugin;
 import net.livecar.nuttyworks.npc_destinations.listeners.BlockStickListener_NPCDest;
 import net.livecar.nuttyworks.npc_destinations.listeners.PlayerJoinListener_NPCDest;
-import net.livecar.nuttyworks.npc_destinations.listeners.commands.Command_Manager;
-import net.livecar.nuttyworks.npc_destinations.listeners.commands.Commands_Location;
-import net.livecar.nuttyworks.npc_destinations.listeners.commands.Commands_NPC;
+import net.livecar.nuttyworks.npc_destinations.listeners.commands.CommandManager;
+import net.livecar.nuttyworks.npc_destinations.listeners.commands.CommandsLocation;
+import net.livecar.nuttyworks.npc_destinations.listeners.commands.CommandsNPC;
 import net.livecar.nuttyworks.npc_destinations.listeners.commands.Commands_Plugin;
-import net.livecar.nuttyworks.npc_destinations.messages.Language_Manager;
-import net.livecar.nuttyworks.npc_destinations.messages.Messages_Manager;
-import net.livecar.nuttyworks.npc_destinations.messages.jsonChat;
+import net.livecar.nuttyworks.npc_destinations.messages.LanguageManager;
+import net.livecar.nuttyworks.npc_destinations.messages.MessagesManager;
+import net.livecar.nuttyworks.npc_destinations.messages.JSONChat;
 import net.livecar.nuttyworks.npc_destinations.metrics.BStat_Metrics;
 import net.livecar.nuttyworks.npc_destinations.particles.PlayParticleInterface;
 import net.livecar.nuttyworks.npc_destinations.particles.PlayParticle_1_18_R1R2;
@@ -39,6 +39,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.plugin.Plugin;
 
 import java.io.*;
 import java.net.URL;
@@ -56,12 +57,11 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
 
     // variables
     public List<DebugTarget> debugTargets = null;
-    public jsonChat jsonChat = null;
+    public JSONChat jsonChat = null;
     public AstarPathFinder getPathClass = null;
     public String currentLanguage = "en_def";
     public Level debugLogLevel = Level.OFF;
     public int maxDistance = 500;
-    public int Version = 10000;
     public int entityRadius = 47 * 47;
 
     // Storage locations
@@ -69,8 +69,8 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
     public File loggingPath;
 
     // Links to classes
-    public Language_Manager getLanguageManager = null;
-    public Messages_Manager getMessageManager = null;
+    public LanguageManager getLanguageManager = null;
+    public MessagesManager getMessageManager = null;
     public Citizens getCitizensPlugin = null;
     public BetonQuest_Interface getBetonQuestPlugin = null;
     public LightAPI_Plugin getLightPlugin = null;
@@ -80,8 +80,8 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
     public WorldGuardInterface getWorldGuardPlugin = null;
     public PlayParticleInterface getParticleManager = null;
     public Utilities getUtilitiesClass = null;
-    public Command_Manager getCommandManager = null;
-    public Citizens_Processing getCitizensProc = null;
+    public CommandManager getCommandManager = null;
+    public CitizensProcessing getCitizensProc = null;
     public PlotSquared getPlotSquared = null;
     public MCUtilsBridge getMCUtils = null;
     public DestinationsTimeManager getTimeManager = null;
@@ -90,80 +90,31 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
         DestinationsPlugin.Instance = this;
         getUtilitiesClass = new Utilities(this);
 
-        if (getServer().getPluginManager().getPlugin("WorldGuard") == null) {
-            getServer().getLogger().log(Level.WARNING, "Worldguard not found, custom flags are not enabled");
+        Plugin worldGuardPlugin = getServer().getPluginManager().getPlugin("WorldGuard");
+        if (worldGuardPlugin == null) {
+            getServer().getLogger().log(Level.WARNING, "WorldGuard not found, custom flags will not be enabled");
         } else {
-            String wgVer = getServer().getPluginManager().getPlugin("WorldGuard").getDescription().getVersion();
-            if (wgVer.contains(";")) wgVer = wgVer.substring(0, wgVer.indexOf(";"));
-            if (wgVer.contains("-SNAPSHOT")) wgVer = wgVer.substring(0, wgVer.indexOf("-"));
-            if (wgVer.startsWith("v")) wgVer = wgVer.substring(1);
-
-            String[] parts = wgVer.split("[.]");
-
-            int majorVersion = 0;
-
-            boolean goodVersion = false;
-            try {
-                Integer[] verPart = new Integer[3];
-                if (getUtilitiesClass.isNumeric(parts[0])) {
-                    verPart[0] = Integer.parseInt(parts[0]);
-                }
-
-                if (getUtilitiesClass.isNumeric(parts[1])) {
-                    verPart[1] = Integer.parseInt(parts[1]);
-                }
-
-                if (parts.length > 2 && getUtilitiesClass.isNumeric(parts[2])) {
-                    verPart[2] = Integer.parseInt(parts[2]);
-                }
-
-                if (verPart[0] == 6 && verPart[1] == 1 && verPart[2] >= 3) {
-                    majorVersion = 6;
-                    goodVersion = true;
-                } else if (verPart[0] == 6 && verPart[1] > 1) {
-                    majorVersion = 6;
-                    goodVersion = true;
-                } else if (verPart[0] == 6) {
-                    goodVersion = true;
-                    majorVersion = 6;
-                } else if (verPart[0] >= 7) {
-                    goodVersion = true;
-                    majorVersion = 7;
-                }
-
-            } catch (Exception err) {
-                goodVersion = false;
-            }
-
-            if (!goodVersion) {
-                getServer().getLogger().log(Level.WARNING, "This Worldguard version is not supported, custom flags are not enabled");
-            } else {
-                if (majorVersion == 7 && WorldGuard_7_0_7.isValidVersion())
-                    this.getWorldGuardPlugin = new WorldGuard_7_0_7(this);
-                this.getWorldGuardPlugin.registerFlags();
-            }
+            this.getWorldGuardPlugin = new WorldGuard_7_0_7(this);
+            this.getWorldGuardPlugin.registerFlags();
         }
-
 
         if (getServer().getPluginManager().getPlugin("Quests") != null) {
             //Write out the quests addon to the quests modules folder.
             if (new File(this.getDataFolder().getParentFile(), "/Quests/modules").exists())
                 exportFile(new File(this.getDataFolder().getParentFile(), "/Quests/modules"), "NPCDestinations_Quests-2.3.0.jar", true);
         }
-
     }
 
     public void onEnable() {
-
         // Setup defaults
-        debugTargets = new ArrayList<DebugTarget>();
-        getLanguageManager = new Language_Manager(this);
-        getMessageManager = new Messages_Manager(this);
+        debugTargets = new ArrayList<>();
+        getLanguageManager = new LanguageManager(this);
+        getMessageManager = new MessagesManager(this);
         getPluginManager = new Plugin_Manager(this);
-        getCommandManager = new Command_Manager(this);
-        getCitizensProc = new Citizens_Processing(this);
+        getCommandManager = new CommandManager(this);
+        getCitizensProc = new CitizensProcessing(this);
 
-        // Setup the default paths in the storage folder.
+        // Setup default paths in the storage folder.
         languagePath = new File(this.getDataFolder(), "/Languages/");
         loggingPath = new File(this.getDataFolder(), "/Logs/");
 
@@ -185,11 +136,10 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
 
         // Register commands
         getCommandManager.registerCommandClass(Commands_Plugin.class);
-        getCommandManager.registerCommandClass(Commands_NPC.class);
-        getCommandManager.registerCommandClass(Commands_Location.class);
+        getCommandManager.registerCommandClass(CommandsNPC.class);
+        getCommandManager.registerCommandClass(CommandsLocation.class);
 
-        if (Bukkit.getServer().getClass().getPackage().getName().endsWith("v1_18")) {
-            Version = 11710;
+        if (Bukkit.getServer().getClass().getPackage().getName().contains("v1_18")) {
             getParticleManager = new PlayParticle_1_18_R1R2();
             getMCUtils = new MCUtil_1_18_R1R2();
             getMessageManager.consoleMessage(this, "destinations", "console_messages.plugin_version", getServer().getVersion().substring(getServer().getVersion().indexOf('(')));
@@ -202,12 +152,10 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
         //Determine the time engine
         String timePlugin = this.getConfig().getString("timeplugin", "default");
 
-        switch (timePlugin.toUpperCase()) {
-            case "REALWORLD":
-                this.getTimeManager = new DestinationsRealWorldTimeManager();
-                break;
-            default:
-                this.getTimeManager = new DestinationsTimeManager();
+        if ("REALWORLD".equals(timePlugin.toUpperCase())) {
+            this.getTimeManager = new DestinationsRealWorldTimeManager();
+        } else {
+            this.getTimeManager = new DestinationsTimeManager();
         }
 
         getPathClass = new AstarPathFinder(this);
@@ -328,7 +276,7 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
             }
         }
 
-        jsonChat = new net.livecar.nuttyworks.npc_destinations.messages.jsonChat(this);
+        jsonChat = new JSONChat(this);
 
         // Register your trait with Citizens.
         net.citizensnpcs.api.CitizensAPI.getTraitFactory().registerTrait(net.citizensnpcs.api.trait.TraitInfo.create(NPCDestinationsTrait.class).withName("npcdestinations"));
@@ -339,7 +287,7 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
         Bukkit.getPluginManager().registerEvents(new BlockStickListener_NPCDest(this), this);
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener_NPCDest(this), this);
 
-        net.citizensnpcs.trait.waypoint.Waypoints.registerWaypointProvider(Citizens_WaypointProvider.class, "npcdestinations");
+        net.citizensnpcs.trait.waypoint.Waypoints.registerWaypointProvider(CitizensWaypointProvider.class, "npcdestinations");
 
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
             @Override
@@ -352,7 +300,7 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
         }, 30L, 5L);
 
         // 1.34 - Citizens save.yml backup monitor
-        final Citizens_Utilities backupClass = new Citizens_Utilities(this);
+        final CitizensUtilities backupClass = new CitizensUtilities(this);
 
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
             try {

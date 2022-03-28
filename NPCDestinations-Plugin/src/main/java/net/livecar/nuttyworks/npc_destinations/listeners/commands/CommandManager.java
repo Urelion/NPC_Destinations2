@@ -16,14 +16,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Command_Manager {
-    HashMap<String, Command_Record> registeredCommands = null;
+public class CommandManager {
+    HashMap<String, CommandRecord> registeredCommands = null;
     private List<String> commandGroups = null;
     private DestinationsPlugin getStorageReference = null;
 
-    public Command_Manager(DestinationsPlugin destRef) {
+    public CommandManager(DestinationsPlugin destRef) {
         this.getStorageReference = destRef;
-        registeredCommands = new HashMap<String, Command_Record>();
+        registeredCommands = new HashMap<String, CommandRecord>();
         commandGroups = new ArrayList<String>();
     }
 
@@ -83,7 +83,7 @@ public class Command_Manager {
             for (String groupName : commandGroups) {
                 StringBuilder response = new StringBuilder();
 
-                for (Command_Record cmdRecord : registeredCommands.values()) {
+                for (CommandRecord cmdRecord : registeredCommands.values()) {
                     if (cmdRecord.helpMessage.equals(""))
                         continue;
 
@@ -124,7 +124,7 @@ public class Command_Manager {
             }
             return true;
         } else if (registeredCommands.containsKey(inargs[0])) {
-            Command_Record cmdRecord = registeredCommands.get(inargs[0].toLowerCase());
+            CommandRecord cmdRecord = registeredCommands.get(inargs[0].toLowerCase());
             if (!cmdRecord.allowConsole & !isPlayer(sender)) {
                 getStorageReference.getMessageManager.sendMessage("destinations", sender, "console_messages.command_noconsole");
                 return true;
@@ -178,14 +178,14 @@ public class Command_Manager {
         arguments = sList.toArray(new String[sList.size()]);
 
         if (arguments.length == 1) {
-            for (Command_Record cmdSetting : this.registeredCommands.values()) {
+            for (CommandRecord cmdSetting : this.registeredCommands.values()) {
                 if ((!isPlayer && cmdSetting.allowConsole) || getStorageReference.hasPermissions(sender, cmdSetting.commandPermission)) {
                     if ((arguments[0].trim().length() > 0 && cmdSetting.commandName.startsWith(arguments[0].trim().toLowerCase())) || arguments[0].trim().equals(""))
                         results.add(cmdSetting.commandName);
                 }
             }
         } else {
-            for (Command_Record cmdSetting : this.registeredCommands.values()) {
+            for (CommandRecord cmdSetting : this.registeredCommands.values()) {
                 if ((!isPlayer && cmdSetting.allowConsole) || getStorageReference.hasPermissions(sender, cmdSetting.commandPermission)) {
                     if (arguments.length > 0) {
                         if (arguments[0].trim().equalsIgnoreCase(cmdSetting.commandName)) {
@@ -230,7 +230,7 @@ public class Command_Manager {
                 CommandInfo methodAnnotation = commandMethod.getAnnotation(CommandInfo.class);
                 if (!commandGroups.contains(methodAnnotation.group()))
                     commandGroups.add(methodAnnotation.group());
-                Command_Record cmdRecord = new Command_Record(methodAnnotation.name(), methodAnnotation.group(), methodAnnotation.languageFile(), methodAnnotation.permission(), methodAnnotation.helpMessage(), methodAnnotation
+                CommandRecord cmdRecord = new CommandRecord(methodAnnotation.name(), methodAnnotation.group(), methodAnnotation.languageFile(), methodAnnotation.permission(), methodAnnotation.helpMessage(), methodAnnotation
                         .allowConsole(), methodAnnotation.minArguments(), methodAnnotation.maxArguments(), methodAnnotation.arguments(), commandClass, commandMethod.getName());
                 registeredCommands.put(methodAnnotation.name(), cmdRecord);
             }

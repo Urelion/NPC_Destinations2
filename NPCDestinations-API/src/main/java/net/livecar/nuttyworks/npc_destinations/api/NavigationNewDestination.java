@@ -5,16 +5,18 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class Location_Added extends Event implements Cancellable {
+public class NavigationNewDestination extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
 
-    private Destination_Setting      destinationChanged;
+    private DestinationSetting targetDestination;
     private NPC                      owningNPC;
     private boolean                  cancelEvent;
+    private boolean                  forcedEvent;
 
-    public Location_Added(NPC changedNPC, Destination_Setting changedDestination) {
-        destinationChanged = changedDestination;
-        owningNPC = changedNPC;
+    public NavigationNewDestination(NPC npc, DestinationSetting newDestination, boolean forced) {
+        targetDestination = newDestination;
+        owningNPC = npc;
+        forcedEvent = forced;
     }
 
     @Override
@@ -40,7 +42,11 @@ public class Location_Added extends Event implements Cancellable {
         return cancelEvent;
     }
 
-    public Destination_Setting getDestination() {
-        return destinationChanged;
+    public boolean isForced() {
+        return forcedEvent;
+    }
+
+    public DestinationSetting getDestination() {
+        return targetDestination;
     }
 }

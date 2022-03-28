@@ -6,7 +6,7 @@ import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.Trait;
 import net.citizensnpcs.trait.waypoint.Waypoints;
 import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
-import net.livecar.nuttyworks.npc_destinations.api.Navigation_NewDestination;
+import net.livecar.nuttyworks.npc_destinations.api.NavigationNewDestination;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait.en_RequestedAction;
 import net.livecar.nuttyworks.npc_destinations.plugins.DestinationsAddon;
@@ -20,7 +20,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
 
-public class Commands_NPC {
+public class CommandsNPC {
     @CommandInfo(
             name = "autoset",
             group = "NPC Config Commands",
@@ -261,7 +261,7 @@ public class Commands_NPC {
                 }
 
                 // Fire the navigation event
-                Navigation_NewDestination newLocation = new Navigation_NewDestination(npc, destTrait.NPCLocations
+                NavigationNewDestination newLocation = new NavigationNewDestination(npc, destTrait.NPCLocations
                         .get(nLocNum), true);
                 Bukkit.getServer().getPluginManager().callEvent(newLocation);
 

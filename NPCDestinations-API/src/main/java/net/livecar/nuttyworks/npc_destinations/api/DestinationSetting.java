@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 import java.util.UUID;
 
-public class Destination_Setting {
+public class DestinationSetting {
 
     public UUID         LocationIdent;
     public String       Alias_Name;
@@ -54,7 +54,7 @@ public class Destination_Setting {
     private double      Wandering_Distance;
     private double      Wandering_DistanceSquared;
 
-    public Destination_Setting() {
+    public DestinationSetting() {
         citizens_Swim = TriBoolean.NotSet;
         citizens_NewPathFinder = TriBoolean.NotSet;
         citizens_AvoidWater = TriBoolean.NotSet;

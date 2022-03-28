@@ -12,11 +12,11 @@ import net.citizensnpcs.npc.skin.SkinnableEntity;
 import net.citizensnpcs.trait.waypoint.Waypoints;
 import net.livecar.nuttyworks.npc_destinations.DebugTarget;
 import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
-import net.livecar.nuttyworks.npc_destinations.api.Destination_Setting;
-import net.livecar.nuttyworks.npc_destinations.api.Location_Added;
-import net.livecar.nuttyworks.npc_destinations.api.Location_Deleted;
-import net.livecar.nuttyworks.npc_destinations.api.Location_Updated;
-import net.livecar.nuttyworks.npc_destinations.citizens.Citizens_Utilities;
+import net.livecar.nuttyworks.npc_destinations.api.DestinationSetting;
+import net.livecar.nuttyworks.npc_destinations.api.LocationAdded;
+import net.livecar.nuttyworks.npc_destinations.api.LocationDeleted;
+import net.livecar.nuttyworks.npc_destinations.api.LocationUpdated;
+import net.livecar.nuttyworks.npc_destinations.citizens.CitizensUtilities;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait.en_RequestedAction;
 import net.livecar.nuttyworks.npc_destinations.plugins.DestinationsAddon;
@@ -69,7 +69,7 @@ public class CommandListener_NPCDest {
                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.no_permissions");
                 return true;
             } else {
-                Citizens_Utilities citizensUtils = new Citizens_Utilities(destRef);
+                CitizensUtilities citizensUtils = new CitizensUtilities(destRef);
                 citizensUtils.BackupConfig(true);
                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.backup_command");
                 return true;
@@ -390,7 +390,7 @@ public class CommandListener_NPCDest {
                     } else if (trait.NPCLocations.size() > 0) {
                         sender.sendMessage(ChatColor.GREEN + "Configured Locations: ");
                         for (int nCnt = 0; nCnt < trait.NPCLocations.size(); nCnt++) {
-                            Destination_Setting oLoc = trait.NPCLocations.get(nCnt);
+                            DestinationSetting oLoc = trait.NPCLocations.get(nCnt);
                             destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_info_location", trait, trait.NPCLocations.get(nCnt));
                         }
                     } else {
@@ -572,7 +572,7 @@ public class CommandListener_NPCDest {
                                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_badargs");
                                 return true;
                             }
-                            Destination_Setting oCurLoc = trait.NPCLocations.get(nIndex);
+                            DestinationSetting oCurLoc = trait.NPCLocations.get(nIndex);
                             if (oCurLoc == null) {
                                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_info_nolocations");
                             } else {
@@ -608,7 +608,7 @@ public class CommandListener_NPCDest {
                                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_badargs");
                                 return true;
                             }
-                            Destination_Setting oCurLoc = trait.NPCLocations.get(nIndex);
+                            DestinationSetting oCurLoc = trait.NPCLocations.get(nIndex);
                             if (oCurLoc == null) {
                                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_info_nolocations");
                             } else {
@@ -625,7 +625,7 @@ public class CommandListener_NPCDest {
                                 }
                                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_delete", trait, oCurLoc, 0);
                                 oCurLoc.arrival_Commands.remove(listIndex);
-                                Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nIndex));
+                                LocationUpdated changedLocation = new LocationUpdated(npc, trait.NPCLocations.get(nIndex));
                                 Bukkit.getServer().getPluginManager().callEvent(changedLocation);
                                 onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                                 return true;
@@ -657,7 +657,7 @@ public class CommandListener_NPCDest {
                                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_badargs");
                                 return true;
                             }
-                            Destination_Setting oCurLoc = trait.NPCLocations.get(nIndex);
+                            DestinationSetting oCurLoc = trait.NPCLocations.get(nIndex);
                             if (!oCurLoc.managed_Location.equals("")) {
                                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_managed", trait, oCurLoc);
                                 return true;
@@ -677,7 +677,7 @@ public class CommandListener_NPCDest {
                             for (int pageNum = 1; pageNum <= meta.getPageCount(); pageNum++)
                                 commandString += meta.getPage(1).trim();
                             oCurLoc.arrival_Commands.add(commandString);
-                            Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nIndex));
+                            LocationUpdated changedLocation = new LocationUpdated(npc, trait.NPCLocations.get(nIndex));
                             Bukkit.getServer().getPluginManager().callEvent(changedLocation);
                             onCommand(sender, cmd, cmdLabel, new String[]{"loccommands", "--npc", Integer.toString(npc.getId()), inargs[1]});
                             return true;
@@ -687,7 +687,7 @@ public class CommandListener_NPCDest {
                                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_commands_badargs");
                                 return true;
                             }
-                            Destination_Setting oCurLoc = trait.NPCLocations.get(nIndex);
+                            DestinationSetting oCurLoc = trait.NPCLocations.get(nIndex);
                             if (oCurLoc == null) {
                                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_info_nolocations");
                             } else {
@@ -703,7 +703,7 @@ public class CommandListener_NPCDest {
                                     commandString += inargs[nCnt] + " ";
                                 }
                                 oCurLoc.arrival_Commands.add(commandString.trim());
-                                Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nIndex));
+                                LocationUpdated changedLocation = new LocationUpdated(npc, trait.NPCLocations.get(nIndex));
                                 Bukkit.getServer().getPluginManager().callEvent(changedLocation);
                                 onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                                 return true;
@@ -749,7 +749,7 @@ public class CommandListener_NPCDest {
                             return true;
                         }
                         // V1.39 -- Event
-                        Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nIndex));
+                        LocationUpdated changedLocation = new LocationUpdated(npc, trait.NPCLocations.get(nIndex));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
                         onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
@@ -829,7 +829,7 @@ public class CommandListener_NPCDest {
                         }
 
                         // V1.39 -- Event
-                        Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nIndex));
+                        LocationUpdated changedLocation = new LocationUpdated(npc, trait.NPCLocations.get(nIndex));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
                         onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
@@ -853,7 +853,7 @@ public class CommandListener_NPCDest {
 
                     if (inargs.length > 2) {
                         // Loop the NPC and see if we have an alias
-                        for (Destination_Setting oDestination : trait.NPCLocations) {
+                        for (DestinationSetting oDestination : trait.NPCLocations) {
                             if (oDestination.Alias_Name.equalsIgnoreCase(inargs[2])) {
                                 // Exists
                                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_localias_duplicate");
@@ -880,7 +880,7 @@ public class CommandListener_NPCDest {
                         trait.NPCLocations.get(nIndex).Alias_Name = inargs[2];
 
                         // V1.39 -- Event
-                        Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nIndex));
+                        LocationUpdated changedLocation = new LocationUpdated(npc, trait.NPCLocations.get(nIndex));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
                         onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
@@ -926,7 +926,7 @@ public class CommandListener_NPCDest {
                                 return true;
                             }
                         }
-                        Destination_Setting oLoc = new Destination_Setting();
+                        DestinationSetting oLoc = new DestinationSetting();
                         oLoc.destination = new Location(player.getLocation().getWorld(), player.getLocation().getBlockX() + 0.5, player.getLocation().getBlockY(), player.getLocation().getBlockZ() + 0.5, Math.abs(player.getLocation()
                                 .getYaw()), 0.0F);
                         oLoc.TimeOfDay = nTimeOfDay;
@@ -953,11 +953,11 @@ public class CommandListener_NPCDest {
                         oLoc.Pause_Type = "ALL";
 
                         if (trait.NPCLocations == null) {
-                            trait.NPCLocations = new ArrayList<Destination_Setting>();
+                            trait.NPCLocations = new ArrayList<DestinationSetting>();
                         }
 
                         // V1.39 -- Event
-                        final Location_Added newLocation = new Location_Added(npc, oLoc);
+                        final LocationAdded newLocation = new LocationAdded(npc, oLoc);
                         Bukkit.getServer().getPluginManager().callEvent(newLocation);
                         if (newLocation.isCancelled()) {
                             destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_addlocation_blocked", trait);
@@ -992,8 +992,8 @@ public class CommandListener_NPCDest {
                             }
 
                             // V1.39 -- Event
-                            final Destination_Setting removedDest = trait.NPCLocations.get(Integer.parseInt(inargs[1]));
-                            Location_Deleted removeEvent = new Location_Deleted(npc, removedDest);
+                            final DestinationSetting removedDest = trait.NPCLocations.get(Integer.parseInt(inargs[1]));
+                            LocationDeleted removeEvent = new LocationDeleted(npc, removedDest);
                             Bukkit.getServer().getPluginManager().callEvent(removeEvent);
                             if (removeEvent.isCancelled()) {
                                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_removelocation_blocked", trait);
@@ -1013,7 +1013,7 @@ public class CommandListener_NPCDest {
                         if (oCurLoc == null) {
                             destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_info_nolocations", trait);
                         } else {
-                            for (Destination_Setting oLoc : trait.NPCLocations) {
+                            for (DestinationSetting oLoc : trait.NPCLocations) {
                                 destRef.getMessageManager.sendMessage("destinations", sender, "messages.commands_info_location", trait, oLoc);
                             }
                         }
@@ -1329,7 +1329,7 @@ public class CommandListener_NPCDest {
                             trait.NPCLocations.get(nIndex).player_Skin_Texture_Metadata = "";
                             trait.NPCLocations.get(nIndex).player_Skin_Texture_Signature = "";
                             // V1.39 -- Event
-                            Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nIndex));
+                            LocationUpdated changedLocation = new LocationUpdated(npc, trait.NPCLocations.get(nIndex));
                             Bukkit.getServer().getPluginManager().callEvent(changedLocation);
                             onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                             return true;
@@ -1348,7 +1348,7 @@ public class CommandListener_NPCDest {
                         trait.NPCLocations.get(nIndex).player_Skin_Texture_Signature = npc.data().get(NPC.PLAYER_SKIN_TEXTURE_PROPERTIES_SIGN_METADATA).toString();
 
                         // V1.39 -- Event
-                        Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nIndex));
+                        LocationUpdated changedLocation = new LocationUpdated(npc, trait.NPCLocations.get(nIndex));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
                         onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         return true;
@@ -1398,7 +1398,7 @@ public class CommandListener_NPCDest {
                             trait.NPCLocations.get(nLoc).items_Offhand = npcINV.get(EquipmentSlot.OFF_HAND);
 
                         // V1.39 -- Event
-                        Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
+                        LocationUpdated changedLocation = new LocationUpdated(npc, trait.NPCLocations.get(nLoc));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
                         onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
@@ -1431,7 +1431,7 @@ public class CommandListener_NPCDest {
                         trait.NPCLocations.get(nLoc).setMaxDistance(nDist);
 
                         // V1.39 -- Event
-                        Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
+                        LocationUpdated changedLocation = new LocationUpdated(npc, trait.NPCLocations.get(nLoc));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
                         onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     } catch (Exception e) {
@@ -1466,7 +1466,7 @@ public class CommandListener_NPCDest {
                         trait.NPCLocations.get(nLoc).Pause_Type = "ALL";
 
                         // V1.39 -- Event
-                        Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
+                        LocationUpdated changedLocation = new LocationUpdated(npc, trait.NPCLocations.get(nLoc));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
                         onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         return true;
@@ -1478,7 +1478,7 @@ public class CommandListener_NPCDest {
                             trait.NPCLocations.get(nLoc).Pause_Type = "ALL";
 
                             // V1.39 -- Event
-                            Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
+                            LocationUpdated changedLocation = new LocationUpdated(npc, trait.NPCLocations.get(nLoc));
                             Bukkit.getServer().getPluginManager().callEvent(changedLocation);
                             onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         } catch (Exception e) {
@@ -1492,7 +1492,7 @@ public class CommandListener_NPCDest {
                             trait.NPCLocations.get(nLoc).Pause_Type = "ALL";
 
                             // V1.39 -- Event
-                            Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
+                            LocationUpdated changedLocation = new LocationUpdated(npc, trait.NPCLocations.get(nLoc));
                             Bukkit.getServer().getPluginManager().callEvent(changedLocation);
                             onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         } catch (Exception e) {
@@ -1513,7 +1513,7 @@ public class CommandListener_NPCDest {
                             }
 
                             // V1.39 -- Event
-                            Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
+                            LocationUpdated changedLocation = new LocationUpdated(npc, trait.NPCLocations.get(nLoc));
                             Bukkit.getServer().getPluginManager().callEvent(changedLocation);
                             onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                         } catch (Exception e) {
@@ -1555,7 +1555,7 @@ public class CommandListener_NPCDest {
                         trait.NPCLocations.get(nLoc).Time_Maximum = nMax;
 
                         // V1.39 -- Event
-                        Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
+                        LocationUpdated changedLocation = new LocationUpdated(npc, trait.NPCLocations.get(nLoc));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
                         onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
@@ -1599,7 +1599,7 @@ public class CommandListener_NPCDest {
                             }
                         }
                         // V1.39 -- Event
-                        Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
+                        LocationUpdated changedLocation = new LocationUpdated(npc, trait.NPCLocations.get(nLoc));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
                         onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
@@ -1648,7 +1648,7 @@ public class CommandListener_NPCDest {
                     }
                     trait.NPCLocations.get(nLoc).TimeOfDay = nTimeOfDay;
                     // V1.39 -- Event
-                    Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
+                    LocationUpdated changedLocation = new LocationUpdated(npc, trait.NPCLocations.get(nLoc));
                     Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
                     onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
@@ -1677,7 +1677,7 @@ public class CommandListener_NPCDest {
                         trait.NPCLocations.get(nLoc).destination.setYaw(Math.abs(trait.NPCLocations.get(nLoc).destination.getYaw()));
 
                         // V1.39 -- Event
-                        Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
+                        LocationUpdated changedLocation = new LocationUpdated(npc, trait.NPCLocations.get(nLoc));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
                         onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});
@@ -1705,7 +1705,7 @@ public class CommandListener_NPCDest {
                         trait.NPCLocations.get(nLoc).destination = new Location(trait.NPCLocations.get(nLoc).destination.getWorld(), nX + 0.5, nY, nZ + 0.5, nYaw, nPitch);
 
                         // V1.39 -- Event
-                        Location_Updated changedLocation = new Location_Updated(npc, trait.NPCLocations.get(nLoc));
+                        LocationUpdated changedLocation = new LocationUpdated(npc, trait.NPCLocations.get(nLoc));
                         Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
                         onCommand(sender, cmd, cmdLabel, new String[]{"info", "--npc", Integer.toString(npc.getId())});

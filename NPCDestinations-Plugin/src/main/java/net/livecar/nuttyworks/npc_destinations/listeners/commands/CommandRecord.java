@@ -9,7 +9,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class Command_Record {
+public class CommandRecord {
     public String commandName;
     public String groupName;
     public String languageFile;
@@ -23,8 +23,8 @@ public class Command_Record {
     private final Class<?> commandClass;
     private final Method commandMethod;
 
-    public Command_Record(String commandName, String groupName, String languageFile, String[] commandPermission, String helpMessage, Boolean allowConsole, int minArguments, int maxArguments, String[] arguments, Class<?> commandClass,
-                          String commandMethod) {
+    public CommandRecord(String commandName, String groupName, String languageFile, String[] commandPermission, String helpMessage, Boolean allowConsole, int minArguments, int maxArguments, String[] arguments, Class<?> commandClass,
+                         String commandMethod) {
         this.commandName = commandName;
         this.groupName = groupName;
         this.languageFile = languageFile;

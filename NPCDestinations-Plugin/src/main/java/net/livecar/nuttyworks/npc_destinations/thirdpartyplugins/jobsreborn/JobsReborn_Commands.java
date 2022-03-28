@@ -2,7 +2,7 @@ package net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.jobsreborn;
 
 import net.citizensnpcs.api.npc.NPC;
 import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
-import net.livecar.nuttyworks.npc_destinations.api.Location_Updated;
+import net.livecar.nuttyworks.npc_destinations.api.LocationUpdated;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
 import net.livecar.nuttyworks.npc_destinations.listeners.commands.CommandInfo;
 import net.livecar.nuttyworks.npc_destinations.utilities.Utilities;
@@ -61,7 +61,7 @@ public class JobsReborn_Commands {
                         addonReference.pluginReference.npcSettings.get(npc.getId()).locations.remove(destTrait.NPCLocations.get(nIndex).LocationIdent);
 
                         // V1.39 -- Event
-                        Location_Updated changeEvent = new Location_Updated(npc, destTrait.NPCLocations.get(nIndex));
+                        LocationUpdated changeEvent = new LocationUpdated(npc, destTrait.NPCLocations.get(nIndex));
                         Bukkit.getServer().getPluginManager().callEvent(changeEvent);
                     }
 
@@ -100,7 +100,7 @@ public class JobsReborn_Commands {
                 }
 
                 // V1.39 -- Event
-                Location_Updated changedLocation = new Location_Updated(npc, destTrait.NPCLocations.get(nIndex));
+                LocationUpdated changedLocation = new LocationUpdated(npc, destTrait.NPCLocations.get(nIndex));
                 Bukkit.getServer().getPluginManager().callEvent(changedLocation);
 
                 destRef.getCommandManager.onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});

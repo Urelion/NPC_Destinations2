@@ -6,11 +6,11 @@ import org.bukkit.configuration.file.FileConfiguration;
 import java.io.File;
 import java.util.HashMap;
 
-public class Language_Manager {
+public class LanguageManager {
     public HashMap<String, FileConfiguration> languageStorage = new HashMap<>();
     private DestinationsPlugin destRef = null;
 
-    public Language_Manager(DestinationsPlugin storageRef) {
+    public LanguageManager(DestinationsPlugin storageRef) {
         destRef = storageRef;
     }
 

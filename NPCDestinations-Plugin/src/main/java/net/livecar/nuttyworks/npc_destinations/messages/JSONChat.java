@@ -10,10 +10,10 @@ import org.bukkit.entity.Player;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
-public class jsonChat {
+public class JSONChat {
     private final DestinationsPlugin destRef;
 
-    public jsonChat(DestinationsPlugin storageRef) {
+    public JSONChat(DestinationsPlugin storageRef) {
         destRef = storageRef;
     }
 
@@ -26,14 +26,10 @@ public class jsonChat {
     }
 
     private void sendMessage(CommandSender player, String jsonMsg) {
-        if (destRef.Version < 11200) {
-            sendMessageLess12(player, jsonMsg);
-        } else {
-            try {
-                player.spigot().sendMessage(ComponentSerializer.parse(jsonMsg));
-            } catch (Exception error) {
-                destRef.getMessageManager.logToConsole(destRef, "Json Failure: " + error.getMessage() + "\n" + jsonMsg);
-            }
+        try {
+            player.spigot().sendMessage(ComponentSerializer.parse(jsonMsg));
+        } catch (Exception error) {
+            destRef.getMessageManager.logToConsole(destRef, "Json Failure: " + error.getMessage() + "\n" + jsonMsg);
         }
     }
 

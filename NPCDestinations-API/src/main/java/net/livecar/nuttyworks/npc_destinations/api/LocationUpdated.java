@@ -4,15 +4,15 @@ import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class Navigation_Failed extends Event {
+public class LocationUpdated extends Event {
     private static final HandlerList handlers = new HandlerList();
 
-    private Destination_Setting      targetDestination;
+    private DestinationSetting destinationChanged;
     private NPC                      owningNPC;
 
-    public Navigation_Failed(NPC npc, Destination_Setting newDestination) {
-        targetDestination = newDestination;
-        owningNPC = npc;
+    public LocationUpdated(NPC changedNPC, DestinationSetting changedDestination) {
+        destinationChanged = changedDestination;
+        owningNPC = changedNPC;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class Navigation_Failed extends Event {
         return owningNPC;
     }
 
-    public Destination_Setting getDestination() {
-        return targetDestination;
+    public DestinationSetting getDestination() {
+        return destinationChanged;
     }
 }

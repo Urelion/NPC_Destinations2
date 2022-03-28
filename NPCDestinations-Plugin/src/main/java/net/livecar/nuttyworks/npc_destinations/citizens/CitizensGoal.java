@@ -6,12 +6,12 @@ import net.citizensnpcs.api.ai.tree.BehaviorStatus;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.event.EventHandler;
 
-public class Citizens_Goal extends BehaviorGoalAdapter {
+public class CitizensGoal extends BehaviorGoalAdapter {
     public boolean forceFinish;
     public int nFailedPathCount = 0;
     private final NPC npc;
 
-    private Citizens_Goal(NPC npc) {
+    private CitizensGoal(NPC npc) {
         this.npc = npc;
     }
 
@@ -34,10 +34,10 @@ public class Citizens_Goal extends BehaviorGoalAdapter {
     }
 
     public boolean shouldExecute() {
-        return Citizens_Processing.goalAdapter_ShouldExecute(this.npc, this);
+        return CitizensProcessing.goalAdapterShouldExecute(this.npc, this);
     }
 
-    public static Citizens_Goal createWithNPC(NPC npc) {
-        return new Citizens_Goal(npc);
+    public static CitizensGoal createWithNPC(NPC npc) {
+        return new CitizensGoal(npc);
     }
 }

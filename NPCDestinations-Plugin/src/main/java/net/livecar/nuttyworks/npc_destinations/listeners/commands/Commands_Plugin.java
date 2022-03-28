@@ -5,7 +5,7 @@ import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.trait.Owner;
 import net.livecar.nuttyworks.npc_destinations.DebugTarget;
 import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
-import net.livecar.nuttyworks.npc_destinations.citizens.Citizens_Utilities;
+import net.livecar.nuttyworks.npc_destinations.citizens.CitizensUtilities;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -75,7 +75,7 @@ public class Commands_Plugin {
             maxArguments = 0
     )
     public boolean npcDest_Backup(DestinationsPlugin destinationsRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
-        Citizens_Utilities citizensUtils = new Citizens_Utilities(destinationsRef);
+        CitizensUtilities citizensUtils = new CitizensUtilities(destinationsRef);
         citizensUtils.BackupConfig(true);
         destinationsRef.getMessageManager.sendMessage("destinations", sender, "messages.backup_command");
         return true;
