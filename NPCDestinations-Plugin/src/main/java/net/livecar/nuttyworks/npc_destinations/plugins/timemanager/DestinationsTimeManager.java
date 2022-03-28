@@ -34,9 +34,9 @@ public class DestinationsTimeManager {
     }
 
     private void loadWorldClocks() {
-        File worldConfigFile = new File(DestinationsPlugin.Instance.getDataFolder(), "worldclock_settings.yml");
+        File worldConfigFile = new File(DestinationsPlugin.getInstance().getDataFolder(), "worldclock_settings.yml");
 
-        YamlConfiguration worldSettings = DestinationsPlugin.Instance.getUtilitiesClass.loadConfiguration(worldConfigFile);
+        YamlConfiguration worldSettings = DestinationsPlugin.getInstance().getUtilitiesClass.loadConfiguration(worldConfigFile);
 
         if (worldSettings != null) {
             for (World world : Bukkit.getServer().getWorlds()) {
@@ -58,9 +58,9 @@ public class DestinationsTimeManager {
     }
 
     private void saveWorldClocks() {
-        if (!DestinationsPlugin.Instance.getDataFolder().exists())
-            DestinationsPlugin.Instance.getDataFolder().mkdirs();
-        File worldConfigFile = new File(DestinationsPlugin.Instance.getDataFolder(), "worldclock_settings.yml");
+        if (!DestinationsPlugin.getInstance().getDataFolder().exists())
+            DestinationsPlugin.getInstance().getDataFolder().mkdirs();
+        File worldConfigFile = new File(DestinationsPlugin.getInstance().getDataFolder(), "worldclock_settings.yml");
         YamlConfiguration worldSettings = new YamlConfiguration();
 
         for (GameWorldTime gameWorldTime : worlds.values()) {

@@ -38,7 +38,7 @@ public class Sentinel_Plugin {
             version[2] = Integer.parseInt(versionSplit[2]);
 
         this.getSentinelPlugin = new Sentinel_Addon(this);
-        DestinationsPlugin.Instance.getPluginManager.registerPlugin(getSentinelPlugin);
+        DestinationsPlugin.getInstance().getPluginManager.registerPlugin(getSentinelPlugin);
         destRef.getCommandManager.registerCommandClass(Sentinel_Commands.class);
 
         new BukkitRunnable() {

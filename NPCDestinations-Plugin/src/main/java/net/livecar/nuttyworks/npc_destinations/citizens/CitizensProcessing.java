@@ -813,14 +813,7 @@ public class CitizensProcessing {
                 }
             } while (true);
 
-            if (lastLocation == null) {
-                lastLocation = trait.getPendingDestinations().get(0).clone();
-                trait.processedDestinations.add(trait.getPendingDestinations().get(0));
-                trait.removePendingDestination(0);
-            }
-
             plugin.getMessageManager.debugMessage(Level.FINEST, "NPCDestinations_Goal.shouldExecute()|NPC:" + npc.getId() + "|Navigate: " + lastLocation);
-
 
             Location newLocation = new Location(npc.getEntity().getWorld(), lastLocation.getBlockX() + 0.5, lastLocation.getBlockY() + 0.0, lastLocation.getBlockZ() + 0.0);
             npc.getNavigator().setTarget(newLocation);
@@ -863,7 +856,7 @@ public class CitizensProcessing {
         if (processWander) {
             Random random = new Random();
             if (trait.getLocationLockUntil() == null && trait.getCurrentAction().equals(en_CurrentAction.RANDOM_MOVEMENT)) {
-                int nWaitTime = 1;
+                int nWaitTime;
                 if (trait.currentLocation.Wait_Maximum == 0 || trait.currentLocation.Wait_Minimum == 0) {
                     nWaitTime = 1;
                 } else {
@@ -895,7 +888,7 @@ public class CitizensProcessing {
                         if (plugin.getPlotSquared != null) {
                             if (!plugin.getPlotSquared.locationInSamePlotAsNPC(npc, oNewDest)) continue;
                         }
-                        int newY = trait.blocksUnderSurface == -1 ? 0 - oNewDest.getBlockY() : trait.blocksUnderSurface > 0 ? y - trait.blocksUnderSurface : y;
+                        int newY = trait.blocksUnderSurface == -1 ? -oNewDest.getBlockY() : trait.blocksUnderSurface > 0 ? y - trait.blocksUnderSurface : y;
 
                         if (plugin.getWorldGuardPlugin.isInRegion(oNewDest, oLoc.Wandering_Region)) {
                             if (plugin.getPathClass.isLocationWalkable(oNewDest.getBlock().getRelative(0, y, 0).getLocation(), trait.OpensGates, trait.OpensWoodDoors, trait.OpensMetalDoors)) {
@@ -938,7 +931,7 @@ public class CitizensProcessing {
                             if (plugin.getPlotSquared != null) {
                                 if (!plugin.getPlotSquared.locationInSamePlotAsNPC(npc, oNewDest)) continue;
                             }
-                            int newY = trait.blocksUnderSurface == -1 ? 0 - oNewDest.getBlockY() : trait.blocksUnderSurface > 0 ? y - trait.blocksUnderSurface : y;
+                            int newY = trait.blocksUnderSurface == -1 ? -oNewDest.getBlockY() : trait.blocksUnderSurface > 0 ? y - trait.blocksUnderSurface : y;
 
                             if (plugin.getPathClass.isLocationWalkable(oNewDest.getBlock().getRelative(0, y, 0).getLocation(), trait.OpensGates, trait.OpensWoodDoors, trait.OpensMetalDoors)) {
                                 if (oLoc.Wandering_UseBlocks && trait.AllowedPathBlocks != null && trait.AllowedPathBlocks.size() > 0) {
@@ -1559,7 +1552,7 @@ public class CitizensProcessing {
                     net.citizensnpcs.util.PlayerAnimation.ARM_SWING.play((Player) npc.getEntity());
 
                 trait.removePendingDestination(0);
-                DestinationsPlugin.Instance.getMCUtils.closeOpenable(trait.lastOpenedObject);
+                DestinationsPlugin.getInstance().getMCUtils.closeOpenable(trait.lastOpenedObject);
                 plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                     this.processNPCThruOpenable(6, npc, trait);
                 }, 15L);

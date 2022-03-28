@@ -19,11 +19,11 @@ public class DestinationsRealWorldTimeManager extends DestinationsTimeManager {
         super();
         //Get the config settings
         try {
-            startDate = LocalDateTime.parse(DestinationsPlugin.Instance.getConfig().getString("realtime.startdate", "2020-01-01T00:00:00"));
+            startDate = LocalDateTime.parse(DestinationsPlugin.getInstance().getConfig().getString("realtime.startdate", "2020-01-01T00:00:00"));
         } catch (Exception err) {
             startDate = LocalDateTime.parse("2020-01-01T00:00:00");
         }
-        this.daySec = 86400.00F / DestinationsPlugin.Instance.getConfig().getInt("realworld.secondsperday", 1200);
+        this.daySec = 86400.00F / DestinationsPlugin.getInstance().getConfig().getInt("realworld.secondsperday", 1200);
     }
 
     @Override

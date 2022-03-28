@@ -50,7 +50,7 @@ import java.util.logging.Level;
 
 public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implements org.bukkit.event.Listener {
 
-    public static DestinationsPlugin Instance = null;
+    private static DestinationsPlugin instance;
 
     // For quick reference to this instance of the plugin.
     public FileConfiguration getDefaultConfig;
@@ -87,7 +87,7 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
     public DestinationsTimeManager getTimeManager = null;
 
     public void onLoad() {
-        DestinationsPlugin.Instance = this;
+        instance = this;
         getUtilitiesClass = new Utilities(this);
 
         Plugin worldGuardPlugin = getServer().getPluginManager().getPlugin("WorldGuard");
@@ -436,5 +436,9 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
         } catch (Exception error) {
             throw new IOException("Failure exporting file");
         }
+    }
+
+    public static DestinationsPlugin getInstance() {
+        return instance;
     }
 }

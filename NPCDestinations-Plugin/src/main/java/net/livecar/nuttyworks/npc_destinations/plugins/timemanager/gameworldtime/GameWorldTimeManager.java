@@ -31,7 +31,7 @@ public class GameWorldTimeManager extends DestinationsTimeManager {
         if (tickWatcher != null)
             return;
 
-        tickWatcher = Bukkit.getScheduler().runTaskTimer(DestinationsPlugin.Instance, () -> timeTick(), 0, 20);
+        tickWatcher = Bukkit.getScheduler().runTaskTimer(DestinationsPlugin.getInstance(), () -> timeTick(), 0, 20);
     }
 
     private void stopTimeWatcher() {
@@ -46,7 +46,7 @@ public class GameWorldTimeManager extends DestinationsTimeManager {
                 newWorldTime.dayCount = 0;
                 //Get the config settings
                 try {
-                    newWorldTime.startDate = LocalDateTime.parse(DestinationsPlugin.Instance.getConfig().getString("defaultworld.startdate", "2020-01-01T00:00:00"));
+                    newWorldTime.startDate = LocalDateTime.parse(DestinationsPlugin.getInstance().getConfig().getString("defaultworld.startdate", "2020-01-01T00:00:00"));
                 } catch (Exception err) {
                     newWorldTime.startDate = LocalDateTime.parse("2020-01-01T00:00:00");
                 }
