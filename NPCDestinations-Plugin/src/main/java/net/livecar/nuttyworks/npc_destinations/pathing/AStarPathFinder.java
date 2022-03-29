@@ -69,7 +69,7 @@ public class AStarPathFinder {
 
         if (playToPlayers != null) playToPlayers.clear();
 
-        //For Short pathing faults just teleport the NPC @fixme verify this behaviour why would NPC teleport to itself? shouldn't it just teleport to the end location?
+        // For Short pathing faults just teleport the NPC @fixme verify this behaviour why would NPC teleport to itself? shouldn't it just teleport to the end location?
         if (npc.getEntity().getLocation().distanceSquared(end) < 4) {
             Location toLocation = new Location(npc.getEntity().getLocation().getWorld(), npc.getEntity().getLocation().getBlockX(), npc.getEntity().getLocation().getBlockY(), npc.getEntity().getLocation().getBlockZ());
             if (plugin.getMcUtils().isHalfBlock(npc.getEntity().getLocation().getBlock().getType()))
@@ -95,13 +95,11 @@ public class AStarPathFinder {
             return;
         }
 
-        // Fix the start location
         Location cleanStart = start.clone();
         Location cleanEnd = end.clone();
 
-        if (!cleanStart.clone().getBlock().getType().isSolid()) cleanStart = findSurface(cleanStart.clone());
-
-        if (!cleanEnd.clone().getBlock().getType().isSolid()) cleanEnd = findSurface(cleanEnd.clone());
+        if (!cleanStart.getBlock().getType().isSolid()) cleanStart = findSurface(cleanStart.clone());
+        if (!cleanEnd.getBlock().getType().isSolid()) cleanEnd = findSurface(cleanEnd.clone());
 
         // Add to the queue
         PathFindingQueue pathFindingQueue = new PathFindingQueue();
@@ -174,9 +172,7 @@ public class AStarPathFinder {
     }
 
     private void addToClosedList(Tile tile) {
-        if (!currentTask.getClosed().containsKey(tile.getUID())) {
-            currentTask.getClosed().put(tile.getUID(), tile);
-        }
+        currentTask.getClosed().putIfAbsent(tile.getUID(), tile);
     }
 
     private void processQueueItem() {
@@ -260,8 +256,7 @@ public class AStarPathFinder {
 
             // 1.6 Ensure they are on a walkable block
             if (currentTask.getAllowedPathBlocks().size() > 0 && !currentTask.getAllowedPathBlocks().contains(currentTask.getPathLocation(getStartLocation()).getBlock().getType())) {
-                // remove the list of blocks to ensure that the NPC can walk
-                // home.
+                // remove the list of blocks to ensure that the NPC can walk home.
                 currentTask.getAllowedPathBlocks().clear();
             }
         }
@@ -269,10 +264,10 @@ public class AStarPathFinder {
         currentTask.getNpcTrait().setLastPathCalc();
 
         short sh = 0;
-        Tile t = new Tile(sh, sh, sh, null);
-        t.calculateBoth(currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ(), currentTask.getEndX(), currentTask.getEndY(), currentTask.getEndZ(), true);
-        currentTask.getOpen().put(t.getUID(), t);
-        processAdjacentTiles(t);
+        Tile tile = new Tile(sh, sh, sh, null);
+        tile.calculateBoth(currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ(), currentTask.getEndX(), currentTask.getEndY(), currentTask.getEndZ(), true);
+        currentTask.getOpen().put(tile.getUID(), tile);
+        processAdjacentTiles(tile);
         iterate();
     }
 
@@ -566,7 +561,7 @@ public class AStarPathFinder {
     private void processAdjacentTiles(Tile current) {
 
         // set of possible walk to locations adjacent to current tile
-        HashSet<Tile> possible = new HashSet<Tile>(26);
+        HashSet<Tile> possible = new HashSet<>(26);
 
         currentTask.setBlocksProcessed(currentTask.getBlocksProcessed() + 1);
 
@@ -578,28 +573,28 @@ public class AStarPathFinder {
                         continue;// don't check current square
                     }
 
-                    Tile t = new Tile((short) (current.getX() + x), (short) (current.getY() + y), (short) (current.getZ() + z), current);
-                    Location l = new Location(currentTask.getWorld(), (currentTask.getStartX() + t.getX()), (currentTask.getStartY() + t.getY()), (currentTask.getStartZ() + t.getZ()));
+                    Tile tile = new Tile((short) (current.getX() + x), (short) (current.getY() + y), (short) (current.getZ() + z), current);
+                    Location location = new Location(currentTask.getWorld(), (currentTask.getStartX() + tile.getX()), (currentTask.getStartY() + tile.getY()), (currentTask.getStartZ() + tile.getZ()));
 
                     //Validate the current tile has 3 spaces open above.
                     if (y == 1) {
-                        if (l.clone().add(0, 2, 0).getBlock().getType().isSolid()) continue;
+                        if (location.clone().add(0, 2, 0).getBlock().getType().isSolid()) continue;
                     }
                     if (y == -1) {
-                        if (l.clone().add(x, 2, z).getBlock().getType().isSolid()) continue;
+                        if (location.clone().add(x, 2, z).getBlock().getType().isSolid()) continue;
                     }
 
-                    Block b = l.getBlock();
+                    Block b = location.getBlock();
                     if (currentTask.getAllowedPathBlocks().size() > 0) {
-                        l = new Location(currentTask.getWorld(), (currentTask.getStartX() + t.getX()), (currentTask.getStartY() + t.getY()), (currentTask.getStartZ() + t.getZ()));
+                        location = new Location(currentTask.getWorld(), (currentTask.getStartX() + tile.getX()), (currentTask.getStartY() + tile.getY()), (currentTask.getStartZ() + tile.getZ()));
 
-                        b = l.getBlock();
+                        b = location.getBlock();
                         if (bInWater && b.isLiquid()) {
                             // anything?
                         } else {
                             // Validate the block types
                             if (currentTask.getBlocksBelow() != 0) {
-                                if (!currentTask.getAllowedPathBlocks().contains(currentTask.getPathLocation(l).getBlock().getType())) {
+                                if (!currentTask.getAllowedPathBlocks().contains(currentTask.getPathLocation(location).getBlock().getType())) {
                                     continue;
                                 }
                             } else if (!currentTask.getAllowedPathBlocks().contains(b.getType())) {
@@ -608,7 +603,7 @@ public class AStarPathFinder {
                         }
                     }
 
-                    if (!t.isInRange(currentTask.getRange())) {
+                    if (!tile.isInRange(currentTask.getRange())) {
                         // if block is out of bounds continue
                         continue;
                     }
@@ -638,19 +633,18 @@ public class AStarPathFinder {
                     if (plugin.getMcUtils().isOpenable(b) || plugin.getMcUtils().isOpenable(b.getLocation().add(0, 1, 0).getBlock()))
                         if (x != 0 && z != 0) continue;
 
-                    if (isOnClosedList(t)) {
+                    if (isOnClosedList(tile)) {
                         // ignore tile
                         continue;
                     }
 
                     // only process the tile if it can be walked on
-                    if (!isTileWalkable(t)) {
+                    if (!isTileWalkable(tile)) {
                         continue;
                     }
 
-
-                    t.calculateBoth(currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ(), currentTask.getEndX(), currentTask.getEndY(), currentTask.getEndZ(), true);
-                    possible.add(t);
+                    tile.calculateBoth(currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ(), currentTask.getEndX(), currentTask.getEndY(), currentTask.getEndZ(), true);
+                    possible.add(tile);
                 }
             }
         }
