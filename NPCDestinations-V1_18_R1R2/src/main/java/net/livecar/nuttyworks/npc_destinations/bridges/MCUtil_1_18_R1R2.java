@@ -15,8 +15,12 @@ import org.bukkit.inventory.ItemStack;
 
 public class MCUtil_1_18_R1R2 implements MCUtilsBridge {
 
-    public boolean isLocationWalkable(Location l, Boolean openGates, Boolean openWoodDoors, Boolean openMetalDoors) {
-        Block b = l.getBlock();
+    public boolean isLocationWalkable(Location location, Boolean openGates, Boolean openWoodDoors, Boolean openMetalDoors) {
+        Block b = location.getBlock();
+
+        if(b.getType() == Material.LADDER || b.getType() == Material.SCAFFOLDING){
+            return true;
+        }
         
         // Gates
         if (!openGates && (isGate(b.getType()) || isGate(b.getRelative(0, 1, 0).getType())))

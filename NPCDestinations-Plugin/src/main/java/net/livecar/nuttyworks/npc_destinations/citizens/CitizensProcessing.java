@@ -497,6 +497,7 @@ public class CitizensProcessing {
         }
     }
 
+    // Called by CitizensGoal
     private boolean shouldExecute(NPC npc, CitizensGoal citGoal) {
         if (plugin.getAStarPathFinder() == null) return false;
         if (!npc.isSpawned()) return false;
@@ -507,16 +508,11 @@ public class CitizensProcessing {
             return false;
         }
 
-        // NPC is not currently spawned. Exit out.
-        if (!npc.isSpawned()) {
-            return false;
-        }
-
         if (plugin.getAStarPathFinder().getPathQueue().containsKey(npc.getId())) return false;
 
         NPCDestinationsTrait trait = npc.getTrait(NPCDestinationsTrait.class);
 
-        // Timeout the path finding because it's taking too long or stalled
+        // Timeout the pathfinding because it's taking too long or stalled
         if ((trait.getCurrentAction() == en_CurrentAction.PATH_HUNTING) && (trait.getPendingDestinations().size() == 0)) {
             if (trait.getLastPathCalc() != null) {
                 long nSeconds = Duration.between(trait.getLastPathCalc(), LocalDateTime.now()).getSeconds();
@@ -541,10 +537,8 @@ public class CitizensProcessing {
             }
         }
 
-        //Equipment class lookup
-        Equipment locEquip = trait.getNPC().getTrait(Equipment.class);
-
         // Lighting V1.19 - Check for torches in either hand
+        Equipment locEquip = trait.getNPC().getTrait(Equipment.class);
         if (plugin.getLightAPIPlugin() != null) {
             boolean startLightTask = false;
             if (locEquip.get(EquipmentSlot.HAND) != null && (plugin.getMcUtils().isHoldingTorch(locEquip.get(EquipmentSlot.HAND).getType()) != inHandLightSource.NOLIGHT)) {
@@ -626,13 +620,10 @@ public class CitizensProcessing {
             }
         }
 
-        // Validate if the item on the list to open is something we can, and
-        // open it
+        // Validate if the item on the list to open is something we can, and open it
         if (npc.getNavigator().getTargetAsLocation() != null && npc.getNavigator().getTargetType() == TargetType.LOCATION) {
             trait.processOpenableObjects();
-
-            // check if the NPC is stuck and sitting in one place. if so, recalc
-            // the path to the end.
+            // Check if the NPC is stuck and sitting in one place. if so, recalculate the path to the end.
             if ((npc.getNavigator().isNavigating() & npc.getNavigator().getTargetAsLocation().distanceSquared(npc.getEntity().getLocation()) > 3.0D)) {
                 long nSeconds = Duration.between(trait.lastPositionChange, LocalDateTime.now()).getSeconds();
                 if (nSeconds > 10L) {
@@ -650,9 +641,7 @@ public class CitizensProcessing {
 
         Double speed = npc.getEntity().getVelocity().lengthSquared();
         if (trait.getPendingDestinations().size() > 0 && trait.lastNavigationPoint != null) {
-
             Double distTarget = npc.getEntity().getLocation().distanceSquared(trait.lastNavigationPoint);
-
             if (distTarget > 1 && speed > 0.00615) return false;
         }
 
@@ -849,7 +838,9 @@ public class CitizensProcessing {
         }
 
         // Main movement thread
-        boolean processWander = oLoc.getWanderingDistance() > 0 && !npc.getNavigator().isNavigating() && npc.getEntity().getLocation().distanceSquared(oLoc.destination) <= oLoc.getWanderingDistanceSquared();
+        boolean processWander = false;
+        if (oLoc.getWanderingDistance() > 0 && !npc.getNavigator().isNavigating() && npc.getEntity().getLocation().distanceSquared(oLoc.destination) <= oLoc.getWanderingDistanceSquared())
+            processWander = true;
         if (!oLoc.Wandering_Region.equals("") && !npc.getNavigator().isNavigating() && plugin.getWorldGuardPlugin() != null)
             processWander = true;
 
@@ -983,10 +974,10 @@ public class CitizensProcessing {
         if (nDist > oLoc.getMaxDistanceSquared()) {
             trait.setCurrentAction(en_CurrentAction.PATH_HUNTING);
             if ((trait.TeleportOnNoPath) && (trait.lastResult.startsWith("unable to find a path"))) {
-                citGoal.nFailedPathCount += 1;
-                if (citGoal.nFailedPathCount > 2) {
+                citGoal.failedPathCount += 1;
+                if (citGoal.failedPathCount > 2) {
                     trait.lastResult = "Failed to locate a valid path to destination";
-                    citGoal.nFailedPathCount = 0;
+                    citGoal.failedPathCount = 0;
                     teleportSurface(npc.getEntity(), oLoc.destination.clone().add(0, 1, 0));
                     trait.locationReached();
                     if (plugin.getDebugTargets() != null)
@@ -1262,7 +1253,7 @@ public class CitizensProcessing {
                             } catch (Exception err) {
                                 StringWriter sw = new StringWriter();
                                 err.printStackTrace(new PrintWriter(sw));
-                                destRef.getMessageManager.consoleMessage(destRef, "destinations", "Console_Messages.plugin_debug", err.getMessage() + "\n" + sw.toString());
+                                plugin.getMessageManager.consoleMessage(plugin, "destinations", "Console_Messages.plugin_debug", err.getMessage() + "\n" + sw.toString());
                             } */
                         }
                     }

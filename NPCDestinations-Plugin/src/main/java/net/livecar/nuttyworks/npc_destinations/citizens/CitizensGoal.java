@@ -4,15 +4,19 @@ import net.citizensnpcs.api.ai.event.NavigationCompleteEvent;
 import net.citizensnpcs.api.ai.tree.BehaviorGoalAdapter;
 import net.citizensnpcs.api.ai.tree.BehaviorStatus;
 import net.citizensnpcs.api.npc.NPC;
+import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 
-public class CitizensGoal extends BehaviorGoalAdapter {
-    public boolean forceFinish;
-    public int nFailedPathCount = 0;
+public class CitizensGoal extends BehaviorGoalAdapter implements Listener {
     private final NPC npc;
+    private boolean forceFinish;
+    public int failedPathCount = 0;
 
-    private CitizensGoal(NPC npc) {
+    public CitizensGoal(NPC npc) {
         this.npc = npc;
+        Bukkit.getServer().getPluginManager().registerEvents(this, DestinationsPlugin.getInstance());
     }
 
     @EventHandler
@@ -35,9 +39,5 @@ public class CitizensGoal extends BehaviorGoalAdapter {
 
     public boolean shouldExecute() {
         return CitizensProcessing.goalAdapterShouldExecute(this.npc, this);
-    }
-
-    public static CitizensGoal createWithNPC(NPC npc) {
-        return new CitizensGoal(npc);
     }
 }

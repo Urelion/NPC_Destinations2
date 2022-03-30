@@ -48,7 +48,7 @@ public class CitizensWaypointProvider implements WaypointProvider {
         if (trait.TeleportOnFailedStartLoc == null) trait.TeleportOnFailedStartLoc = true;
         if (trait.TeleportOnNoPath == null) trait.TeleportOnNoPath = true;
 
-        if (this.currentGoal == null) this.currentGoal = CitizensGoal.createWithNPC(npc);
+        if (this.currentGoal == null) this.currentGoal = new CitizensGoal(npc);
         npc.getDefaultGoalController().addGoal(this.currentGoal, 1);
     }
 
