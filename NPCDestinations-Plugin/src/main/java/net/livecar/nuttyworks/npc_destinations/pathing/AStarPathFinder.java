@@ -557,39 +557,44 @@ public class AStarPathFinder {
         return currentTask.getClosed().containsKey(tile.getUID());
     }
 
-    // pass in the current tile as the parent
     private void processAdjacentTiles(Tile current) {
-
-        // set of possible walk to locations adjacent to current tile
+        // Set of possible walk to locations adjacent to current tile
         HashSet<Tile> possible = new HashSet<>(26);
 
         currentTask.setBlocksProcessed(currentTask.getBlocksProcessed() + 1);
 
+        // X X X
+        // X X X
+        // X X X
         for (byte x = -1; x <= 1; x++) {
             for (byte y = -1; y <= 1; y++) {
                 for (byte z = -1; z <= 1; z++) {
 
-                    if (x == 0 && y == 0 && z == 0) {
-                        continue;// don't check current square
-                    }
+                    // Don't check current square
+                    if (x == 0 && y == 0 && z == 0) continue;
 
                     Tile tile = new Tile((short) (current.getX() + x), (short) (current.getY() + y), (short) (current.getZ() + z), current);
                     Location location = new Location(currentTask.getWorld(), (currentTask.getStartX() + tile.getX()), (currentTask.getStartY() + tile.getY()), (currentTask.getStartZ() + tile.getZ()));
 
                     //Validate the current tile has 3 spaces open above.
-                    if (y == 1) {
-                        if (location.clone().add(0, 2, 0).getBlock().getType().isSolid()) continue;
-                    }
-                    if (y == -1) {
-                        if (location.clone().add(x, 2, z).getBlock().getType().isSolid()) continue;
-                    }
+                    if (y == 1) if (location.clone().add(0, 2, 0).getBlock().getType().isSolid()) continue;
+                    if (y == -1) if (location.clone().add(x, 2, z).getBlock().getType().isSolid()) continue;
 
-                    Block b = location.getBlock();
+                    // Ignore tile
+                    if (isOnClosedList(tile)) continue;
+
+                    // If block is out of bounds continue
+                    if (!tile.isInRange(currentTask.getRange())) continue;
+
+                    // Only process the tile if it can be walked on
+                    if (!isTileWalkable(tile)) continue;
+
+                    Block block = location.getBlock();
                     if (currentTask.getAllowedPathBlocks().size() > 0) {
                         location = new Location(currentTask.getWorld(), (currentTask.getStartX() + tile.getX()), (currentTask.getStartY() + tile.getY()), (currentTask.getStartZ() + tile.getZ()));
 
-                        b = location.getBlock();
-                        if (bInWater && b.isLiquid()) {
+                        block = location.getBlock();
+                        if (bInWater && block.isLiquid()) {
                             // anything?
                         } else {
                             // Validate the block types
@@ -597,18 +602,13 @@ public class AStarPathFinder {
                                 if (!currentTask.getAllowedPathBlocks().contains(currentTask.getPathLocation(location).getBlock().getType())) {
                                     continue;
                                 }
-                            } else if (!currentTask.getAllowedPathBlocks().contains(b.getType())) {
+                            } else if (!currentTask.getAllowedPathBlocks().contains(block.getType())) {
                                 continue;
                             }
                         }
                     }
 
-                    if (!tile.isInRange(currentTask.getRange())) {
-                        // if block is out of bounds continue
-                        continue;
-                    }
-
-                    if (!bInWater && b.isLiquid()) {
+                    if (!bInWater && block.isLiquid()) {
                         continue;
                     }
 
@@ -630,18 +630,8 @@ public class AStarPathFinder {
                     }
 
                     //Openables?
-                    if (plugin.getMcUtils().isOpenable(b) || plugin.getMcUtils().isOpenable(b.getLocation().add(0, 1, 0).getBlock()))
+                    if (plugin.getMcUtils().isOpenable(block) || plugin.getMcUtils().isOpenable(block.getLocation().add(0, 1, 0).getBlock()))
                         if (x != 0 && z != 0) continue;
-
-                    if (isOnClosedList(tile)) {
-                        // ignore tile
-                        continue;
-                    }
-
-                    // only process the tile if it can be walked on
-                    if (!isTileWalkable(tile)) {
-                        continue;
-                    }
 
                     tile.calculateBoth(currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ(), currentTask.getEndX(), currentTask.getEndY(), currentTask.getEndZ(), true);
                     possible.add(tile);
