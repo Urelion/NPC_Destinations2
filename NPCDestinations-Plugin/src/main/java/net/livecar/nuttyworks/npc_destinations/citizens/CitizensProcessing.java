@@ -784,22 +784,12 @@ public class CitizensProcessing {
 
                 if (plugin.getAStarPathFinder().requiresOpening(trait.getPendingDestinations().get(0).clone())) break;
 
-                if (maxDist < 2) {
-                    pathAngle = Math.toDegrees(angle);
-                    lastLocation = trait.getPendingDestinations().get(0).clone();
-                    trait.processedDestinations.add(trait.getPendingDestinations().get(0));
-                    trait.removePendingDestination(0);
-                    maxDist++;
-                } else {
-                    if (Math.toDegrees(angle) != Math.abs(pathAngle)) {
-                        break;
-                    }
-                    pathAngle = Math.toDegrees(angle);
-                    lastLocation = trait.getPendingDestinations().get(0).clone();
-                    trait.processedDestinations.add(trait.getPendingDestinations().get(0));
-                    trait.removePendingDestination(0);
-                    maxDist++;
-                }
+                if (maxDist >= 2 && (Math.toDegrees(angle) != Math.abs(pathAngle))) break;
+                pathAngle = Math.toDegrees(angle);
+                lastLocation = trait.getPendingDestinations().get(0).clone();
+                trait.processedDestinations.add(trait.getPendingDestinations().get(0));
+                trait.removePendingDestination(0);
+                maxDist++;
             } while (true);
 
             plugin.getMessagesManager().debugMessage(Level.FINEST, "NPCDestinations_Goal.shouldExecute()|NPC:" + npc.getId() + "|Navigate: " + lastLocation);
