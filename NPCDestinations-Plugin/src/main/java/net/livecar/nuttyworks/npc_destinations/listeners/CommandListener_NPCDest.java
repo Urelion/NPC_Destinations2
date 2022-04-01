@@ -16,7 +16,7 @@ import net.livecar.nuttyworks.npc_destinations.api.DestinationSetting;
 import net.livecar.nuttyworks.npc_destinations.api.LocationAdded;
 import net.livecar.nuttyworks.npc_destinations.api.LocationDeleted;
 import net.livecar.nuttyworks.npc_destinations.api.LocationUpdated;
-import net.livecar.nuttyworks.npc_destinations.citizens.CitizensUtilities;
+import net.livecar.nuttyworks.npc_destinations.utilities.CitizensUtilities;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait.en_RequestedAction;
 import net.livecar.nuttyworks.npc_destinations.plugins.DestinationsAddon;

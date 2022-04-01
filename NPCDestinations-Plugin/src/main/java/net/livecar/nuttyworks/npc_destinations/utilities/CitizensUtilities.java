@@ -1,4 +1,4 @@
-package net.livecar.nuttyworks.npc_destinations.citizens;
+package net.livecar.nuttyworks.npc_destinations.utilities;
 
 import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
 

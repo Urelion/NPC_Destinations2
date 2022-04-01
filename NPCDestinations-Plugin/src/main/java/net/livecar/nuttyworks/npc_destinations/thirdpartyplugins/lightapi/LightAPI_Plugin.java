@@ -1,4 +1,4 @@
-package net.livecar.nuttyworks.npc_destinations.lightapi;
+package net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.lightapi;
 
 import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
 import org.bukkit.Location;

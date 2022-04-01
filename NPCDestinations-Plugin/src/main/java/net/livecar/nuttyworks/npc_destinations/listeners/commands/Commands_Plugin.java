@@ -5,7 +5,7 @@ import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.trait.Owner;
 import net.livecar.nuttyworks.npc_destinations.DebugTarget;
 import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
-import net.livecar.nuttyworks.npc_destinations.citizens.CitizensUtilities;
+import net.livecar.nuttyworks.npc_destinations.utilities.CitizensUtilities;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
