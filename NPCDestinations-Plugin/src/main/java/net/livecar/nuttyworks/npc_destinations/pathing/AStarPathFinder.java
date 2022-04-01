@@ -13,7 +13,6 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.material.Openable;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -26,42 +25,16 @@ public class AStarPathFinder {
     private final DestinationsPlugin plugin;
     private boolean bInWater = false;
     private List<Player> playToPlayers;
-    private Long last_Pause = 0L;
+    private Long lastPause = 0L;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private PathFindingQueue currentTask = null;
     @Getter
     private LinkedHashMap<Integer, PathFindingQueue> pathQueue = new LinkedHashMap<>();
 
     public AStarPathFinder(DestinationsPlugin plugin) {
         this.plugin = plugin;
-    }
-
-    public void checkStatus() {
-        if (plugin.getDebugLogLevel() == Level.FINEST)
-            plugin.getMessagesManager().debugMessage(Level.FINEST, Arrays.toString(Thread.currentThread().getStackTrace()));
-
-        if ((currentTask == null || currentTask.getNpc() == null) && pathQueue.size() > 0) {
-            // Fire off the initial task
-            nextQueue();
-        }
-    }
-
-    public boolean isLocationWalkable(Location location, boolean opensGates, boolean opensWoodDoors, boolean opensMetalDoors) {
-        if (plugin.getDebugLogLevel() == Level.FINEST)
-            plugin.getMessagesManager().debugMessage(Level.FINEST, "(Location " + location.toString() + ",boolean " + opensGates + ", boolean " + opensWoodDoors + ", boolean " + opensMetalDoors + ") " + Arrays.toString(Thread.currentThread().getStackTrace()));
-        return plugin.getMcUtils().isLocationWalkable(location, opensGates, opensWoodDoors, opensMetalDoors);
-    }
-
-    public boolean isLocationWalkable(Location location) {
-        if (currentTask == null) return false;
-        return isLocationWalkable(location, currentTask.getOpensGates(), currentTask.getOpensWoodDoors(), currentTask.getOpensMetalDoors());
-    }
-
-    public boolean requiresOpening(Location location) {
-        plugin.getMessagesManager().debugMessage(Level.FINEST, "(Location " + location.toString() + ")" + Arrays.toString(Thread.currentThread().getStackTrace()));
-
-        return plugin.getMcUtils().requiresOpening(location);
     }
 
     public void addToQueue(NPC npc, NPCDestinationsTrait npcTrait, Location start, Location end, int range, List<Material> AllowedPathBlocks, int blocksBelow, Boolean OpensGates, Boolean OpensWoodDoors, Boolean OpensMetalDoors, String requestedBy) {
@@ -90,7 +63,7 @@ public class AStarPathFinder {
 
         if (pathQueue.containsKey(npc.getId())) {
             if (currentTask == null || currentTask.getNpc() == null) {
-                if (last_Pause < new Date().getTime()) nextQueue();
+                if (lastPause < new Date().getTime()) nextQueue();
             }
             return;
         }
@@ -134,7 +107,7 @@ public class AStarPathFinder {
         // Check if the end location is a 1/2 slab
         if (plugin.getMcUtils().isHalfBlock(cleanEnd.getBlock().getRelative(0, 1, 0).getType())) {
             if (!cleanEnd.getBlock().getRelative(0, 2, 0).getType().isSolid() && !cleanEnd.getBlock().getRelative(0, 3, 0).getType().isSolid()) {
-                pathFindingQueue.addEndXYZ(0, 1,0);
+                pathFindingQueue.addEndXYZ(0, 1, 0);
             }
         }
 
@@ -162,17 +135,27 @@ public class AStarPathFinder {
         }
     }
 
-    private void addToOpenList(Tile tile) {
-        currentTask.getOpen().putIfAbsent(tile.getUID(), tile);
+    // This is run every 5 ticks
+    public void checkStatus() {
+        if (plugin.getDebugLogLevel() == Level.FINEST)
+            plugin.getMessagesManager().debugMessage(Level.FINEST, Arrays.toString(Thread.currentThread().getStackTrace()));
 
-        if (playToPlayers != null && playToPlayers.size() > 0) {
-            for (Player player : playToPlayers)
-                plugin.getParticleManager().PlayOutHeartParticle(tile.getLocation(new Location(currentTask.getWorld(), currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ()).add(0.5, 0, 0.5)), player);
+        if ((currentTask == null || currentTask.getNpc() == null) && pathQueue.size() > 0) {
+            // Fire off the initial task
+            nextQueue();
         }
     }
 
-    private void addToClosedList(Tile tile) {
-        currentTask.getClosed().putIfAbsent(tile.getUID(), tile);
+    private void nextQueue() {
+        if (currentTask != null || pathQueue == null || lastPause > new Date().getTime()) return;
+
+        if (pathQueue.size() > 0) {
+            Entry<Integer, PathFindingQueue> entryItem = pathQueue.entrySet().iterator().next();
+            this.currentTask = entryItem.getValue();
+            currentTask.getNpcTrait().setCurrentAction(en_CurrentAction.PATH_HUNTING);
+            pathQueue.remove(entryItem.getKey());
+            processQueueItem();
+        }
     }
 
     private void processQueueItem() {
@@ -198,7 +181,7 @@ public class AStarPathFinder {
 
                             if (plugin.getMcUtils().isLocationWalkable(getStartLocation().add(x, y, z), currentTask.getOpensGates(), currentTask.getOpensWoodDoors(), currentTask.getOpensMetalDoors())) {
                                 // start here?
-                                currentTask.addStartXYZ(x,y,z);
+                                currentTask.addStartXYZ(x, y, z);
                             }
                         }
                     }
@@ -271,292 +254,6 @@ public class AStarPathFinder {
         iterate();
     }
 
-    private Location getEndLocation() {
-        Location endLoc = new Location(currentTask.getWorld(), currentTask.getEndX(), currentTask.getEndY(), currentTask.getEndZ());
-        return findSurface(endLoc);
-    }
-
-    private Location getStartLocation() {
-        Location startLoc = new Location(currentTask.getWorld(), currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ());
-        return findSurface(startLoc);
-    }
-
-    private Location findSurface(Location location) {
-        if (location.getBlock().getType().isSolid() && !location.clone().add(0, 1, 0).getBlock().getType().isSolid())
-            return location;
-
-        if (!location.getBlock().getType().isSolid() && location.clone().add(0, -1, 0).getBlock().getType().isSolid())
-            return location.clone().add(0, -1, 0);
-
-        for (int y = 0; y <= 3; y++) {
-            if (location.clone().add(0, -y, 0).getBlock().getType().isSolid() && !location.clone().add(0, (-y) + 1, 0).getBlock().getType().isSolid())
-                return location.clone().add(0, -y, 0);
-        }
-
-        return location;
-    }
-
-    private int abs(int i) {
-        return (i < 0 ? -i : i);
-    }
-
-    private void iterate() {
-        // while not at end
-        Tile current = null;
-        int nRepCount = 0;
-        Long startTime = new Date().getTime();
-
-        if (currentTask == null) return;
-        if (currentTask.getNpc() == null) {
-            cleanTask();
-            return;
-        }
-
-        if (!currentTask.getNpc().isSpawned()) {
-            cleanTask();
-            return;
-        }
-
-        if (currentTask.getNpcTrait() == null) {
-            cleanTask();
-            return;
-        }
-
-        plugin.getMessagesManager().debugMessage(Level.FINEST, "NPCID:" + currentTask.getNpc().getId());
-
-        NPCDestinationsTrait trait = currentTask.getNpc().getTrait(NPCDestinationsTrait.class);
-
-        Integer maxSeek = plugin.getConfig().getInt("seek-time", 10);
-        if (currentTask.getNpcTrait().maxProcessingTime > 0) maxSeek = currentTask.getNpcTrait().maxProcessingTime;
-
-        while (canContinue()) {
-            if (currentTask == null) return;
-            if (currentTask.getNpcTrait() == null) {
-                cleanTask();
-                return;
-            }
-
-            if (currentTask.getNpcTrait().getLastPathCalc() == null) {
-                plugin.getMessagesManager().debugMessage(Level.FINEST, "NPCID:" + currentTask.getNpc().getId() + "|No last path calc time");
-                cleanTask();
-                return;
-            }
-
-            if (plugin.getDebugTargets() != null && currentTask.getTimeSpent() == 0L) {
-                currentTask.setTimeSpent(1L);
-                currentTask.setProcessingStarted(new Date());
-                trait.processingStarted = LocalDateTime.now();
-                plugin.getMessagesManager().sendDebugMessage("destinations", "debug_messages.path_processing", currentTask.getNpc(), currentTask.getNpcTrait());
-            }
-
-            // get lowest F cost square on open list
-            current = getLowestFTile();
-
-            // process tiles
-            processAdjacentTiles(current);
-
-            // How long has this been running, to long, lets exit out.
-            long nSeconds = Duration.ofMillis(currentTask.getTimeSpent() + (new Date().getTime() - startTime)).getSeconds();
-
-            if (nSeconds > maxSeek) {
-                // Kill the search, to long.
-                trait.lastProcessingTime += (new Date().getTime() - startTime) / 1000 % 60;
-                trait.totalProcessedBlocks += currentTask.getBlocksProcessed();
-                trait.totalProcessingTime += (currentTask.getTimeSpent() + (new Date().getTime() - startTime));
-
-                currentTask.setPathFindingResult(PathingResult.NO_PATH);
-                trait.lastResult = "Unable to find a path";
-                trait.setCurrentAction(en_CurrentAction.IDLE_FAILED);
-                trait.setLastPathCalc();
-                trait.setLocationLockUntil(LocalDateTime.now().plusSeconds(10));
-
-                plugin.getMessagesManager().sendDebugMessage("destinations", "debug_messages.path_timeout", currentTask.getNpc(), trait);
-                plugin.getMessagesManager().debugMessage(Level.INFO, "NPCDestinations_astar.ProcessQueueItem().FailedPath|NPC:" + currentTask.getNpc().getId() + "|Timeout|Requested: " + currentTask.getRequestedBy());
-
-                cleanTask();
-                return;
-            }
-
-            nRepCount++;
-            if (nRepCount > 50) {
-                currentTask.setTimeSpent(currentTask.getTimeSpent() + (new Date().getTime() - startTime));
-                pathQueue.put(currentTask.getNpc().getId(), currentTask);
-                Double distance = (new Location(currentTask.getWorld(), currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ())).distance(new Location(currentTask.getWorld(), current.getX(), current.getY(), current.getZ()));
-                plugin.getMessagesManager().debugMessage(Level.FINEST, "NPCID:" + currentTask.getNpc().getId() + "|Block limit reached, re-adding task to queue (Distance: " + distance + ")");
-                currentTask = null;
-                last_Pause = new Date().getTime() + 200;
-
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        nextQueue();
-                    }
-                }.runTaskLater(plugin, 2);
-                return;
-            }
-        }
-
-        if (currentTask == null) return;
-
-        if (currentTask.getPathFindingResult() != PathingResult.SUCCESS || current == null) {
-            trait.lastProcessingTime += (new Date().getTime() - startTime) / 1000 % 60;
-
-            plugin.getMessagesManager().sendDebugMessage("destinations", "debug_messages.path_novalidpath", currentTask.getNpc(), currentTask.getNpcTrait());
-            plugin.getMessagesManager().debugMessage(Level.FINEST, "NPCDestinations_astar.ProcessQueueItem().FailedPath|NPC:" + currentTask.getNpc().getId() + "|Timeout/Len|Requested: " + currentTask.getRequestedBy());
-
-            trait.lastResult = "Unable to find a path";
-            trait.setCurrentAction(en_CurrentAction.IDLE_FAILED);
-            trait.setLocationLockUntil(LocalDateTime.now().plusSeconds(10));
-            trait.setLastPathCalc();
-            cleanTask();
-            return;
-        } else {
-            // path found
-            LinkedList<Tile> routeTrace = new LinkedList<Tile>();
-            Tile parent;
-
-            routeTrace.add(current);
-
-            while ((parent = current.getParent()) != null) {
-                routeTrace.add(parent);
-                current = parent;
-            }
-
-            Collections.reverse(routeTrace);
-
-            ArrayList<Location> locationArray = new ArrayList<Location>();
-            for (Tile tLoc : routeTrace) {
-                locationArray.add(tLoc.getLocation(getStartLocation()));
-            }
-
-            trait.setPendingDestinations(locationArray);
-            long nSeconds = (currentTask.getTimeSpent() + (new Date().getTime() - startTime)) / 1000 % 60;
-            trait.lastProcessingTime = nSeconds;
-            trait.totalProcessedBlocks += currentTask.getBlocksProcessed();
-            trait.totalProcessingTime += (currentTask.getTimeSpent() + (new Date().getTime() - startTime));
-
-            if (nSeconds < 1 || currentTask.getBlocksProcessed() == 0L) {
-                trait.lastBlocksPerSec = currentTask.getBlocksProcessed();
-            } else {
-                trait.lastBlocksPerSec = currentTask.getBlocksProcessed() / nSeconds;
-            }
-
-            trait.lastResult = "Path found (" + routeTrace.size() + ")";
-            if (!trait.getCurrentAction().equals(en_CurrentAction.RANDOM_MOVEMENT))
-                trait.setCurrentAction(en_CurrentAction.PATH_FOUND);
-            trait.setLastPathCalc();
-            plugin.getMessagesManager().debugMessage(Level.INFO, "astarpath.iterate()|NPC:" + currentTask.getNpc().getId() + "|Path Found (" + locationArray.size() + ")|Requested: " + currentTask.getRequestedBy());
-            plugin.getMessagesManager().sendDebugMessage("destinations", "debug_messages.path_found", currentTask.getNpc(), currentTask.getNpcTrait());
-
-            if (plugin.getDebugTargets().size() > 0) {
-                final ArrayList<Location> debugTrace = (ArrayList<Location>) locationArray.clone();
-                for (DebugTarget debugOutput : plugin.getDebugTargets()) {
-                    if (debugOutput.getTargets().size() == 0 || debugOutput.getTargets().contains(currentTask.getNpc().getId())) {
-                        if (((Player) debugOutput.targetSender).isOnline()) {
-                            Player player = ((Player) debugOutput.targetSender);
-                            for (int count = 1; count < (debugTrace.size() - 1); count++) {
-                                if (player.getWorld().equals(debugTrace.get(count).getWorld())) {
-                                    debugOutput.addDebugBlockSent(debugTrace.get(count), Material.REDSTONE_BLOCK);
-                                }
-                            }
-                            debugOutput.addDebugBlockSent(debugTrace.get(0), Material.GOLD_BLOCK);
-                            debugOutput.addDebugBlockSent(debugTrace.get(debugTrace.size() - 1), Material.DIAMOND_BLOCK);
-                        }
-                    }
-                }
-            }
-
-            for (Tile tLoc : routeTrace) {
-                tLoc.destroy();
-            }
-            routeTrace.clear();
-
-            cleanTask();
-        }
-
-        if (pathQueue.size() > 0) {
-            nextQueue();
-        }
-    }
-
-    private boolean canContinue() {
-
-        if (currentTask == null) return false;
-
-        if (currentTask.getNpc() == null) {
-            cleanTask();
-            return false;
-        }
-
-        if (!currentTask.getNpc().isSpawned()) {
-            cleanTask();
-            return false;
-        }
-
-        if (currentTask.getNpcTrait() == null) {
-            cleanTask();
-            return false;
-        }
-
-        // check if open list is empty, if it is no path has been found
-        if (currentTask.getOpen().size() == 0) {
-            currentTask.setPathFindingResult(PathingResult.NO_PATH);
-            return false;
-        } else {
-            if (currentTask != null) {
-                StringBuilder b = new StringBuilder();
-                b.append(currentTask.getEndX() - currentTask.getStartX()).append(currentTask.getEndY() - currentTask.getStartY()).append(currentTask.getEndZ() - currentTask.getStartZ());
-                if (currentTask.getClosed().containsKey(b.toString())) {
-                    currentTask.setPathFindingResult(PathingResult.SUCCESS);
-                    return false;
-                } else {
-                    b = new StringBuilder();
-                    b.append(currentTask.getEndX() - currentTask.getStartX()).append((currentTask.getEndY() + 1) - currentTask.getStartY()).append(currentTask.getEndZ() - currentTask.getStartZ());
-                    if (currentTask.getClosed().containsKey(b.toString())) {
-                        currentTask.setPathFindingResult(PathingResult.SUCCESS);
-                        return false;
-                    } else {
-                        return true;
-                    }
-                }
-            } else {
-                return false;
-            }
-        }
-    }
-
-    private Tile getLowestFTile() {
-        double f = 0;
-        Tile drop = null;
-
-        // get lowest F cost square
-        for (Tile t : currentTask.getOpen().values()) {
-            if (f == 0) {
-                t.calculateBoth(currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ(), currentTask.getEndX(), currentTask.getEndY(), currentTask.getEndZ(), true);
-                f = t.getF();
-                drop = t;
-            } else {
-                t.calculateBoth(currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ(), currentTask.getEndX(), currentTask.getEndY(), currentTask.getEndZ(), true);
-                double posF = t.getF();
-                if (posF < f) {
-                    f = posF;
-                    drop = t;
-                }
-            }
-        }
-
-        // drop from open list and add to closed
-
-        currentTask.getOpen().remove(drop.getUID());
-        addToClosedList(drop);
-
-        return drop;
-    }
-
-    private boolean isOnClosedList(Tile tile) {
-        return currentTask.getClosed().containsKey(tile.getUID());
-    }
-
     private void processAdjacentTiles(Tile current) {
         // Set of possible walk to locations adjacent to current tile
         HashSet<Tile> possible = new HashSet<>(26);
@@ -581,7 +278,7 @@ public class AStarPathFinder {
                     if (y == -1) if (location.clone().add(x, 2, z).getBlock().getType().isSolid()) continue;
 
                     // Ignore tile
-                    if (isOnClosedList(tile)) continue;
+                    if (isInCloseList(tile)) continue;
 
                     // If block is out of bounds continue
                     if (!tile.isInRange(currentTask.getRange())) continue;
@@ -639,41 +336,265 @@ public class AStarPathFinder {
             }
         }
 
-        for (Tile t : possible) {
-            // get the reference of the object in the array
-            Tile openRef = null;
-            if ((openRef = isOnOpenList(t)) == null) {
-                // not on open list, so add
-                addToOpenList(t);
+        for (Tile tile : possible) {
+            Tile openRef;
+            if ((openRef = isInOpenList(tile)) == null) {
+                // Not in open list, so add it
+                addToOpenList(tile);
             } else {
-                // is on open list, check if path to that square is better using
-                // G cost
-                if (t.getG() < openRef.getG()) {
-                    // if current path is better, change parent
+                // Is in the open list, check if path to that square is better using G cost
+                if (tile.getG() < openRef.getG()) {
+                    // If current path is better, change parent
                     openRef.setParent(current);
-                    // force updates of F, G and H values.
+                    // Force updates of F, G and H values.
                     openRef.calculateBoth(currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ(), currentTask.getEndX(), currentTask.getEndY(), currentTask.getEndZ(), true);
                 }
+            }
+        }
+    }
 
+    private void iterate() {
+        if (currentTask == null) return;
+
+        if (currentTask.getNpc() == null || !currentTask.getNpc().isSpawned() || currentTask.getNpcTrait() == null) {
+            cleanTask();
+            return;
+        }
+
+        Tile current = null;
+        int nRepCount = 0;
+        Long startTime = new Date().getTime();
+
+        plugin.getMessagesManager().debugMessage(Level.FINEST, "NPCID:" + currentTask.getNpc().getId());
+
+        NPCDestinationsTrait trait = currentTask.getNpc().getTrait(NPCDestinationsTrait.class);
+
+        Integer maxSeek = plugin.getConfig().getInt("seek-time", 10);
+        if (currentTask.getNpcTrait().maxProcessingTime > 0) maxSeek = currentTask.getNpcTrait().maxProcessingTime;
+
+        while (canContinue()) {
+            if (currentTask == null) return;
+            if (currentTask.getNpcTrait() == null) {
+                cleanTask();
+                return;
+            }
+
+            if (currentTask.getNpcTrait().getLastPathCalc() == null) {
+                plugin.getMessagesManager().debugMessage(Level.FINEST, "NPCID:" + currentTask.getNpc().getId() + "|No last path calc time");
+                cleanTask();
+                return;
+            }
+
+            if (plugin.getDebugTargets() != null && currentTask.getTimeSpent() == 0L) {
+                currentTask.setTimeSpent(1L);
+                currentTask.setProcessingStarted(new Date());
+                trait.processingStarted = LocalDateTime.now();
+                plugin.getMessagesManager().sendDebugMessage("destinations", "debug_messages.path_processing", currentTask.getNpc(), currentTask.getNpcTrait());
+            }
+
+            // Get lowest F cost square on open list
+            current = getLowestFTile();
+
+            // Process tiles
+            processAdjacentTiles(current);
+
+            // How long has this been running, to long, lets exit out.
+            long nSeconds = Duration.ofMillis(currentTask.getTimeSpent() + (new Date().getTime() - startTime)).getSeconds();
+            if (nSeconds > maxSeek) {
+                trait.lastProcessingTime += (new Date().getTime() - startTime) / 1000 % 60;
+                trait.totalProcessedBlocks += currentTask.getBlocksProcessed();
+                trait.totalProcessingTime += (currentTask.getTimeSpent() + (new Date().getTime() - startTime));
+
+                currentTask.setPathFindingResult(PathingResult.NO_PATH);
+                trait.lastResult = "Unable to find a path";
+                trait.setCurrentAction(en_CurrentAction.IDLE_FAILED);
+                trait.setLastPathCalc();
+                trait.setLocationLockUntil(LocalDateTime.now().plusSeconds(10));
+
+                plugin.getMessagesManager().sendDebugMessage("destinations", "debug_messages.path_timeout", currentTask.getNpc(), trait);
+                plugin.getMessagesManager().debugMessage(Level.INFO, "NPCDestinations_astar.ProcessQueueItem().FailedPath|NPC:" + currentTask.getNpc().getId() + "|Timeout|Requested: " + currentTask.getRequestedBy());
+
+                cleanTask();
+                return;
+            }
+
+            nRepCount++;
+            if (nRepCount > 50) {
+                currentTask.setTimeSpent(currentTask.getTimeSpent() + (new Date().getTime() - startTime));
+                pathQueue.put(currentTask.getNpc().getId(), currentTask);
+                Double distance = (new Location(currentTask.getWorld(), currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ())).distance(new Location(currentTask.getWorld(), current.getX(), current.getY(), current.getZ()));
+                plugin.getMessagesManager().debugMessage(Level.FINEST, "NPCID:" + currentTask.getNpc().getId() + "|Block limit reached, re-adding task to queue (Distance: " + distance + ")");
+                currentTask = null;
+                lastPause = new Date().getTime() + 200;
+
+                plugin.getServer().getScheduler().runTaskLater(plugin, this::nextQueue, 2);
+                return;
             }
         }
 
+        if (currentTask == null) return;
+
+        if (currentTask.getPathFindingResult() != PathingResult.SUCCESS || current == null) {
+            trait.lastProcessingTime += (new Date().getTime() - startTime) / 1000 % 60;
+
+            plugin.getMessagesManager().sendDebugMessage("destinations", "debug_messages.path_novalidpath", currentTask.getNpc(), currentTask.getNpcTrait());
+            plugin.getMessagesManager().debugMessage(Level.FINEST, "NPCDestinations_astar.ProcessQueueItem().FailedPath|NPC:" + currentTask.getNpc().getId() + "|Timeout/Len|Requested: " + currentTask.getRequestedBy());
+
+            trait.lastResult = "Unable to find a path";
+            trait.setCurrentAction(en_CurrentAction.IDLE_FAILED);
+            trait.setLocationLockUntil(LocalDateTime.now().plusSeconds(10));
+            trait.setLastPathCalc();
+            cleanTask();
+            return;
+        } else { // Path found
+            LinkedList<Tile> routeTrace = new LinkedList<>();
+            routeTrace.add(current);
+
+            Tile parent;
+            while ((parent = current.getParent()) != null) {
+                routeTrace.add(parent);
+                current = parent;
+            }
+
+            Collections.reverse(routeTrace);
+
+            ArrayList<Location> locationArray = new ArrayList<>();
+            for (Tile tLoc : routeTrace) {
+                locationArray.add(tLoc.getLocation(getStartLocation()));
+            }
+
+            trait.setPendingDestinations(locationArray);
+            long nSeconds = (currentTask.getTimeSpent() + (new Date().getTime() - startTime)) / 1000 % 60;
+            trait.lastProcessingTime = nSeconds;
+            trait.totalProcessedBlocks += currentTask.getBlocksProcessed();
+            trait.totalProcessingTime += (currentTask.getTimeSpent() + (new Date().getTime() - startTime));
+
+            if (nSeconds < 1 || currentTask.getBlocksProcessed() == 0L) {
+                trait.lastBlocksPerSec = currentTask.getBlocksProcessed();
+            } else {
+                trait.lastBlocksPerSec = currentTask.getBlocksProcessed() / nSeconds;
+            }
+
+            trait.lastResult = "Path found (" + routeTrace.size() + ")";
+            if (!trait.getCurrentAction().equals(en_CurrentAction.RANDOM_MOVEMENT))
+                trait.setCurrentAction(en_CurrentAction.PATH_FOUND);
+            trait.setLastPathCalc();
+            plugin.getMessagesManager().debugMessage(Level.INFO, "astarpath.iterate()|NPC:" + currentTask.getNpc().getId() + "|Path Found (" + locationArray.size() + ")|Requested: " + currentTask.getRequestedBy());
+            plugin.getMessagesManager().sendDebugMessage("destinations", "debug_messages.path_found", currentTask.getNpc(), currentTask.getNpcTrait());
+
+            if (plugin.getDebugTargets().size() > 0) {
+                final ArrayList<Location> debugTrace = (ArrayList<Location>) locationArray.clone();
+                for (DebugTarget debugOutput : plugin.getDebugTargets()) {
+                    if (debugOutput.getTargets().size() == 0 || debugOutput.getTargets().contains(currentTask.getNpc().getId())) {
+                        if (((Player) debugOutput.targetSender).isOnline()) {
+                            Player player = ((Player) debugOutput.targetSender);
+                            for (int count = 1; count < (debugTrace.size() - 1); count++) {
+                                if (player.getWorld().equals(debugTrace.get(count).getWorld())) {
+                                    debugOutput.addDebugBlockSent(debugTrace.get(count), Material.REDSTONE_BLOCK);
+                                }
+                            }
+                            debugOutput.addDebugBlockSent(debugTrace.get(0), Material.GOLD_BLOCK);
+                            debugOutput.addDebugBlockSent(debugTrace.get(debugTrace.size() - 1), Material.DIAMOND_BLOCK);
+                        }
+                    }
+                }
+            }
+            cleanTask();
+            routeTrace.clear();
+        }
+
+        if (pathQueue.size() > 0) nextQueue();
     }
 
-    private Tile isOnOpenList(Tile tile) {
-        return currentTask.getOpen().getOrDefault(tile.getUID(), null);
+    private boolean canContinue() {
+        if (currentTask == null) return false;
+
+        if (currentTask.getNpc() == null || !currentTask.getNpc().isSpawned() || currentTask.getNpcTrait() == null) {
+            cleanTask();
+            return false;
+        }
+
+        // Check if open list is empty, if it is no path has been found
+        if (currentTask.getOpen().size() == 0) {
+            currentTask.setPathFindingResult(PathingResult.NO_PATH);
+            return false;
+        } else {
+            if (currentTask != null) {
+                StringBuilder b = new StringBuilder();
+                b.append(currentTask.getEndX() - currentTask.getStartX()).append(currentTask.getEndY() - currentTask.getStartY()).append(currentTask.getEndZ() - currentTask.getStartZ());
+                if (currentTask.getClosed().containsKey(b.toString())) {
+                    currentTask.setPathFindingResult(PathingResult.SUCCESS);
+                    return false;
+                } else {
+                    b = new StringBuilder();
+                    b.append(currentTask.getEndX() - currentTask.getStartX()).append((currentTask.getEndY() + 1) - currentTask.getStartY()).append(currentTask.getEndZ() - currentTask.getStartZ());
+                    if (currentTask.getClosed().containsKey(b.toString())) {
+                        currentTask.setPathFindingResult(PathingResult.SUCCESS);
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            } else {
+                return false;
+            }
+        }
+    }
+
+    private void cleanTask() {
+        if (plugin.getDebugLogLevel() == Level.FINEST)
+            plugin.getMessagesManager().debugMessage(Level.FINEST, Arrays.toString(Thread.currentThread().getStackTrace()));
+
+        if (currentTask.getOpen() != null) {
+            for (Tile tile : currentTask.getOpen().values()) tile.destroy();
+            currentTask.getOpen().clear();
+        }
+        if (currentTask.getClosed() != null) {
+            for (Tile tile : currentTask.getClosed().values()) tile.destroy();
+            currentTask.getClosed().clear();
+        }
+
+        this.currentTask = null;
+    }
+
+    private Tile getLowestFTile() {
+        double f = 0;
+        Tile drop = null;
+
+        // get lowest F cost square
+        for (Tile tile : currentTask.getOpen().values()) {
+            tile.calculateBoth(currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ(), currentTask.getEndX(), currentTask.getEndY(), currentTask.getEndZ(), true);
+            if (f == 0) {
+                f = tile.getF();
+                drop = tile;
+            } else {
+                double posF = tile.getF();
+                if (posF < f) {
+                    f = posF;
+                    drop = tile;
+                }
+            }
+        }
+
+        // Drop from open list and add to closed
+        if (drop != null){
+            currentTask.getOpen().remove(drop.getUID());
+            addToClosedList(drop);
+        }
+
+        return drop;
     }
 
     private boolean isTileWalkable(Tile tile) {
         return isTileWalkable(tile, true);
     }
 
-    private boolean isTileWalkable(Tile t, Boolean allowDoors) {
-        Location l = new Location(currentTask.getWorld(), (currentTask.getStartX() + t.getX()), (currentTask.getStartY() + t.getY()), (currentTask.getStartZ() + t.getZ()));
-        if (!plugin.getMcUtils().isLocationWalkable(l, currentTask.getOpensGates(), currentTask.getOpensWoodDoors(), currentTask.getOpensMetalDoors()))
+    private boolean isTileWalkable(Tile tile, Boolean allowDoors) {
+        Location location = new Location(currentTask.getWorld(), (currentTask.getStartX() + tile.getX()), (currentTask.getStartY() + tile.getY()), (currentTask.getStartZ() + tile.getZ()));
+        if (!plugin.getMcUtils().isLocationWalkable(location, currentTask.getOpensGates(), currentTask.getOpensWoodDoors(), currentTask.getOpensMetalDoors()))
             return false;
 
-        Block b = l.getBlock();
+        Block b = location.getBlock();
 
         if (b.getRelative(0, 1, 0).getState().getData() instanceof Openable) {
             org.bukkit.block.BlockState oBlockState = b.getRelative(0, 1, 0).getState();
@@ -708,39 +629,70 @@ public class AStarPathFinder {
         return true;
     }
 
-    private void nextQueue() {
-        if (currentTask != null) return;
+    public boolean isLocationWalkable(Location location, boolean opensGates, boolean opensWoodDoors, boolean opensMetalDoors) {
+        if (plugin.getDebugLogLevel() == Level.FINEST)
+            plugin.getMessagesManager().debugMessage(Level.FINEST, "(Location " + location.toString() + ",boolean " + opensGates + ", boolean " + opensWoodDoors + ", boolean " + opensMetalDoors + ") " + Arrays.toString(Thread.currentThread().getStackTrace()));
+        return plugin.getMcUtils().isLocationWalkable(location, opensGates, opensWoodDoors, opensMetalDoors);
+    }
 
-        if (pathQueue == null) return;
+    public boolean isLocationWalkable(Location location) {
+        if (currentTask == null) return false;
+        return isLocationWalkable(location, currentTask.getOpensGates(), currentTask.getOpensWoodDoors(), currentTask.getOpensMetalDoors());
+    }
 
-        if (last_Pause > new Date().getTime()) return;
+    public boolean requiresOpening(Location location) {
+        plugin.getMessagesManager().debugMessage(Level.FINEST, "(Location " + location.toString() + ")" + Arrays.toString(Thread.currentThread().getStackTrace()));
 
-        if (pathQueue.size() > 0) {
-            Entry<Integer, PathFindingQueue> entryItem = pathQueue.entrySet().iterator().next();
-            currentTask = entryItem.getValue();
-            currentTask.getNpcTrait().setCurrentAction(en_CurrentAction.PATH_HUNTING);
-            pathQueue.remove(entryItem.getKey());
-            processQueueItem();
+        return plugin.getMcUtils().requiresOpening(location);
+    }
+
+    private Location findSurface(Location location) {
+        if (location.getBlock().getType().isSolid() && !location.clone().add(0, 1, 0).getBlock().getType().isSolid())
+            return location;
+
+        if (!location.getBlock().getType().isSolid() && location.clone().add(0, -1, 0).getBlock().getType().isSolid())
+            return location.clone().add(0, -1, 0);
+
+        for (int y = 0; y <= 3; y++) {
+            if (location.clone().add(0, -y, 0).getBlock().getType().isSolid() && !location.clone().add(0, (-y) + 1, 0).getBlock().getType().isSolid())
+                return location.clone().add(0, -y, 0);
+        }
+
+        return location;
+    }
+
+    private Location getEndLocation() {
+        Location endLoc = new Location(currentTask.getWorld(), currentTask.getEndX(), currentTask.getEndY(), currentTask.getEndZ());
+        return findSurface(endLoc);
+    }
+
+    private Location getStartLocation() {
+        Location startLoc = new Location(currentTask.getWorld(), currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ());
+        return findSurface(startLoc);
+    }
+
+    private void addToOpenList(Tile tile) {
+        currentTask.getOpen().putIfAbsent(tile.getUID(), tile);
+
+        if (playToPlayers != null && playToPlayers.size() > 0) {
+            for (Player player : playToPlayers)
+                plugin.getParticleManager().PlayOutHeartParticle(tile.getLocation(new Location(currentTask.getWorld(), currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ()).add(0.5, 0, 0.5)), player);
         }
     }
 
-    private void cleanTask() {
-        if (plugin.getDebugLogLevel() == Level.FINEST)
-            plugin.getMessagesManager().debugMessage(Level.FINEST, Arrays.toString(Thread.currentThread().getStackTrace()));
+    private void addToClosedList(Tile tile) {
+        currentTask.getClosed().putIfAbsent(tile.getUID(), tile);
+    }
 
-        if (currentTask.getOpen() != null) {
-            for (Tile t : currentTask.getOpen().values()) {
-                t.destroy();
-            }
-            currentTask.getOpen().clear();
-        }
+    private Tile isInOpenList(Tile tile) {
+        return currentTask.getOpen().getOrDefault(tile.getUID(), null);
+    }
 
-        if (currentTask.getClosed() != null) {
-            for (Tile t : currentTask.getClosed().values()) {
-                t.destroy();
-            }
-            currentTask.getClosed().clear();
-        }
-        currentTask = null;
+    private boolean isInCloseList(Tile tile) {
+        return currentTask.getClosed().containsKey(tile.getUID());
+    }
+
+    private int abs(int i) {
+        return (i < 0 ? -i : i);
     }
 }
