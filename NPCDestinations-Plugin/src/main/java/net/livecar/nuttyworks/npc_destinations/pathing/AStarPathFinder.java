@@ -264,9 +264,14 @@ public class AStarPathFinder {
                     Tile tile = new Tile((short) (current.getX() + x), (short) (current.getY() + y), (short) (current.getZ() + z), current);
                     Location location = new Location(currentTask.getWorld(), (currentTask.getStartX() + tile.getX()), (currentTask.getStartY() + tile.getY()), (currentTask.getStartZ() + tile.getZ()));
 
-                    //Validate the current tile has 3 spaces open above.
+                    // Validate the current tile has 2 spaces open above.
                     if (y == 1) if (location.clone().add(0, 2, 0).getBlock().getType().isSolid()) continue;
                     if (y == -1) if (location.clone().add(x, 2, z).getBlock().getType().isSolid()) continue;
+
+                    // If going up or down validate for 3 open spaces then
+                    if (tile.getY() != current.getY()){
+                        if (location.clone().add(0,3,0).getBlock().getType().isSolid()) continue;
+                    }
 
                     // Ignore tile
                     if (isInCloseList(tile)) continue;
