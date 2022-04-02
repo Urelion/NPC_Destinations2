@@ -269,8 +269,11 @@ public class AStarPathFinder {
                     if (y == -1) if (location.clone().add(x, 2, z).getBlock().getType().isSolid()) continue;
 
                     // If going up or down validate for 3 open spaces then
-                    if (tile.getY() != current.getY()){
-                        if (location.clone().add(0,3,0).getBlock().getType().isSolid()) continue;
+                    if (tile.getY() < current.getY()) {
+                        if (location.clone().add(0, 3, 0).getBlock().getType().isSolid()) continue;
+                    } else if (tile.getY() > current.getY()) {
+                        if (current.getLocation(new Location(currentTask.getWorld(), currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ())).add(0, 3, 0).getBlock().getType().isSolid())
+                            continue;
                     }
 
                     // Ignore tile
