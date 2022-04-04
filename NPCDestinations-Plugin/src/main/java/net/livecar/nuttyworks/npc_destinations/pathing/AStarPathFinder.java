@@ -311,12 +311,7 @@ public class AStarPathFinder {
                     Tile xOff = new Tile((short) (current.getX() + x), (short) (current.getY() + y), current.getZ(), current);
                     Tile zOff = new Tile(current.getX(), (short) (current.getY() + y), (short) (current.getZ() + z), current);
                     // Check to stop jumping through diagonal blocks
-                    if (x != 0 && z != 0 && (y == 0 || y == 1)) {
-                        if (!isTileWalkable(xOff) && !isTileWalkable(zOff)) continue;
-                    }
-                    if (x != 0 && z != 0 && (y == 0 || y == -1)) {
-                        if (!isTileWalkable(xOff) && !isTileWalkable(zOff)) continue;
-                    }
+                    if (x != 0 && z != 0) if (!isTileWalkable(xOff) && !isTileWalkable(zOff)) continue;
 
                     // Openables?
                     if (plugin.getMcUtils().isOpenable(block) || plugin.getMcUtils().isOpenable(block.getLocation().add(0, 1, 0).getBlock()))
