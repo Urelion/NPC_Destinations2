@@ -251,9 +251,7 @@ public class AStarPathFinder {
 
         currentTask.setBlocksProcessed(currentTask.getBlocksProcessed() + 1);
 
-        // X X X
-        // X X X
-        // X X X
+        // 3x3 cube
         for (byte x = -1; x <= 1; x++) {
             for (byte y = -1; y <= 1; y++) {
                 for (byte z = -1; z <= 1; z++) {
@@ -264,13 +262,12 @@ public class AStarPathFinder {
                     Tile tile = new Tile((short) (current.getX() + x), (short) (current.getY() + y), (short) (current.getZ() + z), current);
                     Location location = new Location(currentTask.getWorld(), (currentTask.getStartX() + tile.getX()), (currentTask.getStartY() + tile.getY()), (currentTask.getStartZ() + tile.getZ()));
 
-                    // Validate the current tile has 2 spaces open above.
-                    if (y == 1) if (location.clone().add(0, 2, 0).getBlock().getType().isSolid()) continue;
-                    if (y == -1) if (location.clone().add(x, 2, z).getBlock().getType().isSolid()) continue;
+                    // Only process the tile if it can be walked on
+                    if (!isTileWalkable(tile)) continue;
 
                     // If going up or down validate for 3 open spaces then
                     if (tile.getY() < current.getY()) {
-                        if (location.clone().add(0, 3, 0).getBlock().getType().isSolid()) continue;
+                        if (location.getBlock().getRelative(0,3,0).getType().isSolid()) continue;
                     } else if (tile.getY() > current.getY()) {
                         if (current.getLocation(new Location(currentTask.getWorld(), currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ())).add(0, 3, 0).getBlock().getType().isSolid())
                             continue;
@@ -282,14 +279,8 @@ public class AStarPathFinder {
                     // If block is out of bounds continue
                     if (!tile.isInRange(currentTask.getRange())) continue;
 
-                    // Only process the tile if it can be walked on
-                    if (!isTileWalkable(tile)) continue;
-
                     Block block = location.getBlock();
                     if (currentTask.getAllowedPathBlocks().size() > 0) {
-                        location = new Location(currentTask.getWorld(), (currentTask.getStartX() + tile.getX()), (currentTask.getStartY() + tile.getY()), (currentTask.getStartZ() + tile.getZ()));
-
-                        block = location.getBlock();
                         if (bInWater && block.isLiquid()) {
                             // anything?
                         } else {
