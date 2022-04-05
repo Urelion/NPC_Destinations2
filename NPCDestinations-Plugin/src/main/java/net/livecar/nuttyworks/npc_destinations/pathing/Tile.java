@@ -1,12 +1,15 @@
 package net.livecar.nuttyworks.npc_destinations.pathing;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 
-public class Tile {
+import java.util.Objects;
+
+public class Tile implements Comparable<Tile> {
 
     private final String uid;
     private Tile parent;
+    private Tile possibleParent;
 
     // As offset from starting point
     private final short x, y, z;
@@ -140,7 +143,33 @@ public class Tile {
         return (h + g);
     }
 
-    public boolean equals(Tile t) {
-        return (t.getX() == x && t.getY() == y && t.getZ() == z);
+    public Tile getPossibleParent() {
+        return possibleParent;
+    }
+
+    public void setPossibleParent(Tile possibleParent) {
+        this.possibleParent = possibleParent;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Tile)) return false;
+        Tile tile = (Tile) o;
+        return x == tile.x && y == tile.y && z == tile.z;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, z);
+    }
+
+    @Override
+    public int compareTo(@NotNull Tile o) {
+        if (getF() > o.getF()) {
+            return 1;
+        } else if (getF() < o.getF()) {
+            return -1;
+        }
+        return 0;
     }
 }

@@ -11,6 +11,7 @@ import org.bukkit.World;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeSet;
 
 @Getter
 @Setter
@@ -29,7 +30,7 @@ public class PathFindingQueue {
     private int endX, endY, endZ;
     private World world;
 
-    private HashMap<String, Tile> open;
+    private TreeSet<Tile> open;
     private HashMap<String, Tile> closed;
 
     private int blocksBelow;
