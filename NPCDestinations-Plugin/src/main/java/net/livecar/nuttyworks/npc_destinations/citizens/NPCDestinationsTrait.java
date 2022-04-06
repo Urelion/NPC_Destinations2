@@ -82,9 +82,9 @@ public class NPCDestinationsTrait extends Trait {
     public String lastDebugMessage = "";
 
     // Inner namespace variables
-    ArrayList<Location> pendingDestinations = new ArrayList<>();
-    ArrayList<Location> processedDestinations = new ArrayList<>();
-    ArrayList<Block> openedObjects = new ArrayList<Block>();
+    List<Location> pendingDestinations = new ArrayList<>();
+    List<Location> processedDestinations = new ArrayList<>();
+    List<Block> openedObjects = new ArrayList<>();
     en_CurrentAction currentAction = en_CurrentAction.IDLE;
     en_RequestedAction requestedAction = en_RequestedAction.NORMAL_PROCESSING;
     Plugin monitoringPlugin = null;
@@ -169,7 +169,7 @@ public class NPCDestinationsTrait extends Trait {
         this.requestedAction = action;
     }
 
-    public void setPendingDestinations(ArrayList<Location> newDestinations) {
+    public void setPendingDestinations(List<Location> newDestinations) {
         if (pendingDestinations.size() > 0) {
             clearPendingDestinations();
             this.processedDestinations.clear();
@@ -177,7 +177,7 @@ public class NPCDestinationsTrait extends Trait {
         pendingDestinations = newDestinations;
     }
 
-    public ArrayList<Location> getPendingDestinations() {
+    public List<Location> getPendingDestinations() {
         return pendingDestinations;
     }
 

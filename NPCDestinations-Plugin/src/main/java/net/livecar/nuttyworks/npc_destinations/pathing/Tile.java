@@ -1,7 +1,8 @@
 package net.livecar.nuttyworks.npc_destinations.pathing;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
+
+import java.util.Objects;
 
 public class Tile {
 
@@ -38,8 +39,13 @@ public class Tile {
         return new Location(start.getWorld(), start.getBlockX() + x, start.getBlockY() + y, start.getBlockZ() + z);
     }
 
+    public void calculateBoth(Location start, Location end, boolean update) {
+        this.calculateG(update);
+        this.calculateH(start.getBlockX(), start.getBlockY(), start.getBlockZ(), end.getBlockX(), end.getBlockY(), end.getBlockZ(), update);
+    }
+
     public void calculateBoth(int sx, int sy, int sz, int ex, int ey, int ez, boolean update) {
-        this.calculateG(sx, sy, sz, update);
+        this.calculateG(update);
         this.calculateH(sx, sy, sz, ex, ey, ez, update);
     }
 
@@ -53,7 +59,7 @@ public class Tile {
 
     // G = the movement cost to move from the starting point A to a given square
     // on the grid, following the path generated to get there.
-    public void calculateG(int sx, int sy, int sz, boolean update) {
+    public void calculateG(boolean update) {
         if (update || g == -1) {
             // Only update if g hasn't been calculated, or if forced
             Tile currentParent, currentTile = this;
@@ -140,7 +146,15 @@ public class Tile {
         return (h + g);
     }
 
-    public boolean equals(Tile t) {
-        return (t.getX() == x && t.getY() == y && t.getZ() == z);
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Tile)) return false;
+        Tile tile = (Tile) o;
+        return x == tile.x && y == tile.y && z == tile.z;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, z);
     }
 }
