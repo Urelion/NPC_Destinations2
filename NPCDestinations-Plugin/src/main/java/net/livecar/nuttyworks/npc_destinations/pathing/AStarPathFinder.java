@@ -7,6 +7,7 @@ import net.livecar.nuttyworks.npc_destinations.DebugTarget;
 import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait.en_CurrentAction;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -94,7 +95,22 @@ public class AStarPathFinder {
         pathFindingQueue.setRequestedBy(requestedBy);
         pathFindingQueue.setTimeSpent(0L);
         pathFindingQueue.setBlocksProcessed(0L);
-        pathFindingQueue.setOpen(new TreeSet<>((o1, o2) -> Double.compare(o2.getF(), o1.getF())));
+        pathFindingQueue.setOpen(new TreeSet<>((o1, o2) -> {
+            if (o1.equals(o2)) {
+                if (o1.getG() > o2.getG()) {
+                    o2.setParent(o1.getPossibleParent());
+                    o1.setPossibleParent(null);
+                    o2.calculateBoth(currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ(), currentTask.getEndX(), currentTask.getEndY(), currentTask.getEndZ(), true);
+                }
+            }
+
+            if (o1.getF() > o2.getF()) {
+                return 1;
+            } else if (o1.getF() < o2.getF()) {
+                return -1;
+            }
+            return 0;
+        }));
         pathFindingQueue.setClosed(new HashMap<>());
 
         // Check if the start location is a 1/2 slab
@@ -315,20 +331,25 @@ public class AStarPathFinder {
         }
 
         for (Tile tile : possible) {
-            Optional<Tile> openRefO = currentTask.getOpen().stream().filter(tile1 -> tile1.equals(tile)).findFirst();
-
-            if (openRefO.isPresent()) {
-                Tile openRef = openRefO.get();
-                if (tile.getG() < openRef.getG()) {
-                    // If current path is better, change parent
-                    openRef.setParent(current);
-                    // Force updates of F, G and H values.
-                    openRef.calculateBoth(currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ(), currentTask.getEndX(), currentTask.getEndY(), currentTask.getEndZ(), true);
-                }
-            } else {
-                currentTask.getOpen().add(tile);
-            }
+            if (currentTask.getOpen().contains(tile)) tile.setPossibleParent(current);
+            addToOpenList(tile);
         }
+
+//        for (Tile tile : possible) {
+//            Optional<Tile> openRefO = currentTask.getOpen().stream().filter(tile::equals).findFirst();
+//
+//            if (openRefO.isPresent()) {
+//                Tile openRef = openRefO.get();
+//                if (tile.getG() < openRef.getG()) {
+//                     If current path is better, change parent
+//                    openRef.setParent(current);
+//                     Force updates of F, G and H values.
+//                    openRef.calculateBoth(currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ(), currentTask.getEndX(), currentTask.getEndY(), currentTask.getEndZ(), true);
+//                }
+//            } else {
+//                addToOpenList(tile);
+//            }
+//        }
     }
 
     private void iterate() {

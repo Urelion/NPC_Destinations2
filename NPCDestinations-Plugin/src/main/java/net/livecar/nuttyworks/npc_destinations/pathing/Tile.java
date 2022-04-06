@@ -1,11 +1,10 @@
 package net.livecar.nuttyworks.npc_destinations.pathing;
 
 import org.bukkit.Location;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public class Tile implements Comparable<Tile> {
+public class Tile {
 
     private final String uid;
     private Tile parent;
@@ -161,15 +160,5 @@ public class Tile implements Comparable<Tile> {
     @Override
     public int hashCode() {
         return Objects.hash(x, y, z);
-    }
-
-    @Override
-    public int compareTo(@NotNull Tile o) {
-        if (getF() > o.getF()) {
-            return 1;
-        } else if (getF() < o.getF()) {
-            return -1;
-        }
-        return 0;
     }
 }
