@@ -8,10 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 
 @Getter
 @Setter
@@ -20,6 +17,7 @@ public class PathFindingQueue {
     private String requestedBy;
     private NPC npc;
     private NPCDestinationsTrait npcTrait;
+
     private List<Material> allowedPathBlocks;
     private Boolean opensGates;
     private Boolean opensWoodDoors;
@@ -31,6 +29,7 @@ public class PathFindingQueue {
     private World world;
 
     private TreeSet<Tile> open;
+    private HashMap<Tile, Tile> openLookup;
     private HashMap<String, Tile> closed;
 
     private int blocksBelow;
@@ -69,5 +68,13 @@ public class PathFindingQueue {
         this.endX = this.endX - x;
         this.endY = this.endY - y;
         this.endZ = this.endZ - z;
+    }
+
+    public Location getStartLocation() {
+        return new Location(this.world, this.startX, this.startY, this.startZ);
+    }
+
+    public Location getEndLocation() {
+        return new Location(this.world, this.endX, this.endY, this.endZ);
     }
 }

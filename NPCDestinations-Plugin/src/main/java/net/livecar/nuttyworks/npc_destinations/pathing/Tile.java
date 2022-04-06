@@ -8,7 +8,6 @@ public class Tile {
 
     private final String uid;
     private Tile parent;
-    private Tile possibleParent;
 
     // As offset from starting point
     private final short x, y, z;
@@ -40,8 +39,13 @@ public class Tile {
         return new Location(start.getWorld(), start.getBlockX() + x, start.getBlockY() + y, start.getBlockZ() + z);
     }
 
+    public void calculateBoth(Location start, Location end, boolean update) {
+        this.calculateG(update);
+        this.calculateH(start.getBlockX(), start.getBlockY(), start.getBlockZ(), end.getBlockX(), end.getBlockY(), end.getBlockZ(), update);
+    }
+
     public void calculateBoth(int sx, int sy, int sz, int ex, int ey, int ez, boolean update) {
-        this.calculateG(sx, sy, sz, update);
+        this.calculateG(update);
         this.calculateH(sx, sy, sz, ex, ey, ez, update);
     }
 
@@ -55,7 +59,7 @@ public class Tile {
 
     // G = the movement cost to move from the starting point A to a given square
     // on the grid, following the path generated to get there.
-    public void calculateG(int sx, int sy, int sz, boolean update) {
+    public void calculateG(boolean update) {
         if (update || g == -1) {
             // Only update if g hasn't been calculated, or if forced
             Tile currentParent, currentTile = this;
@@ -140,14 +144,6 @@ public class Tile {
     public double getF() {
         // f = h + g
         return (h + g);
-    }
-
-    public Tile getPossibleParent() {
-        return possibleParent;
-    }
-
-    public void setPossibleParent(Tile possibleParent) {
-        this.possibleParent = possibleParent;
     }
 
     @Override

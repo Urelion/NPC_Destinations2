@@ -7,7 +7,6 @@ import net.livecar.nuttyworks.npc_destinations.DebugTarget;
 import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait.en_CurrentAction;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -95,22 +94,8 @@ public class AStarPathFinder {
         pathFindingQueue.setRequestedBy(requestedBy);
         pathFindingQueue.setTimeSpent(0L);
         pathFindingQueue.setBlocksProcessed(0L);
-        pathFindingQueue.setOpen(new TreeSet<>((o1, o2) -> {
-            if (o1.equals(o2)) {
-                if (o1.getG() > o2.getG()) {
-                    o2.setParent(o1.getPossibleParent());
-                    o1.setPossibleParent(null);
-                    o2.calculateBoth(currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ(), currentTask.getEndX(), currentTask.getEndY(), currentTask.getEndZ(), true);
-                }
-            }
-
-            if (o1.getF() > o2.getF()) {
-                return 1;
-            } else if (o1.getF() < o2.getF()) {
-                return -1;
-            }
-            return 0;
-        }));
+        pathFindingQueue.setOpen(new TreeSet<>(Comparator.comparingDouble(Tile::getF)));
+        pathFindingQueue.setOpenLookup(new HashMap<>());
         pathFindingQueue.setClosed(new HashMap<>());
 
         // Check if the start location is a 1/2 slab
@@ -253,9 +238,9 @@ public class AStarPathFinder {
 
         currentTask.getNpcTrait().setLastPathCalc();
 
-        short sh = 0;
+        final short sh = 0;
         Tile tile = new Tile(sh, sh, sh, null);
-        tile.calculateBoth(currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ(), currentTask.getEndX(), currentTask.getEndY(), currentTask.getEndZ(), true);
+        tile.calculateBoth(currentTask.getStartLocation(), currentTask.getEndLocation(), true);
         currentTask.getOpen().add(tile);
         processAdjacentTiles(tile);
         iterate();
@@ -324,32 +309,26 @@ public class AStarPathFinder {
                     if (plugin.getMcUtils().isOpenable(block) || plugin.getMcUtils().isOpenable(block.getLocation().add(0, 1, 0).getBlock()))
                         if (x != 0 && z != 0) continue;
 
-                    tile.calculateBoth(currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ(), currentTask.getEndX(), currentTask.getEndY(), currentTask.getEndZ(), true);
+                    tile.calculateBoth(currentTask.getStartLocation(), currentTask.getEndLocation(), true);
                     possible.add(tile);
                 }
             }
         }
 
         for (Tile tile : possible) {
-            if (currentTask.getOpen().contains(tile)) tile.setPossibleParent(current);
-            addToOpenList(tile);
+            Tile openLookupTile = currentTask.getOpenLookup().getOrDefault(tile, null);
+            if (openLookupTile == null) {
+                currentTask.getOpenLookup().put(tile, tile); // Hold the instance for fast retrieval
+                addToOpenList(tile);
+            } else {
+                if (tile.getG() < openLookupTile.getG()) {
+                    currentTask.getOpen().remove(openLookupTile);
+                    openLookupTile.setParent(current);
+                    openLookupTile.calculateBoth(currentTask.getStartLocation(), currentTask.getEndLocation(), true);
+                    currentTask.getOpen().add(openLookupTile);
+                }
+            }
         }
-
-//        for (Tile tile : possible) {
-//            Optional<Tile> openRefO = currentTask.getOpen().stream().filter(tile::equals).findFirst();
-//
-//            if (openRefO.isPresent()) {
-//                Tile openRef = openRefO.get();
-//                if (tile.getG() < openRef.getG()) {
-//                     If current path is better, change parent
-//                    openRef.setParent(current);
-//                     Force updates of F, G and H values.
-//                    openRef.calculateBoth(currentTask.getStartX(), currentTask.getStartY(), currentTask.getStartZ(), currentTask.getEndX(), currentTask.getEndY(), currentTask.getEndZ(), true);
-//                }
-//            } else {
-//                addToOpenList(tile);
-//            }
-//        }
     }
 
     private void iterate() {
@@ -448,23 +427,9 @@ public class AStarPathFinder {
             cleanTask();
             return;
         } else { // Path found
-            LinkedList<Tile> routeTrace = new LinkedList<>();
-            routeTrace.add(current);
+            List<Location> locations = buildLocations(buildPath(current));
 
-            Tile parent;
-            while ((parent = current.getParent()) != null) {
-                routeTrace.add(parent);
-                current = parent;
-            }
-
-            Collections.reverse(routeTrace);
-
-            ArrayList<Location> locationArray = new ArrayList<>();
-            for (Tile tLoc : routeTrace) {
-                locationArray.add(tLoc.getLocation(getStartLocation()));
-            }
-
-            trait.setPendingDestinations(locationArray);
+            trait.setPendingDestinations(locations);
             long nSeconds = (currentTask.getTimeSpent() + (new Date().getTime() - startTime)) / 1000 % 60;
             trait.lastProcessingTime = nSeconds;
             trait.totalProcessedBlocks += currentTask.getBlocksProcessed();
@@ -476,35 +441,53 @@ public class AStarPathFinder {
                 trait.lastBlocksPerSec = currentTask.getBlocksProcessed() / nSeconds;
             }
 
-            trait.lastResult = "Path found (" + routeTrace.size() + ")";
+            trait.lastResult = "Path found (" + locations.size() + ")";
             if (!trait.getCurrentAction().equals(en_CurrentAction.RANDOM_MOVEMENT))
                 trait.setCurrentAction(en_CurrentAction.PATH_FOUND);
             trait.setLastPathCalc();
-            plugin.getMessagesManager().debugMessage(Level.INFO, "astarpath.iterate()|NPC:" + currentTask.getNpc().getId() + "|Path Found (" + locationArray.size() + ")|Requested: " + currentTask.getRequestedBy());
+            plugin.getMessagesManager().debugMessage(Level.INFO, "astarpath.iterate()|NPC:" + currentTask.getNpc().getId() + "|Path Found (" + locations.size() + ")|Requested: " + currentTask.getRequestedBy());
             plugin.getMessagesManager().sendDebugMessage("destinations", "debug_messages.path_found", currentTask.getNpc(), currentTask.getNpcTrait());
 
             if (plugin.getDebugTargets().size() > 0) {
-                final ArrayList<Location> debugTrace = (ArrayList<Location>) locationArray.clone();
                 for (DebugTarget debugOutput : plugin.getDebugTargets()) {
                     if (debugOutput.getTargets().size() == 0 || debugOutput.getTargets().contains(currentTask.getNpc().getId())) {
                         if (((Player) debugOutput.targetSender).isOnline()) {
                             Player player = ((Player) debugOutput.targetSender);
-                            for (int count = 1; count < (debugTrace.size() - 1); count++) {
-                                if (player.getWorld().equals(debugTrace.get(count).getWorld())) {
-                                    debugOutput.addDebugBlockSent(debugTrace.get(count), Material.REDSTONE_BLOCK);
+                            for (int count = 1; count < (locations.size() - 1); count++) {
+                                if (player.getWorld().equals(locations.get(count).getWorld())) {
+                                    debugOutput.addDebugBlockSent(locations.get(count), Material.REDSTONE_BLOCK);
                                 }
                             }
-                            debugOutput.addDebugBlockSent(debugTrace.get(0), Material.GOLD_BLOCK);
-                            debugOutput.addDebugBlockSent(debugTrace.get(debugTrace.size() - 1), Material.DIAMOND_BLOCK);
+                            debugOutput.addDebugBlockSent(locations.get(0), Material.GOLD_BLOCK);
+                            debugOutput.addDebugBlockSent(locations.get(locations.size() - 1), Material.DIAMOND_BLOCK);
                         }
                     }
                 }
             }
             cleanTask();
-            routeTrace.clear();
         }
 
         if (pathQueue.size() > 0) nextQueue();
+    }
+
+    private List<Tile> buildPath(Tile current) {
+        List<Tile> tiles = new ArrayList<>();
+        tiles.add(current);
+
+        Tile parent;
+        while ((parent = current.getParent()) != null) {
+            tiles.add(parent);
+            current = parent;
+        }
+
+        Collections.reverse(tiles);
+        return tiles;
+    }
+
+    private List<Location> buildLocations(List<Tile> tiles) {
+        ArrayList<Location> locationArray = new ArrayList<>();
+        for (Tile tile : tiles) locationArray.add(tile.getLocation(getStartLocation()));
+        return locationArray;
     }
 
     private boolean canContinue() {
