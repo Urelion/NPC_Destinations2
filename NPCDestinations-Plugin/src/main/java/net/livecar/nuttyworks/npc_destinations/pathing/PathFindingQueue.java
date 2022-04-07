@@ -30,7 +30,7 @@ public class PathFindingQueue {
 
     private TreeSet<Tile> open;
     private HashMap<Tile, Tile> openLookup;
-    private HashMap<String, Tile> closed;
+    private HashSet<Tile> closed;
 
     private int blocksBelow;
 

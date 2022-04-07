@@ -96,7 +96,7 @@ public class AStarPathFinder {
         pathFindingQueue.setBlocksProcessed(0L);
         pathFindingQueue.setOpen(new TreeSet<>(Comparator.comparingDouble(Tile::getF)));
         pathFindingQueue.setOpenLookup(new HashMap<>());
-        pathFindingQueue.setClosed(new HashMap<>());
+        pathFindingQueue.setClosed(new HashSet<>());
 
         // Check if the start location is a 1/2 slab
         if (plugin.getMcUtils().isHalfBlock(cleanStart.getBlock().getRelative(0, 1, 0).getType())) {
@@ -502,25 +502,26 @@ public class AStarPathFinder {
             return false;
         } else {
             if (currentTask != null) {
-                StringBuilder b = new StringBuilder();
-                b.append(currentTask.getEndX() - currentTask.getStartX()).append(currentTask.getEndY() - currentTask.getStartY()).append(currentTask.getEndZ() - currentTask.getStartZ());
-                if (currentTask.getClosed().containsKey(b.toString())) {
+                short x = (short) (currentTask.getEndX() - currentTask.getStartX());
+                short y = (short) (currentTask.getEndY() - currentTask.getStartY());
+                short z = (short) (currentTask.getEndZ() - currentTask.getStartZ());
+                Tile endTile = new Tile(x, y, z, null);
+
+                if (currentTask.getClosed().contains(endTile)) {
                     currentTask.setPathFindingResult(PathingResult.SUCCESS);
                     return false;
                 } else {
-                    b = new StringBuilder();
-                    b.append(currentTask.getEndX() - currentTask.getStartX()).append((currentTask.getEndY() + 1) - currentTask.getStartY()).append(currentTask.getEndZ() - currentTask.getStartZ());
-                    if (currentTask.getClosed().containsKey(b.toString())) {
+                    endTile = new Tile(x, (short) (y + 1), z, null);
+                    if (currentTask.getClosed().contains(endTile)) {
                         currentTask.setPathFindingResult(PathingResult.SUCCESS);
                         return false;
-                    } else {
-                        return true;
                     }
                 }
             } else {
                 return false;
             }
         }
+        return true;
     }
 
     public void cleanTask() {
@@ -534,7 +535,7 @@ public class AStarPathFinder {
             currentTask.getOpen().clear();
         }
         if (currentTask.getClosed() != null) {
-            for (Tile tile : currentTask.getClosed().values()) tile.destroy();
+            for (Tile tile : currentTask.getClosed()) tile.destroy();
             currentTask.getClosed().clear();
         }
 
@@ -637,11 +638,11 @@ public class AStarPathFinder {
     }
 
     private void addToClosedList(Tile tile) {
-        currentTask.getClosed().putIfAbsent(tile.getUID(), tile);
+        currentTask.getClosed().add(tile);
     }
 
     private boolean isInCloseList(Tile tile) {
-        return currentTask.getClosed().containsKey(tile.getUID());
+        return currentTask.getClosed().contains(tile);
     }
 
     private int abs(int i) {
