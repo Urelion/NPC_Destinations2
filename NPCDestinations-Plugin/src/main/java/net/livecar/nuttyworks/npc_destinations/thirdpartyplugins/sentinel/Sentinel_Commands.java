@@ -29,7 +29,7 @@ public class Sentinel_Commands {
                     return true;
                 }
 
-                if (!destTrait.NPCLocations.get(nIndex).managed_Location.equals("")) {
+                if (!destTrait.NPCLocations.get(nIndex).managedLocation.equals("")) {
                     destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_managed", destTrait, destTrait.NPCLocations.get(nIndex));
                     return true;
                 }
@@ -41,30 +41,30 @@ public class Sentinel_Commands {
                 if (!addonReference.npcSettings.containsKey(npc.getId()))
                     addonReference.npcSettings.put(npc.getId(), new Sentinel_NPCSetting());
 
-                if (addonReference.npcSettings.get(npc.getId()).locations.containsKey(destTrait.NPCLocations.get(nIndex).LocationIdent))
-                    locSetting = addonReference.npcSettings.get(npc.getId()).locations.get(destTrait.NPCLocations.get(nIndex).LocationIdent);
+                if (addonReference.npcSettings.get(npc.getId()).locations.containsKey(destTrait.NPCLocations.get(nIndex).locationUUID))
+                    locSetting = addonReference.npcSettings.get(npc.getId()).locations.get(destTrait.NPCLocations.get(nIndex).locationUUID);
 
                 if (inargs[2].equalsIgnoreCase("clear")) {
                     if (locSetting != null) {
-                        addonReference.npcSettings.get(npc.getId()).locations.remove(destTrait.NPCLocations.get(nIndex).LocationIdent);
+                        addonReference.npcSettings.get(npc.getId()).locations.remove(destTrait.NPCLocations.get(nIndex).locationUUID);
                     }
                     destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
 
                 if (inargs[2].equalsIgnoreCase("set")) {
-                    addonReference.npcSettings.get(npc.getId()).locations.remove(destTrait.NPCLocations.get(nIndex).LocationIdent);
+                    addonReference.npcSettings.get(npc.getId()).locations.remove(destTrait.NPCLocations.get(nIndex).locationUUID);
                     locSetting = addonReference.pluginReference.getCurrentSettings(npc);
-                    locSetting.locationID = destTrait.NPCLocations.get(nIndex).LocationIdent;
-                    addonReference.npcSettings.get(npc.getId()).locations.put(destTrait.NPCLocations.get(nIndex).LocationIdent, locSetting);
+                    locSetting.locationID = destTrait.NPCLocations.get(nIndex).locationUUID;
+                    addonReference.npcSettings.get(npc.getId()).locations.put(destTrait.NPCLocations.get(nIndex).locationUUID, locSetting);
                     destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
                     return true;
                 }
 
                 if (locSetting == null) {
                     locSetting = new Sentinel_LocationSetting();
-                    locSetting.locationID = destTrait.NPCLocations.get(nIndex).LocationIdent;
-                    addonReference.npcSettings.get(npc.getId()).locations.put(destTrait.NPCLocations.get(nIndex).LocationIdent, locSetting);
+                    locSetting.locationID = destTrait.NPCLocations.get(nIndex).locationUUID;
+                    addonReference.npcSettings.get(npc.getId()).locations.put(destTrait.NPCLocations.get(nIndex).locationUUID, locSetting);
                 }
 
                 if (inargs[2].equalsIgnoreCase("get")) {

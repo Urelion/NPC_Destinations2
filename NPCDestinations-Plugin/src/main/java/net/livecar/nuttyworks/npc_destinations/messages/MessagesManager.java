@@ -4,7 +4,7 @@ import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.livecar.nuttyworks.npc_destinations.DebugTarget;
 import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
-import net.livecar.nuttyworks.npc_destinations.api.DestinationSetting;
+import net.livecar.nuttyworks.npc_destinations.api.Destination;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
 import net.livecar.nuttyworks.npc_destinations.plugins.DestinationsAddon;
 import org.bukkit.Bukkit;
@@ -108,11 +108,11 @@ public class MessagesManager {
         return messages;
     }
 
-    public String[] buildMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, DestinationSetting locationSetting, NPC npc, Material material, int ident) {
+    public String[] buildMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, Destination locationSetting, NPC npc, Material material, int ident) {
         return buildMessage(langFile, sender, msgKey, npcTrait, locationSetting, npc, material, ident, "");
     }
 
-    public String[] buildMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, DestinationSetting locationSetting, NPC npc, Material material, int ident, String rawMessage) {
+    public String[] buildMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, Destination locationSetting, NPC npc, Material material, int ident, String rawMessage) {
         List<String> processedMessages = new ArrayList<String>();
 
         String[] messages = this.getResultMessage(langFile, msgKey.toLowerCase());
@@ -129,15 +129,15 @@ public class MessagesManager {
         sendMessage(sender, buildMessage(langFile, sender, msgKey, null, null, null, null, 0, ""));
     }
 
-    public void sendMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, DestinationSetting locationSetting) {
+    public void sendMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, Destination locationSetting) {
         sendMessage(sender, buildMessage(langFile, sender, msgKey, npcTrait, locationSetting, npcTrait.getNPC(), null, 0, ""));
     }
 
-    public void sendMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, DestinationSetting locationSetting, String message) {
+    public void sendMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, Destination locationSetting, String message) {
         sendMessage(sender, buildMessage(langFile, sender, msgKey, npcTrait, locationSetting, npcTrait.getNPC(), null, 0, message));
     }
 
-    public void sendMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, DestinationSetting locationSetting, int ident) {
+    public void sendMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, Destination locationSetting, int ident) {
         sendMessage(sender, buildMessage(langFile, sender, msgKey, npcTrait, locationSetting, npcTrait.getNPC(), null, ident, ""));
     }
 
@@ -157,7 +157,7 @@ public class MessagesManager {
         sendMessage(sender, buildMessage(langFile, sender, msgKey, null, null, null, material, 0, ""));
     }
 
-    public void sendMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, DestinationSetting locationSetting, Material material) {
+    public void sendMessage(String langFile, CommandSender sender, String msgKey, NPCDestinationsTrait npcTrait, Destination locationSetting, Material material) {
         sendMessage(sender, buildMessage(langFile, sender, msgKey, npcTrait, locationSetting, npcTrait.getNPC(), material, 0, ""));
     }
 
@@ -214,7 +214,7 @@ public class MessagesManager {
     }
 
     @SuppressWarnings("deprecation")
-    private String parseMessage(CommandSender sender, String langFile, String message, NPCDestinationsTrait npcTrait, DestinationSetting locationSetting, Material blockMaterial, NPC npc, int ident) {
+    private String parseMessage(CommandSender sender, String langFile, String message, NPCDestinationsTrait npcTrait, Destination locationSetting, Material blockMaterial, NPC npc, int ident) {
 
         for (DestinationsAddon pluginReference : destRef.getPluginManager().getPlugins()) {
             message = pluginReference.parseLanguageLine(message, npcTrait, locationSetting, blockMaterial, npc, ident);
@@ -256,12 +256,12 @@ public class MessagesManager {
         if (npcTrait != null) {
             // Replace variables
             if (message.toLowerCase().contains("<setting.pauseforplayers>"))
-                message = replaceAll(message, "<setting.pauseforplayers>", Integer.toString(npcTrait.PauseForPlayers));
+                message = replaceAll(message, "<setting.pauseforplayers>", Integer.toString(npcTrait.pauseForPlayers));
             if (message.toLowerCase().contains("<setting.pausefortimeout>")) {
-                if (npcTrait.PauseTimeout < 0)
+                if (npcTrait.pauseTimeout < 0)
                     message = replaceAll(message, "<setting.pausefortimeout>", "Unlimited pause");
-                if (npcTrait.PauseTimeout > -1)
-                    message = replaceAll(message, "<setting.pausefortimeout>", Integer.toString(npcTrait.PauseTimeout));
+                if (npcTrait.pauseTimeout > -1)
+                    message = replaceAll(message, "<setting.pausefortimeout>", Integer.toString(npcTrait.pauseTimeout));
             }
             if (message.toLowerCase().contains("<setting.enabledplugins>")) {
                 if (destRef.getPluginManager().getPlugins().size() == 0) {
@@ -287,22 +287,20 @@ public class MessagesManager {
             if (message.toLowerCase().contains("<setting.blocksundersurface>"))
                 message = replaceAll(message, "<setting.blocksundersurface>", npcTrait.blocksUnderSurface == 0 ? this.getResultMessage(langFile, "result_Messages.false_text")[0]
                         : npcTrait.blocksUnderSurface == -1 ? this.getResultMessage(langFile, "result_messages.lowest_block")[0] : Integer.toString(npcTrait.blocksUnderSurface));
-            if (message.toLowerCase().contains("<setting.locationscount>"))
-                message = replaceAll(message, "<setting.locationscount>", npcTrait.Locations == null ? "0" : Integer.toString(npcTrait.Locations.size()));
             if (message.toLowerCase().contains("<setting.opensgates>"))
-                message = replaceAll(message, "<setting.opensgates>", !npcTrait.OpensGates ? "X\",\"color\":\"red" : "✔\",\"color\":\"white");
+                message = replaceAll(message, "<setting.opensgates>", !npcTrait.openGates ? "X\",\"color\":\"red" : "✔\",\"color\":\"white");
             if (message.toLowerCase().contains("<setting.openswooddoors>"))
-                message = replaceAll(message, "<setting.openswooddoors>", !npcTrait.OpensWoodDoors ? "X\",\"color\":\"red" : "✔\",\"color\":\"white");
+                message = replaceAll(message, "<setting.openswooddoors>", !npcTrait.openWoodDoors ? "X\",\"color\":\"red" : "✔\",\"color\":\"white");
             if (message.toLowerCase().contains("<setting.opensmetaldoors>"))
-                message = replaceAll(message, "<setting.opensmetaldoors>", !npcTrait.OpensMetalDoors ? "X\",\"color\":\"red" : "✔\",\"color\":\"white");
+                message = replaceAll(message, "<setting.opensmetaldoors>", !npcTrait.openMetalDoors ? "X\",\"color\":\"red" : "✔\",\"color\":\"white");
             if (message.toLowerCase().contains("<setting.teleportonfailedstartloc>"))
-                message = replaceAll(message, "<setting.teleportonfailedstartloc>", npcTrait.TeleportOnFailedStartLoc == null ? this.getResultMessage(langFile, "result_messages.false_text")[0]
-                        : (npcTrait.TeleportOnFailedStartLoc ? this.getResultMessage(langFile, "result_Messages.true_text")[0] : this.getResultMessage(langFile, "result_messages.false_text")[0]));
+                message = replaceAll(message, "<setting.teleportonfailedstartloc>", npcTrait.teleportOnFailedToStartLocation == null ? this.getResultMessage(langFile, "result_messages.false_text")[0]
+                        : (npcTrait.teleportOnFailedToStartLocation ? this.getResultMessage(langFile, "result_Messages.true_text")[0] : this.getResultMessage(langFile, "result_messages.false_text")[0]));
             if (message.toLowerCase().contains("<setting.teleportonnopath>"))
-                message = replaceAll(message, "<setting.teleportonnopath>", npcTrait.TeleportOnNoPath == null ? this.getResultMessage(langFile, "result_Messages.false_text")[0]
-                        : (npcTrait.TeleportOnNoPath ? this.getResultMessage(langFile, "result_Messages.true_text")[0] : this.getResultMessage(langFile, "result_Messages.false_text")[0]));
+                message = replaceAll(message, "<setting.teleportonnopath>", npcTrait.teleportOnNoPath == null ? this.getResultMessage(langFile, "result_Messages.false_text")[0]
+                        : (npcTrait.teleportOnNoPath ? this.getResultMessage(langFile, "result_Messages.true_text")[0] : this.getResultMessage(langFile, "result_Messages.false_text")[0]));
             if (message.toLowerCase().contains("<setting.maxdistfromdestination>"))
-                message = replaceAll(message, "<setting.maxdistfromdestination>", Integer.toString(npcTrait.MaxDistFromDestination));
+                message = replaceAll(message, "<setting.maxdistfromdestination>", Integer.toString(npcTrait.maxDistanceFromDestination));
             if (message.toLowerCase().contains("<setting.currentaction>"))
                 message = replaceAll(message, "<setting.currentaction>", npcTrait.getCurrentAction() == null ? this.getResultMessage(langFile, "result_Messages.action_idle")[0] : "action_" + npcTrait.getCurrentAction().toString());
             if (message.toLowerCase().contains("<setting.lastresult>"))
@@ -344,7 +342,7 @@ public class MessagesManager {
                 }
             }
             if (message.toLowerCase().contains("<setting.statusmessage>")) {
-                if (npcTrait.monitoredLocation != null && npcTrait.monitoredLocation.LocationIdent.toString().equals(npcTrait.currentLocation.LocationIdent.toString())) {
+                if (npcTrait.monitoredLocation != null && npcTrait.monitoredLocation.locationUUID.toString().equals(npcTrait.currentLocation.locationUUID.toString())) {
                     if (npcTrait.getMonitoringPlugin() != null)
                         message = replaceAll(message, "<setting.statusmessage>", this.getResultMessage(langFile, "result_Messages.action_monitored")[0].replaceAll("<message>", npcTrait.getMonitoringPlugin().getDescription().getName()));
                     else
@@ -467,8 +465,8 @@ public class MessagesManager {
                         String linkColor = "aqua";
                         if (locationBlocked)
                             linkColor = "yellow";
-                        message = replaceAll(message, "<location.current>", "{\"text\":\"" + nCnt + "\",\"color\":\"" + linkColor + "\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"" + locationSetting.LocationIdent
-                                .toString() + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"" + this.getResultMessage(langFile, "result_Messages.current_location")[0] + "\n&eID: " + locationSetting.LocationIdent.toString()
+                        message = replaceAll(message, "<location.current>", "{\"text\":\"" + nCnt + "\",\"color\":\"" + linkColor + "\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"" + locationSetting.locationUUID
+                                .toString() + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"" + this.getResultMessage(langFile, "result_Messages.current_location")[0] + "\n&eID: " + locationSetting.locationUUID.toString()
                                 + "\"}}");
                         bFound = true;
                         break;
@@ -476,15 +474,15 @@ public class MessagesManager {
                         String linkColor = "white";
                         if (locationBlocked)
                             linkColor = "red";
-                        message = replaceAll(message, "<location.current>", "{\"text\":\"<location.id>\",\"color\":\"" + linkColor + "\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"" + locationSetting.LocationIdent.toString()
-                                + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"&eID: " + locationSetting.LocationIdent + "\"}}");
+                        message = replaceAll(message, "<location.current>", "{\"text\":\"<location.id>\",\"color\":\"" + linkColor + "\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"" + locationSetting.locationUUID.toString()
+                                + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"&eID: " + locationSetting.locationUUID + "\"}}");
                         bFound = true;
                     }
                 }
 
                 if (!bFound) {
-                    message = replaceAll(message, "<location.current>", "{\"text\":\"<location.id>\",\"color\":\"white\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"" + locationSetting.LocationIdent.toString()
-                            + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"&eID: " + locationSetting.LocationIdent + "\"}}");
+                    message = replaceAll(message, "<location.current>", "{\"text\":\"<location.id>\",\"color\":\"white\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"" + locationSetting.locationUUID.toString()
+                            + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"&eID: " + locationSetting.locationUUID + "\"}}");
                 }
             }
             if (message.toLowerCase().contains("<location.id>")) {
@@ -508,29 +506,29 @@ public class MessagesManager {
             }
 
             if (message.toLowerCase().contains("<location.unique>"))
-                message = replaceAll(message, "<location.unique>", locationSetting.LocationIdent.toString());
+                message = replaceAll(message, "<location.unique>", locationSetting.locationUUID.toString());
             if (message.toLowerCase().contains("<location.timeofday>")) {
-                if (locationSetting.TimeOfDay == -1)
+                if (locationSetting.timeOfDay == -1)
                     message = replaceAll(message, "<location.timeofday>", this.getResultMessage(langFile, "result_Messages.disabled_text")[0]);
                 else
-                    message = replaceAll(message, "<location.timeofday>", Integer.toString(locationSetting.TimeOfDay));
+                    message = replaceAll(message, "<location.timeofday>", Integer.toString(locationSetting.timeOfDay));
             }
             if (message.toLowerCase().contains("<location.probability>"))
-                message = replaceAll(message, "<location.probability>", Integer.toString(locationSetting.Probability));
+                message = replaceAll(message, "<location.probability>", Integer.toString(locationSetting.probability));
             if (message.toLowerCase().contains("<location.time_min>"))
-                message = replaceAll(message, "<location.time_min>", Integer.toString(locationSetting.Time_Minimum));
+                message = replaceAll(message, "<location.time_min>", Integer.toString(locationSetting.timeMinimum));
             if (message.toLowerCase().contains("<location.time_max>"))
-                message = replaceAll(message, "<location.time_max>", Integer.toString(locationSetting.Time_Maximum));
+                message = replaceAll(message, "<location.time_max>", Integer.toString(locationSetting.timeMaximum));
             if (message.toLowerCase().contains("<location.destinationyaw>"))
-                message = replaceAll(message, "<location.destinationyaw>", "(" + locationSetting.destination.getBlockX() + "," + locationSetting.destination.getBlockY() + "," + locationSetting.destination.getBlockZ() + ") ["
-                        + locationSetting.destination.getYaw() + "]");
+                message = replaceAll(message, "<location.destinationyaw>", "(" + locationSetting.location.getBlockX() + "," + locationSetting.location.getBlockY() + "," + locationSetting.location.getBlockZ() + ") ["
+                        + locationSetting.location.getYaw() + "]");
             if (message.toLowerCase().contains("<location.destination>"))
-                message = replaceAll(message, "<location.destination>", "(" + locationSetting.destination.getBlockX() + "," + locationSetting.destination.getBlockY() + "," + locationSetting.destination.getBlockZ() + ")");
+                message = replaceAll(message, "<location.destination>", "(" + locationSetting.location.getBlockX() + "," + locationSetting.location.getBlockY() + "," + locationSetting.location.getBlockZ() + ")");
             if (message.toLowerCase().contains("<location.destinationraw>"))
-                message = replaceAll(message, "<location.destinationraw>", "" + locationSetting.destination.getBlockX() + " " + locationSetting.destination.getBlockY() + " " + locationSetting.destination.getBlockZ() + "");
+                message = replaceAll(message, "<location.destinationraw>", "" + locationSetting.location.getBlockX() + " " + locationSetting.location.getBlockY() + " " + locationSetting.location.getBlockZ() + "");
 
             if (message.toLowerCase().contains("<location.wandering_settingtype>")) {
-                if (!locationSetting.Wandering_Region.trim().equals("")) {
+                if (!locationSetting.wanderingRegion.trim().equals("")) {
                     message = replaceAll(message, "<location.wandering_settingtype>", this.getResultMessage(langFile, "result_Messages.wander_setting_region")[0]);
                 } else {
                     message = replaceAll(message, "<location.wandering_settingtype>", this.getResultMessage(langFile, "result_Messages.wander_setting_distance")[0]);
@@ -538,8 +536,8 @@ public class MessagesManager {
             }
 
             if (message.toLowerCase().contains("<location.wandering_setting>")) {
-                if (!locationSetting.Wandering_Region.trim().equals("")) {
-                    message = replaceAll(message, "<location.wandering_setting>", locationSetting.Wandering_Region);
+                if (!locationSetting.wanderingRegion.trim().equals("")) {
+                    message = replaceAll(message, "<location.wandering_setting>", locationSetting.wanderingRegion);
                 } else {
                     message = replaceAll(message, "<location.wandering_setting>", Double.toString(locationSetting.getWanderingDistance()));
                 }
@@ -549,45 +547,45 @@ public class MessagesManager {
                 message = replaceAll(message, "<location.wandering_distance>", Double.toString(locationSetting.getWanderingDistance()));
             }
             if (message.toLowerCase().contains("<location.wait_minimum>"))
-                message = replaceAll(message, "<location.wait_minimum>", Integer.toString(locationSetting.Wait_Minimum));
+                message = replaceAll(message, "<location.wait_minimum>", Integer.toString(locationSetting.waitMinimum));
             if (message.toLowerCase().contains("<location.wait_maximum>"))
-                message = replaceAll(message, "<location.wait_maximum>", Integer.toString(locationSetting.Wait_Maximum));
+                message = replaceAll(message, "<location.wait_maximum>", Integer.toString(locationSetting.waitMaximum));
             if (message.toLowerCase().contains("<location.max_distance>"))
                 message = replaceAll(message, "<location.max_distance>", Double.toString(locationSetting.getMaxDistance()));
             if (message.toLowerCase().contains("<location.pause_distance>"))
-                message = replaceAll(message, "<location.pause_distance>", Integer.toString(locationSetting.Pause_Distance));
+                message = replaceAll(message, "<location.pause_distance>", Integer.toString(locationSetting.pauseDistance));
             if (message.toLowerCase().contains("<location.pause_timeout>"))
-                message = replaceAll(message, "<location.pause_timeout>", Integer.toString(locationSetting.Pause_Timeout));
+                message = replaceAll(message, "<location.pause_timeout>", Integer.toString(locationSetting.pauseTimeout));
             if (message.toLowerCase().contains("<location.pause_style>"))
-                message = replaceAll(message, "<location.pause_style>", locationSetting.Pause_Type);
+                message = replaceAll(message, "<location.pause_style>", locationSetting.pauseType);
             if (message.toLowerCase().contains("<location.alias_name>"))
-                message = replaceAll(message, "<location.alias_name>", locationSetting.Alias_Name == null ? "" : locationSetting.Alias_Name);
+                message = replaceAll(message, "<location.alias_name>", locationSetting.aliasName == null ? "" : locationSetting.aliasName);
             if (message.toLowerCase().contains("<location.distanceto>"))
-                message = replaceAll(message, "<location.distanceto>", Long.toString((long) npc.getEntity().getLocation().distance(locationSetting.destination)));
+                message = replaceAll(message, "<location.distanceto>", Long.toString((long) npc.getEntity().getLocation().distance(locationSetting.location)));
             if (message.toLowerCase().contains("<location.useblocks>"))
-                message = replaceAll(message, "<location.useblocks>", locationSetting.Wandering_UseBlocks.toString());
+                message = replaceAll(message, "<location.useblocks>", locationSetting.wanderingUseBlocks.toString());
             if (message.toLowerCase().contains("<location.skin>"))
-                message = replaceAll(message, "<location.skin>", locationSetting.player_Skin_Name.isEmpty() ? "Not Set" : locationSetting.player_Skin_Name);
+                message = replaceAll(message, "<location.skin>", locationSetting.playerSkinName.isEmpty() ? "Not Set" : locationSetting.playerSkinName);
             if (message.toLowerCase().contains("<location.skin_action>"))
-                message = replaceAll(message, "<location.skin_action>", locationSetting.player_Skin_ApplyOnArrival ? "End location" : "Start Location");
+                message = replaceAll(message, "<location.skin_action>", locationSetting.playerSkinApplyOnArrival ? "End location" : "Start Location");
             if (message.toLowerCase().contains("<location.clearinv>"))
-                message = replaceAll(message, "<location.clearinv>", !locationSetting.items_Clear ? this.getResultMessage(langFile, "result_messages.false_text")[0] : this.getResultMessage(langFile, "result_messages.true_text")[0]);
+                message = replaceAll(message, "<location.clearinv>", !locationSetting.itemsClear ? this.getResultMessage(langFile, "result_messages.false_text")[0] : this.getResultMessage(langFile, "result_messages.true_text")[0]);
             if (message.toLowerCase().contains("<location.helmet>"))
-                message = replaceAll(message, "<location.helmet>", locationSetting.items_Head == null ? "" : getItemName(locationSetting.items_Head));
+                message = replaceAll(message, "<location.helmet>", locationSetting.itemsHead == null ? "" : getItemName(locationSetting.itemsHead));
             if (message.toLowerCase().contains("<location.chest>"))
-                message = replaceAll(message, "<location.chest>", locationSetting.items_Chest == null ? "" : getItemName(locationSetting.items_Chest));
+                message = replaceAll(message, "<location.chest>", locationSetting.itemsChest == null ? "" : getItemName(locationSetting.itemsChest));
             if (message.toLowerCase().contains("<location.legs>"))
-                message = replaceAll(message, "<location.legs>", locationSetting.items_Legs == null ? "" : getItemName(locationSetting.items_Legs));
+                message = replaceAll(message, "<location.legs>", locationSetting.itemsLegs == null ? "" : getItemName(locationSetting.itemsLegs));
             if (message.toLowerCase().contains("<location.boots>"))
-                message = replaceAll(message, "<location.boots>", locationSetting.items_Boots == null ? "" : getItemName(locationSetting.items_Boots));
+                message = replaceAll(message, "<location.boots>", locationSetting.itemsBoots == null ? "" : getItemName(locationSetting.itemsBoots));
             if (message.toLowerCase().contains("<location.hand>"))
-                message = replaceAll(message, "<location.hand>", locationSetting.items_Hand == null ? "" : getItemName(locationSetting.items_Hand));
+                message = replaceAll(message, "<location.hand>", locationSetting.itemsHand == null ? "" : getItemName(locationSetting.itemsHand));
             if (message.toLowerCase().contains("<location.offhand>"))
-                message = replaceAll(message, "<location.offhand>", locationSetting.items_Offhand == null ? "" : getItemName(locationSetting.items_Offhand));
+                message = replaceAll(message, "<location.offhand>", locationSetting.itemsOffhand == null ? "" : getItemName(locationSetting.itemsOffhand));
             if (message.toLowerCase().contains("<location.commands>")) {
-                if (locationSetting.arrival_Commands != null && locationSetting.arrival_Commands.size() > 0) {
+                if (locationSetting.arrivalCommands != null && locationSetting.arrivalCommands.size() > 0) {
                     String cmds = "";
-                    for (String cmdStr : locationSetting.arrival_Commands) {
+                    for (String cmdStr : locationSetting.arrivalCommands) {
                         if (cmdStr.length() > 25)
                             cmds += cmdStr.substring(0, 25) + "\n&f  ";
                         else
@@ -602,9 +600,9 @@ public class MessagesManager {
 
             // 1.29 - Weather
             if (message.toLowerCase().contains("<location.weather>")) {
-                if (locationSetting.WeatherFlag == 1) {
+                if (locationSetting.weatherFlag == 1) {
                     message = replaceAll(message, "<location.weather>", "Clear Weather");
-                } else if (locationSetting.WeatherFlag == 2) {
+                } else if (locationSetting.weatherFlag == 2) {
                     message = replaceAll(message, "<location.weather>", "Stormy Weather");
                 } else {
                     message = replaceAll(message, "<location.weather>", "Any Weather");
@@ -618,7 +616,7 @@ public class MessagesManager {
             if (message.toLowerCase().contains("<command.textlong>")) {
                 String start = message.substring(0, message.indexOf("<command.textlong>"));
                 String end = message.substring(message.indexOf("<command.textlong>") + ("<command.textlong>".length()));
-                String replacement = locationSetting.arrival_Commands.get(ident).replace("\\", "\\\\").replace("\"", "\\\"").replace("{", "\\{").replace("}", "\\}");
+                String replacement = locationSetting.arrivalCommands.get(ident).replace("\\", "\\\\").replace("\"", "\\\"").replace("{", "\\{").replace("}", "\\}");
                 String metaWindow = "";
                 while (true) {
                     if (replacement.length() > 51) {
@@ -636,10 +634,10 @@ public class MessagesManager {
                 String start = message.substring(0, message.indexOf("<command.textshort>"));
                 String end = message.substring(message.indexOf("<command.textshort>") + ("<command.textshort>".length()));
                 String replacement = "";
-                if (locationSetting.arrival_Commands.get(ident).length() > 51)
-                    replacement = locationSetting.arrival_Commands.get(ident).substring(0, 50).replace("\\", "\\\\").replace("\"", "\\\"").replace("{", "\\{").replace("}", "\\}") + "...";
+                if (locationSetting.arrivalCommands.get(ident).length() > 51)
+                    replacement = locationSetting.arrivalCommands.get(ident).substring(0, 50).replace("\\", "\\\\").replace("\"", "\\\"").replace("{", "\\{").replace("}", "\\}") + "...";
                 else
-                    replacement = locationSetting.arrival_Commands.get(ident).replace("\\", "\\\\").replace("\"", "\\\"").replace("{", "\\{").replace("}", "\\}");
+                    replacement = locationSetting.arrivalCommands.get(ident).replace("\\", "\\\\").replace("\"", "\\\"").replace("{", "\\{").replace("}", "\\}");
                 message = start + replacement + end;
             }
         }

@@ -8,11 +8,11 @@ import org.bukkit.event.HandlerList;
 public class LocationDeleted extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
 
-    private DestinationSetting destinationChanged;
+    private Destination destinationChanged;
     private NPC                      owningNPC;
     private boolean                  cancelEvent;
 
-    public LocationDeleted(NPC referencedNPC, final DestinationSetting removedDestination) {
+    public LocationDeleted(NPC referencedNPC, final Destination removedDestination) {
         destinationChanged = removedDestination;
         owningNPC = referencedNPC;
     }
@@ -40,7 +40,7 @@ public class LocationDeleted extends Event implements Cancellable {
         return cancelEvent;
     }
 
-    public DestinationSetting getDestination() {
+    public Destination getDestination() {
         return destinationChanged;
     }
 }

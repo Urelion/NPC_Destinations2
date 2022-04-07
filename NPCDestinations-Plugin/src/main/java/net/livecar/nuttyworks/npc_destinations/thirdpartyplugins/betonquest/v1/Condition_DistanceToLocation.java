@@ -2,7 +2,7 @@ package net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.betonquest.v1;
 
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
-import net.livecar.nuttyworks.npc_destinations.api.DestinationSetting;
+import net.livecar.nuttyworks.npc_destinations.api.Destination;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
 import org.apache.commons.lang.math.NumberUtils;
 import pl.betoncraft.betonquest.Instruction;
@@ -68,12 +68,12 @@ public class Condition_DistanceToLocation extends Condition {
 
             //if (trait.NPCLocations.get(destID).destination.toString().equals(trait.currentLocation.destination.toString()))
             //{
-            return trait.NPCLocations.get(destID).destination.distance(npc.getEntity().getLocation()) <= destDistance;
+            return trait.NPCLocations.get(destID).location.distance(npc.getEntity().getLocation()) <= destDistance;
             //}
         }
-        for (DestinationSetting destLoc : trait.NPCLocations) {
+        for (Destination destLoc : trait.NPCLocations) {
 
-            if (destLoc.LocationIdent.toString().equalsIgnoreCase(destUUID.toString()) && destLoc.destination.distance(npc.getEntity().getLocation()) <= destDistance) {
+            if (destLoc.locationUUID.toString().equalsIgnoreCase(destUUID.toString()) && destLoc.location.distance(npc.getEntity().getLocation()) <= destDistance) {
                 return true;
             }
         }

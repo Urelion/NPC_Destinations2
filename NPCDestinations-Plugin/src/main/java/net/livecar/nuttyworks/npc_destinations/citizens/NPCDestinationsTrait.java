@@ -3,8 +3,9 @@ package net.livecar.nuttyworks.npc_destinations.citizens;
 import net.citizensnpcs.api.persistence.Persist;
 import net.citizensnpcs.api.trait.Trait;
 import net.citizensnpcs.api.util.DataKey;
+import net.citizensnpcs.api.util.MemoryDataKey;
 import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
-import net.livecar.nuttyworks.npc_destinations.api.DestinationSetting;
+import net.livecar.nuttyworks.npc_destinations.api.Destination;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -17,47 +18,43 @@ import java.util.logging.Level;
 
 public class NPCDestinationsTrait extends Trait {
     @Persist
-    public int PauseForPlayers = 5;
+    public int pauseForPlayers = 5;
     @Persist
-    public int PauseTimeout = 25;
-    // @Persist public Boolean LookOneBlockDown = false;
+    public int pauseTimeout = 25;
     @Persist
     public int blocksUnderSurface = 0;
-    // Format X:Y:Z:TIMEOFDAY -Old, will convert this to new format on loading
     @Persist
-    public List<String> Locations = new ArrayList<String>();
+    public Boolean openGates = false;
     @Persist
-    public Boolean OpensGates = false;
+    public Boolean openWoodDoors = false;
     @Persist
-    public Boolean OpensWoodDoors = false;
+    public Boolean openMetalDoors = false;
     @Persist
-    public Boolean OpensMetalDoors = false;
+    public Boolean teleportOnFailedToStartLocation = true;
     @Persist
-    public Boolean TeleportOnFailedStartLoc = true;
+    public Boolean teleportOnNoPath = true;
     @Persist
-    public Boolean TeleportOnNoPath = true;
-    @Persist
-    public int MaxDistFromDestination = 2;
+    public int maxDistanceFromDestination = 2;
 
-    public enum en_CurrentAction {
+    public enum CurrentAction {
         RANDOM_MOVEMENT, PATH_HUNTING, PATH_FOUND, TRAVELING, IDLE, IDLE_FAILED,
     }
 
-    public enum en_RequestedAction {
+    public enum RequestedAction {
         NORMAL_PROCESSING, NO_PROCESSING, SET_LOCATION,
     }
 
-    public List<DestinationSetting> NPCLocations = new ArrayList<>();
+    public List<Destination> NPCLocations = new ArrayList<>();
     public String lastResult = "Idle";
     public List<Material> AllowedPathBlocks = new ArrayList<>();
     public LocalDateTime lastPositionChange;
     public LocalDateTime lastPlayerPause;
     public Location lastPauseLocation;
     public Location lastNavigationPoint;
-    public DestinationSetting currentLocation = new DestinationSetting();
-    public DestinationSetting setLocation = new DestinationSetting();
-    public DestinationSetting lastLocation = new DestinationSetting();
-    public DestinationSetting monitoredLocation = null;
+    public Destination currentLocation = new Destination();
+    public Destination setLocation = new Destination();
+    public Destination lastLocation = new Destination();
+    public Destination monitoredLocation = null;
 
     public List<String> enabledPlugins = new ArrayList<>();
     public Boolean citizens_Swim = true;
@@ -79,14 +76,12 @@ public class NPCDestinationsTrait extends Trait {
 
     public Integer maxProcessingTime = -1;
 
-    public String lastDebugMessage = "";
-
     // Inner namespace variables
     List<Location> pendingDestinations = new ArrayList<>();
     List<Location> processedDestinations = new ArrayList<>();
     List<Block> openedObjects = new ArrayList<>();
-    en_CurrentAction currentAction = en_CurrentAction.IDLE;
-    en_RequestedAction requestedAction = en_RequestedAction.NORMAL_PROCESSING;
+    CurrentAction currentAction = CurrentAction.IDLE;
+    RequestedAction requestedAction = RequestedAction.NORMAL_PROCESSING;
     Plugin monitoringPlugin = null;
     LocalDateTime timeLastPathCalc;
     LocalDateTime locationLockUntil;
@@ -97,7 +92,6 @@ public class NPCDestinationsTrait extends Trait {
     UUID last_Loc_Reached;
     int requestedPauseTime;
 
-    // Public methods
     public NPCDestinationsTrait() {
         super("npcdestinations");
         this.lastPositionChange = LocalDateTime.now();
@@ -110,7 +104,12 @@ public class NPCDestinationsTrait extends Trait {
 
     @Override
     public void onAttach() {
-        load(new net.citizensnpcs.api.util.MemoryDataKey());
+        load(new MemoryDataKey());
+    }
+
+    @Override
+    public void load(DataKey key) {
+        DestinationsPlugin.getInstance().getCitizensProcessing().load(this, key);
     }
 
     public Plugin getMonitoringPlugin() {
@@ -130,21 +129,25 @@ public class NPCDestinationsTrait extends Trait {
         unsetMonitoringPlugin("");
     }
 
-    public void setMonitoringPlugin(Plugin plugin, DestinationSetting monitoredDestination) {
+    public void setMonitoringPlugin(Plugin plugin, Destination monitoredDestination) {
         monitoringPlugin = plugin;
         monitoredLocation = monitoredDestination;
         if (monitoringPlugin != null)
             DestinationsPlugin.getInstance().getMessagesManager().sendDebugMessage("destinations", "Debug_Messages.trait_monitored", npc, monitoringPlugin.getName());
     }
 
-    public DestinationSetting GetCurrentLocation() {
+    public Destination GetCurrentLocation() {
         return GetCurrentLocation(false);
     }
 
-    public DestinationSetting GetCurrentLocation(Boolean noNull) {
-        return CitizensProcessing.traitGetCurrentLocation(this, noNull);
+    public Destination GetCurrentLocation(Boolean noNull) {
+        return DestinationsPlugin.getInstance().getCitizensProcessing().getCurrentLocation(this, noNull);
     }
 
+    public Destination getCurrentLocation() {
+        if (this.currentLocation == null) return new Destination();
+        return this.currentLocation;
+    }
 
     public LocalDateTime getLocationLockUntil() {
         return locationLockUntil;
@@ -152,7 +155,7 @@ public class NPCDestinationsTrait extends Trait {
 
     public void setLocationLockUntil(LocalDateTime lockUntil) {
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-mm-dd hh:mm:ss");
-        CitizensProcessing.debugMessage(Level.FINE, "NPC:" + this.npc.getId() + "|" + (lockUntil == null ? "Clear" : dateFormat.format(lockUntil)) + "|" + Arrays.toString(Thread.currentThread().getStackTrace()));
+        DestinationsPlugin.getInstance().getMessagesManager().debugMessage(Level.FINE, "NPC:" + this.npc.getId() + "|" + (lockUntil == null ? "Clear" : dateFormat.format(lockUntil)) + "|" + Arrays.toString(Thread.currentThread().getStackTrace()));
         this.locationLockUntil = lockUntil;
     }
 
@@ -164,8 +167,8 @@ public class NPCDestinationsTrait extends Trait {
         return this.requestedPauseTime;
     }
 
-    public void setRequestedAction(en_RequestedAction action) {
-        CitizensProcessing.debugMessage(Level.FINE, "NPCDestinations_Trait.setRequestedAction()|NPC:" + this.npc.getId() + "|" + action.toString());
+    public void setRequestedAction(RequestedAction action) {
+        DestinationsPlugin.getInstance().getMessagesManager().debugMessage(Level.FINE, "NPCDestinations_Trait.setRequestedAction()|NPC:" + this.npc.getId() + "|" + action.toString());
         this.requestedAction = action;
     }
 
@@ -182,7 +185,7 @@ public class NPCDestinationsTrait extends Trait {
     }
 
     public void removePendingDestination(int index) {
-        CitizensProcessing.traitRemovePendingDestination(this, index);
+        DestinationsPlugin.getInstance().getCitizensProcessing().removePendingDestination(this, index);
         if (this.pendingDestinations.size() > index) {
             this.processedDestinations.add(this.pendingDestinations.get(index));
             this.pendingDestinations.remove(index);
@@ -190,52 +193,42 @@ public class NPCDestinationsTrait extends Trait {
     }
 
     public void clearPendingDestinations() {
-        CitizensProcessing.traitClearPendingDestinations(this);
+        DestinationsPlugin.getInstance().getCitizensProcessing().clearPendingDestinations(this);
         this.pendingDestinations.clear();
         this.processedDestinations.clear();
     }
 
     @Override
-    public void load(DataKey key) {
-        CitizensProcessing.traitLoadSettings(this, key);
-    }
-
-    @Override
     public void save(DataKey key) {
-        CitizensProcessing.traitSaveSettings(this, key);
+        DestinationsPlugin.getInstance().getCitizensProcessing().save(this, key);
     }
 
-    public en_RequestedAction getRequestedAction() {
+    public RequestedAction getRequestedAction() {
         return this.requestedAction;
     }
 
-    public void setCurrentAction(en_CurrentAction action) {
-        CitizensProcessing.debugMessage(Level.FINE, "NPCDestinations_Trait.setCurrentAction()|NPC:" + this.npc.getId() + "|" + action.toString() + Arrays.toString(Thread.currentThread().getStackTrace()));
+    public void setCurrentAction(CurrentAction action) {
+        DestinationsPlugin.getInstance().getMessagesManager().debugMessage(Level.FINE, "NPCDestinations_Trait.setCurrentAction()|NPC:" + this.npc.getId() + "|" + action.toString() + Arrays.toString(Thread.currentThread().getStackTrace()));
         this.currentAction = action;
     }
 
-    public en_CurrentAction getCurrentAction() {
+    public CurrentAction getCurrentAction() {
         return this.currentAction;
     }
 
     public void locationReached() {
-        CitizensProcessing.traitLocationReached(this);
+        DestinationsPlugin.getInstance().getCitizensProcessing().locationReached(this);
     }
 
-    public void setCurrentLocation(DestinationSetting location) {
-        if (this.currentLocation.destination == null) {
-            if (location.destination.distanceSquared(this.npc.getEntity().getLocation()) > 5) {
+    public void setCurrentLocation(Destination location) {
+        if (this.currentLocation.location == null) {
+            if (location.location.distanceSquared(this.npc.getEntity().getLocation()) > 5) {
                 this.currentLocation = location;
             } else {
                 this.currentLocation = location;
                 this.locationReached();
             }
         } else this.currentLocation = location;
-    }
-
-    public DestinationSetting getCurrentLocation() {
-        if (this.currentLocation == null) return new DestinationSetting();
-        return this.currentLocation;
     }
 
     public void processOpenableObjects() {
@@ -266,15 +259,15 @@ public class NPCDestinationsTrait extends Trait {
     }
 
     private void openOpenable(Block oBlock) {
-        if (DestinationsPlugin.getInstance().getMcUtils().isGate(oBlock.getType()) && OpensGates) {
+        if (DestinationsPlugin.getInstance().getMcUtils().isGate(oBlock.getType()) && openGates) {
             if (DestinationsPlugin.getInstance().getMcUtils().openOpenable(oBlock)) {
                 this.openedObjects.add(oBlock);
             }
-        } else if (DestinationsPlugin.getInstance().getMcUtils().isWoodDoor(oBlock.getType()) && OpensWoodDoors) {
+        } else if (DestinationsPlugin.getInstance().getMcUtils().isWoodDoor(oBlock.getType()) && openWoodDoors) {
             if (DestinationsPlugin.getInstance().getMcUtils().openOpenable(oBlock)) {
                 this.openedObjects.add(oBlock);
             }
-        } else if (DestinationsPlugin.getInstance().getMcUtils().isMetalDoor(oBlock.getType()) && OpensMetalDoors) {
+        } else if (DestinationsPlugin.getInstance().getMcUtils().isMetalDoor(oBlock.getType()) && openMetalDoors) {
             if (DestinationsPlugin.getInstance().getMcUtils().openOpenable(oBlock)) {
                 this.openedObjects.add(oBlock);
             }

@@ -7,10 +7,10 @@ import org.bukkit.event.HandlerList;
 public class NavigationFailed extends Event {
     private static final HandlerList handlers = new HandlerList();
 
-    private DestinationSetting targetDestination;
+    private Destination targetDestination;
     private NPC                      owningNPC;
 
-    public NavigationFailed(NPC npc, DestinationSetting newDestination) {
+    public NavigationFailed(NPC npc, Destination newDestination) {
         targetDestination = newDestination;
         owningNPC = npc;
     }
@@ -28,7 +28,7 @@ public class NavigationFailed extends Event {
         return owningNPC;
     }
 
-    public DestinationSetting getDestination() {
+    public Destination getDestination() {
         return targetDestination;
     }
 }

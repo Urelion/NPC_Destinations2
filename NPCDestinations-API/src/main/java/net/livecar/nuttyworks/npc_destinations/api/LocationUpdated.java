@@ -7,10 +7,10 @@ import org.bukkit.event.HandlerList;
 public class LocationUpdated extends Event {
     private static final HandlerList handlers = new HandlerList();
 
-    private DestinationSetting destinationChanged;
+    private Destination destinationChanged;
     private NPC                      owningNPC;
 
-    public LocationUpdated(NPC changedNPC, DestinationSetting changedDestination) {
+    public LocationUpdated(NPC changedNPC, Destination changedDestination) {
         destinationChanged = changedDestination;
         owningNPC = changedNPC;
     }
@@ -28,7 +28,7 @@ public class LocationUpdated extends Event {
         return owningNPC;
     }
 
-    public DestinationSetting getDestination() {
+    public Destination getDestination() {
         return destinationChanged;
     }
 }

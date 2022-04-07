@@ -6,7 +6,7 @@ import net.citizensnpcs.api.npc.NPC;
 import net.livecar.nuttyworks.npc_destinations.DebugTarget;
 import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
-import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait.en_CurrentAction;
+import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait.CurrentAction;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -149,7 +149,7 @@ public class AStarPathFinder {
         if (pathQueue.size() > 0) {
             Entry<Integer, PathFindingQueue> entryItem = pathQueue.entrySet().iterator().next();
             this.currentTask = entryItem.getValue();
-            currentTask.getNpcTrait().setCurrentAction(en_CurrentAction.PATH_HUNTING);
+            currentTask.getNpcTrait().setCurrentAction(CurrentAction.PATH_HUNTING);
             pathQueue.remove(entryItem.getKey());
             processQueueItem();
         }
@@ -190,7 +190,7 @@ public class AStarPathFinder {
                 plugin.getMessagesManager().sendDebugMessage("destinations", "debug_messages.path_outofrange", currentTask.getNpc(), currentTask.getNpcTrait());
                 plugin.getMessagesManager().debugMessage(Level.INFO, "NPCDestinations_astar.ProcessQueueItem().FailedPath|NPC:" + currentTask.getNpc().getId() + "|Requested: " + currentTask.getRequestedBy());
                 currentTask.getNpcTrait().lastResult = "Unable to find a path";
-                currentTask.getNpcTrait().setCurrentAction(en_CurrentAction.IDLE_FAILED);
+                currentTask.getNpcTrait().setCurrentAction(CurrentAction.IDLE_FAILED);
                 currentTask.getNpcTrait().setLastPathCalc();
                 currentTask.getNpcTrait().setLocationLockUntil(LocalDateTime.now().plusSeconds(10));
                 cleanTask();
@@ -201,7 +201,7 @@ public class AStarPathFinder {
                 plugin.getMessagesManager().sendDebugMessage("destinations", "debug_messages.path_badendloc", currentTask.getNpc(), currentTask.getNpcTrait(), "S/E Fail [" + currentTask.getEndX() + "," + currentTask.getEndY() + "," + currentTask.getEndZ() + "]");
                 plugin.getMessagesManager().debugMessage(Level.INFO, "NPCDestinations_astar.ProcessQueueItem().FailedPath|NPC:" + currentTask.getNpc().getId() + "|Requested: " + currentTask.getRequestedBy());
                 currentTask.getNpcTrait().lastResult = "Start/End location is not walkable";
-                currentTask.getNpcTrait().setCurrentAction(en_CurrentAction.IDLE_FAILED);
+                currentTask.getNpcTrait().setCurrentAction(CurrentAction.IDLE_FAILED);
                 currentTask.getNpcTrait().setLastPathCalc();
                 currentTask.getNpcTrait().setLocationLockUntil(LocalDateTime.now().plusSeconds(10));
 
@@ -216,7 +216,7 @@ public class AStarPathFinder {
                 plugin.getMessagesManager().debugMessage(Level.INFO, "NPCDestinations_astar.ProcessQueueItem().FailedPath|NPC:" + currentTask.getNpc().getId() + "|Start/End No Walk|Requested: " + currentTask.getRequestedBy());
 
                 currentTask.getNpcTrait().lastResult = "End location is not walkable";
-                currentTask.getNpcTrait().setCurrentAction(en_CurrentAction.IDLE_FAILED);
+                currentTask.getNpcTrait().setCurrentAction(CurrentAction.IDLE_FAILED);
                 currentTask.getNpcTrait().setLastPathCalc();
                 currentTask.getNpcTrait().setLocationLockUntil(LocalDateTime.now().plusSeconds(10));
                 cleanTask();
@@ -387,7 +387,7 @@ public class AStarPathFinder {
 
                 currentTask.setPathFindingResult(PathingResult.NO_PATH);
                 trait.lastResult = "Unable to find a path";
-                trait.setCurrentAction(en_CurrentAction.IDLE_FAILED);
+                trait.setCurrentAction(CurrentAction.IDLE_FAILED);
                 trait.setLastPathCalc();
                 trait.setLocationLockUntil(LocalDateTime.now().plusSeconds(10));
 
@@ -421,7 +421,7 @@ public class AStarPathFinder {
             plugin.getMessagesManager().debugMessage(Level.FINEST, "NPCDestinations_astar.ProcessQueueItem().FailedPath|NPC:" + currentTask.getNpc().getId() + "|Timeout/Len|Requested: " + currentTask.getRequestedBy());
 
             trait.lastResult = "Unable to find a path";
-            trait.setCurrentAction(en_CurrentAction.IDLE_FAILED);
+            trait.setCurrentAction(CurrentAction.IDLE_FAILED);
             trait.setLocationLockUntil(LocalDateTime.now().plusSeconds(10));
             trait.setLastPathCalc();
             cleanTask();
@@ -442,8 +442,8 @@ public class AStarPathFinder {
             }
 
             trait.lastResult = "Path found (" + locations.size() + ")";
-            if (!trait.getCurrentAction().equals(en_CurrentAction.RANDOM_MOVEMENT))
-                trait.setCurrentAction(en_CurrentAction.PATH_FOUND);
+            if (!trait.getCurrentAction().equals(CurrentAction.RANDOM_MOVEMENT))
+                trait.setCurrentAction(CurrentAction.PATH_FOUND);
             trait.setLastPathCalc();
             plugin.getMessagesManager().debugMessage(Level.INFO, "astarpath.iterate()|NPC:" + currentTask.getNpc().getId() + "|Path Found (" + locations.size() + ")|Requested: " + currentTask.getRequestedBy());
             plugin.getMessagesManager().sendDebugMessage("destinations", "debug_messages.path_found", currentTask.getNpc(), currentTask.getNpcTrait());
@@ -523,7 +523,7 @@ public class AStarPathFinder {
         }
     }
 
-    private void cleanTask() {
+    public void cleanTask() {
         if (currentTask == null) return;
 
         if (plugin.getDebugLogLevel() == Level.FINEST)

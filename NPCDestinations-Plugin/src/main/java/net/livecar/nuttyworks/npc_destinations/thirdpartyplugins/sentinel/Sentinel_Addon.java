@@ -2,7 +2,7 @@ package net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.sentinel;
 
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.util.DataKey;
-import net.livecar.nuttyworks.npc_destinations.api.DestinationSetting;
+import net.livecar.nuttyworks.npc_destinations.api.Destination;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
 import net.livecar.nuttyworks.npc_destinations.plugins.DestinationsAddon;
 import org.bukkit.Material;
@@ -40,20 +40,20 @@ public class Sentinel_Addon extends DestinationsAddon {
     }
 
     @Override
-    public String getDestinationHelp(NPC npc, NPCDestinationsTrait npcTrait, DestinationSetting location) {
+    public String getDestinationHelp(NPC npc, NPCDestinationsTrait npcTrait, Destination location) {
         String[] response = pluginReference.destRef.getMessagesManager().buildMessage("sentinel", null, "sentinel.plugin_destination", npcTrait, location, npc, null, 0);
         return response[0];
     }
 
-    public String parseLanguageLine(String message, NPCDestinationsTrait npcTrait, DestinationSetting locationSetting, Material blockMaterial, NPC npc, int ident) {
+    public String parseLanguageLine(String message, NPCDestinationsTrait npcTrait, Destination locationSetting, Material blockMaterial, NPC npc, int ident) {
         if (locationSetting != null) {
             if (!npcSettings.containsKey(npc.getId())) {
                 message = message.replaceAll("<location\\.sentinel>", "");
                 return message;
             }
 
-            if (npcSettings.get(npc.getId()).locations.containsKey(locationSetting.LocationIdent)) {
-                Sentinel_LocationSetting locSetting = npcSettings.get(npc.getId()).locations.get(locationSetting.LocationIdent);
+            if (npcSettings.get(npc.getId()).locations.containsKey(locationSetting.locationUUID)) {
+                Sentinel_LocationSetting locSetting = npcSettings.get(npc.getId()).locations.get(locationSetting.locationUUID);
 
                 if (message.toLowerCase().contains("<location.sentinel>")) {
                     if (locSetting.lastSet.getTime() == 0) {
@@ -70,12 +70,12 @@ public class Sentinel_Addon extends DestinationsAddon {
         return message;
     }
 
-    public boolean isDestinationEnabled(NPC npc, NPCDestinationsTrait npcTrait, DestinationSetting location) {
+    public boolean isDestinationEnabled(NPC npc, NPCDestinationsTrait npcTrait, Destination location) {
         return true;
     }
 
     @SuppressWarnings("unchecked")
-    public void onLocationLoading(NPC npc, NPCDestinationsTrait npcTrait, DestinationSetting location, DataKey storageKey) {
+    public void onLocationLoading(NPC npc, NPCDestinationsTrait npcTrait, Destination location, DataKey storageKey) {
         if (!storageKey.keyExists("Sentinel"))
             return;
 
@@ -184,17 +184,17 @@ public class Sentinel_Addon extends DestinationsAddon {
         if (storageKey.keyExists("Sentinel.squad"))
             oLoc.squad = storageKey.getString("Sentinel.squad");
 
-        oLoc.locationID = location.LocationIdent;
-        npcSetting.locations.put(location.LocationIdent, oLoc);
+        oLoc.locationID = location.locationUUID;
+        npcSetting.locations.put(location.locationUUID, oLoc);
     }
 
-    public void onLocationSaving(NPC npc, NPCDestinationsTrait npcTrait, DestinationSetting location, DataKey storageKey) {
+    public void onLocationSaving(NPC npc, NPCDestinationsTrait npcTrait, Destination location, DataKey storageKey) {
         if (!npcSettings.containsKey(npc.getId()))
             return;
-        if (!npcSettings.get(npc.getId()).locations.containsKey(location.LocationIdent))
+        if (!npcSettings.get(npc.getId()).locations.containsKey(location.locationUUID))
             return;
 
-        Sentinel_LocationSetting locationConfig = npcSettings.get(npc.getId()).locations.get(location.LocationIdent);
+        Sentinel_LocationSetting locationConfig = npcSettings.get(npc.getId()).locations.get(location.locationUUID);
 
         if (locationConfig.locationID != null) {
 
@@ -256,17 +256,17 @@ public class Sentinel_Addon extends DestinationsAddon {
         }
     }
 
-    public boolean onNavigationReached(NPC npc, NPCDestinationsTrait npcTrait, DestinationSetting location) {
+    public boolean onNavigationReached(NPC npc, NPCDestinationsTrait npcTrait, Destination location) {
         if (npcSettings.containsKey(npc.getId())) {
-            if (npcSettings.get(npc.getId()).locations.containsKey(location.LocationIdent)) {
+            if (npcSettings.get(npc.getId()).locations.containsKey(location.locationUUID)) {
                 pluginReference.destRef.getMessagesManager().debugMessage(Level.INFO, "DestinationsEventsListener.onNavigationReached|NPC:" + npc.getId() + "|Monitored location reached, setting sentinel settings");
-                pluginReference.setCurrentSettings(npc, npcSettings.get(npc.getId()).locations.get(location.LocationIdent));
+                pluginReference.setCurrentSettings(npc, npcSettings.get(npc.getId()).locations.get(location.locationUUID));
             }
         }
         return false;
     }
 
-    public boolean onNewDestination(NPC npc, NPCDestinationsTrait npcTrait, DestinationSetting location) {
+    public boolean onNewDestination(NPC npc, NPCDestinationsTrait npcTrait, Destination location) {
         return false;
     }
 

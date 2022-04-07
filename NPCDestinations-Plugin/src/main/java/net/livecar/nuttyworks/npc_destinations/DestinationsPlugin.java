@@ -3,16 +3,17 @@ package net.livecar.nuttyworks.npc_destinations;
 import lombok.Getter;
 import lombok.Setter;
 import net.citizensnpcs.Citizens;
-import net.citizensnpcs.api.event.CitizensDisableEvent;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.trait.TraitInfo;
+import net.citizensnpcs.trait.waypoint.Waypoints;
 import net.livecar.nuttyworks.npc_destinations.bridges.MCUtil_1_18_R1R2;
 import net.livecar.nuttyworks.npc_destinations.bridges.MCUtilsBridge;
 import net.livecar.nuttyworks.npc_destinations.citizens.CitizensProcessing;
-import net.livecar.nuttyworks.npc_destinations.utilities.CitizensUtilities;
 import net.livecar.nuttyworks.npc_destinations.citizens.CitizensWaypointProvider;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
-import net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.lightapi.LightAPI_Plugin;
-import net.livecar.nuttyworks.npc_destinations.listeners.BlockStickListener_NPCDest;
-import net.livecar.nuttyworks.npc_destinations.listeners.PlayerJoinListener_NPCDest;
+import net.livecar.nuttyworks.npc_destinations.listeners.OnCitizensEvents;
+import net.livecar.nuttyworks.npc_destinations.listeners.OnPlayerInteractEvent;
+import net.livecar.nuttyworks.npc_destinations.listeners.OnPlayerJoinLeaveEvent;
 import net.livecar.nuttyworks.npc_destinations.listeners.commands.CommandManager;
 import net.livecar.nuttyworks.npc_destinations.listeners.commands.CommandsLocation;
 import net.livecar.nuttyworks.npc_destinations.listeners.commands.CommandsNPC;
@@ -29,9 +30,11 @@ import net.livecar.nuttyworks.npc_destinations.plugins.timemanager.DestinationsT
 import net.livecar.nuttyworks.npc_destinations.plugins.timemanager.realworldtime.DestinationsRealWorldTimeManager;
 import net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.betonquest.BetonQuest_Interface;
 import net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.jobsreborn.JobsReborn_Plugin;
+import net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.lightapi.LightAPI_Plugin;
 import net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.plotsquared.PlotSquared;
 import net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.plotsquared.PlotSquared_Plugin_V6;
 import net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.sentinel.Sentinel_Plugin;
+import net.livecar.nuttyworks.npc_destinations.utilities.CitizensUtilities;
 import net.livecar.nuttyworks.npc_destinations.utilities.Utilities;
 import net.livecar.nuttyworks.npc_destinations.worldguard.WorldGuardInterface;
 import net.livecar.nuttyworks.npc_destinations.worldguard.WorldGuard_7_0_7;
@@ -40,7 +43,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.plugin.Plugin;
 
 import java.io.*;
@@ -50,66 +52,42 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+@Getter
+@Setter
 public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implements org.bukkit.event.Listener {
 
     @Getter
     private static DestinationsPlugin instance;
 
-    @Getter
     private String currentLanguage = "en_def";
-    @Getter
-    @Setter
     private Level debugLogLevel = Level.OFF;
-    @Getter
     private List<DebugTarget> debugTargets;
-    @Getter
     private JSONChat jsonChat = null;
-    @Getter
     private int maxDistance = 500;
-    @Getter
     private int entityRadius = 47 * 47;
 
     private FileConfiguration defaultConfig;
-    @Getter
     private File languagePath;
-    @Getter
     private File loggingPath;
 
-    @Getter
     private Plugin_Manager pluginManager = null;
-    @Getter
     private LanguageManager languageManager = null;
-    @Getter
     private MessagesManager messagesManager = null;
-    @Getter
     private CommandManager commandManager = null;
-    @Getter
     private AStarPathFinder aStarPathFinder = null;
-    @Getter
     private CitizensProcessing citizensProcessing = null;
-    @Getter
     private DestinationsTimeManager timeManager = null;
-    @Getter
     private Utilities utilities = null;
 
-    @Getter
     private MCUtilsBridge mcUtils = null;
-    @Getter
     private PlayParticleInterface particleManager = null;
 
-    @Getter
     private Citizens citizensPlugin = null;
-    @Getter
     private PlotSquared plotSquaredPlugin = null;
-    @Getter
     private BetonQuest_Interface betonQuestPlugin = null;
-    @Getter
     private WorldGuardInterface worldGuardPlugin = null;
-    @Getter
     private LightAPI_Plugin lightAPIPlugin = null;
-    @Getter
     private JobsReborn_Plugin jobsRebornPlugin = null;
-    @Getter
     private Sentinel_Plugin sentinelPlugin = null;
 
     public void onLoad() {
@@ -152,8 +130,7 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
         this.languageManager.loadLanguages();
 
         // Init Default settings
-        if (this.defaultConfig.contains("language"))
-            this.currentLanguage = this.defaultConfig.getString("language");
+        if (this.defaultConfig.contains("language")) this.currentLanguage = this.defaultConfig.getString("language");
         if (this.getCurrentLanguage().equalsIgnoreCase("en-default")) this.currentLanguage = "en_def";
 
         if (this.defaultConfig.contains("max-distance"))
@@ -267,22 +244,14 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
         this.jsonChat = new JSONChat(this);
 
         // Register your trait with Citizens.
-        net.citizensnpcs.api.CitizensAPI.getTraitFactory().registerTrait(net.citizensnpcs.api.trait.TraitInfo.create(NPCDestinationsTrait.class).withName("npcdestinations"));
+        CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(NPCDestinationsTrait.class).withName("npcdestinations"));
 
         // Register events
-        Bukkit.getPluginManager().registerEvents(this, this);
+        registerEventListeners();
 
-        Bukkit.getPluginManager().registerEvents(new BlockStickListener_NPCDest(this), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerJoinListener_NPCDest(this), this);
+        Waypoints.registerWaypointProvider(CitizensWaypointProvider.class, "npcdestinations");
 
-        net.citizensnpcs.trait.waypoint.Waypoints.registerWaypointProvider(CitizensWaypointProvider.class, "npcdestinations");
-
-        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
-            try {
-                aStarPathFinder.checkStatus();
-            } catch (Exception ignored) {
-            }
-        }, 30L, 5L);
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> aStarPathFinder.checkStatus(), 30L, 5L);
 
         // 1.34 - Citizens save.yml backup monitor
         final CitizensUtilities backupClass = new CitizensUtilities(this);
@@ -299,14 +268,18 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, statsReporting::Start, 500L);
     }
 
+    private void registerEventListeners() {
+        Bukkit.getPluginManager().registerEvents(new OnCitizensEvents(this), this);
+        Bukkit.getPluginManager().registerEvents(new OnPlayerJoinLeaveEvent(this), this);
+        Bukkit.getPluginManager().registerEvents(new OnPlayerInteractEvent(this), this);
+    }
+
     public void onDisable() {
-        if (isEnabled()) {
-            this.getMessagesManager().debugMessage(Level.CONFIG, "nuNPCDestinations.onDisable()|Stopping Internal Processes");
-            Bukkit.getServer().getScheduler().cancelTasks(this);
-            this.aStarPathFinder.setCurrentTask(null);
-            this.aStarPathFinder.getPathQueue().clear();
-            this.aStarPathFinder = null;
-        }
+        this.getMessagesManager().debugMessage(Level.CONFIG, "nuNPCDestinations.onDisable()|Stopping Internal Processes");
+        Bukkit.getServer().getScheduler().cancelTasks(this);
+        this.aStarPathFinder.setCurrentTask(null);
+        this.aStarPathFinder.getPathQueue().clear();
+        this.aStarPathFinder = null;
     }
 
     @Override
@@ -323,14 +296,6 @@ public class DestinationsPlugin extends org.bukkit.plugin.java.JavaPlugin implem
             return getCommandManager().onTabComplete(sender, inargs);
         }
         return new ArrayList<>();
-    }
-
-    @EventHandler
-    public void CitizensDisabled(final CitizensDisableEvent event) {
-        Bukkit.getServer().getScheduler().cancelTasks(this);
-        this.aStarPathFinder = null;
-        getMessagesManager().consoleMessage(this, "destinations", "Console_Messages.plugin_ondisable");
-        getServer().getPluginManager().disablePlugin(this);
     }
 
     public Boolean hasPermissions(CommandSender player, String[] permissions) {

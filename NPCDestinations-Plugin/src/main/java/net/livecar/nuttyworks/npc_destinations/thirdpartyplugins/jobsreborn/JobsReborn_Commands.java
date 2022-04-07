@@ -39,7 +39,7 @@ public class JobsReborn_Commands {
                     return true;
                 }
 
-                if (!destTrait.NPCLocations.get(nIndex).managed_Location.equals("")) {
+                if (!destTrait.NPCLocations.get(nIndex).managedLocation.equals("")) {
                     destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_managed", destTrait, destTrait.NPCLocations.get(nIndex));
                     return true;
                 }
@@ -52,13 +52,13 @@ public class JobsReborn_Commands {
                 if (!addonReference.pluginReference.npcSettings.containsKey(npc.getId()))
                     addonReference.pluginReference.npcSettings.put(npc.getId(), new JobsReborn_NPCSetting());
 
-                if (addonReference.pluginReference.npcSettings.get(npc.getId()).locations.containsKey(destTrait.NPCLocations.get(nIndex).LocationIdent))
-                    locSetting = addonReference.pluginReference.npcSettings.get(npc.getId()).locations.get(destTrait.NPCLocations.get(nIndex).LocationIdent);
+                if (addonReference.pluginReference.npcSettings.get(npc.getId()).locations.containsKey(destTrait.NPCLocations.get(nIndex).locationUUID))
+                    locSetting = addonReference.pluginReference.npcSettings.get(npc.getId()).locations.get(destTrait.NPCLocations.get(nIndex).locationUUID);
 
 
                 if (inargs[2].equalsIgnoreCase("clear")) {
                     if (locSetting != null) {
-                        addonReference.pluginReference.npcSettings.get(npc.getId()).locations.remove(destTrait.NPCLocations.get(nIndex).LocationIdent);
+                        addonReference.pluginReference.npcSettings.get(npc.getId()).locations.remove(destTrait.NPCLocations.get(nIndex).locationUUID);
 
                         // V1.39 -- Event
                         LocationUpdated changeEvent = new LocationUpdated(npc, destTrait.NPCLocations.get(nIndex));
@@ -71,8 +71,8 @@ public class JobsReborn_Commands {
 
                 if (locSetting == null) {
                     locSetting = new JobsReborn_LocationSetting();
-                    locSetting.locationID = destTrait.NPCLocations.get(nIndex).LocationIdent;
-                    addonReference.pluginReference.npcSettings.get(npc.getId()).locations.put(destTrait.NPCLocations.get(nIndex).LocationIdent, locSetting);
+                    locSetting.locationID = destTrait.NPCLocations.get(nIndex).locationUUID;
+                    addonReference.pluginReference.npcSettings.get(npc.getId()).locations.put(destTrait.NPCLocations.get(nIndex).locationUUID, locSetting);
                 }
 
                 if (inargs[2].equalsIgnoreCase(">")) {

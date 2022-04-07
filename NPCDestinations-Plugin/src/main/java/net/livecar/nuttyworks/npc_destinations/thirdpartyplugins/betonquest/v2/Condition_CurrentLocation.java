@@ -62,7 +62,7 @@ public class Condition_CurrentLocation extends Condition {
                 return false;
             }
 
-            return trait.NPCLocations.get(destID).destination.toString().equals(trait.currentLocation.destination.toString());
-        } else return trait.currentLocation.LocationIdent.toString().equalsIgnoreCase(destUUID.toString());
+            return trait.NPCLocations.get(destID).location.toString().equals(trait.currentLocation.location.toString());
+        } else return trait.currentLocation.locationUUID.toString().equalsIgnoreCase(destUUID.toString());
     }
 }

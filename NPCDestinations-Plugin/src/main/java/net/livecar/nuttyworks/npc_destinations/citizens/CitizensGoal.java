@@ -38,6 +38,6 @@ public class CitizensGoal extends BehaviorGoalAdapter implements Listener {
     }
 
     public boolean shouldExecute() {
-        return CitizensProcessing.goalAdapterShouldExecute(this.npc, this);
+        return DestinationsPlugin.getInstance().getCitizensProcessing().shouldExecute(this.npc, this);
     }
 }

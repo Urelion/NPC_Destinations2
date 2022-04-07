@@ -2,9 +2,9 @@ package net.livecar.nuttyworks.npc_destinations.thirdpartyplugins.betonquest.v2;
 
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
-import net.livecar.nuttyworks.npc_destinations.api.DestinationSetting;
+import net.livecar.nuttyworks.npc_destinations.api.Destination;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
-import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait.en_RequestedAction;
+import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait.RequestedAction;
 import org.apache.commons.lang.math.NumberUtils;
 import org.betonquest.betonquest.Instruction;
 import org.betonquest.betonquest.api.QuestEvent;
@@ -66,7 +66,7 @@ public class Event_goloc extends QuestEvent {
         } else
             trait = npc.getTrait(NPCDestinationsTrait.class);
 
-        DestinationSetting newDest = null;
+        Destination newDest = null;
         if (destID > -1) {
             if (destID > trait.NPCLocations.size()) {
                 BetonQuest_Plugin.destRef.getMessagesManager().consoleMessage(BetonQuest_Plugin.destRef, "destinations", "Console_Messages.betonquest_error", "Event_GoLocation references NPC (" + targetNPC + ") but is missing location (" + destID + ")");
@@ -74,8 +74,8 @@ public class Event_goloc extends QuestEvent {
             }
             newDest = trait.NPCLocations.get(destID);
         } else {
-            for (DestinationSetting destLoc : trait.NPCLocations) {
-                if (destLoc.LocationIdent.toString().equalsIgnoreCase(destUUID.toString())) {
+            for (Destination destLoc : trait.NPCLocations) {
+                if (destLoc.locationUUID.toString().equalsIgnoreCase(destUUID.toString())) {
                     newDest = destLoc;
                     break;
                 }
@@ -91,7 +91,7 @@ public class Event_goloc extends QuestEvent {
         trait.currentLocation = newDest;
         trait.setLocationLockUntil(duration);
         trait.lastPositionChange = LocalDateTime.now();
-        trait.setRequestedAction(en_RequestedAction.SET_LOCATION);
+        trait.setRequestedAction(RequestedAction.SET_LOCATION);
         return null;
     }
 }

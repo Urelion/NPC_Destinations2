@@ -8,7 +8,7 @@ import net.citizensnpcs.trait.waypoint.Waypoints;
 import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
 import net.livecar.nuttyworks.npc_destinations.api.NavigationNewDestination;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
-import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait.en_RequestedAction;
+import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait.RequestedAction;
 import net.livecar.nuttyworks.npc_destinations.plugins.DestinationsAddon;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -110,10 +110,10 @@ public class CommandsNPC {
             destRef.getMessagesManager().sendMessage("destinations", sender, "messages.invalid_npc");
             return true;
         }
-        if (destTrait.getRequestedAction() == en_RequestedAction.NO_PROCESSING) {
-            destTrait.setRequestedAction(en_RequestedAction.NORMAL_PROCESSING);
+        if (destTrait.getRequestedAction() == RequestedAction.NO_PROCESSING) {
+            destTrait.setRequestedAction(RequestedAction.NORMAL_PROCESSING);
         } else {
-            destTrait.setRequestedAction(en_RequestedAction.NO_PROCESSING);
+            destTrait.setRequestedAction(RequestedAction.NO_PROCESSING);
         }
         return true;
     }
@@ -213,8 +213,8 @@ public class CommandsNPC {
                 for (int nCnt = 0; nCnt < destTrait.NPCLocations.size(); nCnt++) {
                     // V 1.45 -- Added location ID support for this
                     // command.
-                    if (destTrait.NPCLocations.get(nCnt).Alias_Name.equalsIgnoreCase(inargs[1])
-                            || destTrait.NPCLocations.get(nCnt).LocationIdent.toString().equalsIgnoreCase(
+                    if (destTrait.NPCLocations.get(nCnt).aliasName.equalsIgnoreCase(inargs[1])
+                            || destTrait.NPCLocations.get(nCnt).locationUUID.toString().equalsIgnoreCase(
                             inargs[1])) {
                         // Exists
                         nLocNum = nCnt;
@@ -236,7 +236,7 @@ public class CommandsNPC {
                     nLength = 86400; // 1 day
                 }
 
-                if (!destTrait.NPCLocations.get(nLocNum).managed_Location.equals("")) {
+                if (!destTrait.NPCLocations.get(nLocNum).managedLocation.equals("")) {
                     destRef.getMessagesManager().sendMessage("destinations", sender, "messages.commands_managed",
                             destTrait, destTrait.NPCLocations.get(nLocNum));
                     return true;
@@ -274,7 +274,7 @@ public class CommandsNPC {
                 destTrait.currentLocation = destTrait.NPCLocations.get(nLocNum);
                 destTrait.setLocationLockUntil(nLength);
                 destTrait.lastPositionChange = LocalDateTime.now();
-                destTrait.setRequestedAction(en_RequestedAction.SET_LOCATION);
+                destTrait.setRequestedAction(RequestedAction.SET_LOCATION);
 
                 return true;
             }
@@ -352,15 +352,15 @@ public class CommandsNPC {
             return true;
         }
         if (inargs.length == 1) {
-            destTrait.PauseForPlayers = -1;
-            destTrait.PauseTimeout = -1;
+            destTrait.pauseForPlayers = -1;
+            destTrait.pauseTimeout = -1;
             // V1.39 -- Event
             destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
             return true;
         } else if (inargs.length == 2) {
             try {
-                destTrait.PauseForPlayers = Integer.parseInt(inargs[1]);
-                destTrait.PauseTimeout = -1;
+                destTrait.pauseForPlayers = Integer.parseInt(inargs[1]);
+                destTrait.pauseTimeout = -1;
                 destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
             } catch (Exception e) {
                 destRef.getMessagesManager().sendMessage("destinations", sender,
@@ -369,8 +369,8 @@ public class CommandsNPC {
             return true;
         } else if (inargs.length == 3) {
             try {
-                destTrait.PauseForPlayers = Integer.parseInt(inargs[1]);
-                destTrait.PauseTimeout = Integer.parseInt(inargs[2]);
+                destTrait.pauseForPlayers = Integer.parseInt(inargs[1]);
+                destTrait.pauseTimeout = Integer.parseInt(inargs[2]);
                 destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
             } catch (Exception e) {
                 destRef.getMessagesManager().sendMessage("destinations", sender,
@@ -507,7 +507,7 @@ public class CommandsNPC {
             return true;
         }
 
-        destTrait.OpensGates = !destTrait.OpensGates;
+        destTrait.openGates = !destTrait.openGates;
         destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
         return true;
     }
@@ -529,7 +529,7 @@ public class CommandsNPC {
             return true;
         }
 
-        destTrait.OpensWoodDoors = !destTrait.OpensWoodDoors;
+        destTrait.openWoodDoors = !destTrait.openWoodDoors;
         destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
         return true;
     }
@@ -551,7 +551,7 @@ public class CommandsNPC {
             return true;
         }
 
-        destTrait.OpensMetalDoors = !destTrait.OpensMetalDoors;
+        destTrait.openMetalDoors = !destTrait.openMetalDoors;
         destRef.getCommandManager().onCommand(sender, new String[]{"info", "--npc", Integer.toString(npc.getId())});
         return true;
     }

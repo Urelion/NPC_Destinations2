@@ -8,12 +8,12 @@ import org.bukkit.event.HandlerList;
 public class NavigationNewDestination extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
 
-    private DestinationSetting targetDestination;
+    private Destination targetDestination;
     private NPC                      owningNPC;
     private boolean                  cancelEvent;
     private boolean                  forcedEvent;
 
-    public NavigationNewDestination(NPC npc, DestinationSetting newDestination, boolean forced) {
+    public NavigationNewDestination(NPC npc, Destination newDestination, boolean forced) {
         targetDestination = newDestination;
         owningNPC = npc;
         forcedEvent = forced;
@@ -46,7 +46,7 @@ public class NavigationNewDestination extends Event implements Cancellable {
         return forcedEvent;
     }
 
-    public DestinationSetting getDestination() {
+    public Destination getDestination() {
         return targetDestination;
     }
 }

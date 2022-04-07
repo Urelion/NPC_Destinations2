@@ -2,15 +2,16 @@ package net.livecar.nuttyworks.npc_destinations.listeners;
 
 import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public class PlayerJoinListener_NPCDest implements org.bukkit.event.Listener {
+public class OnPlayerJoinLeaveEvent implements Listener {
 
-    private DestinationsPlugin destRef = null;
+    private DestinationsPlugin plugin;
 
-    public PlayerJoinListener_NPCDest(DestinationsPlugin storageRef) {
-        destRef = storageRef;
+    public OnPlayerJoinLeaveEvent(DestinationsPlugin plugin) {
+        this.plugin = plugin;
     }
 
     @EventHandler
@@ -21,6 +22,6 @@ public class PlayerJoinListener_NPCDest implements org.bukkit.event.Listener {
     @EventHandler
     public void onPlayerLeaveEvent(PlayerQuitEvent event) {
         // Remove this player from the debug if they are in it
-        destRef.getDebugTargets().remove(event.getPlayer());
+        plugin.getDebugTargets().remove(event.getPlayer());
     }
 }
