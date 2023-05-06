@@ -1,0 +1,15 @@
+name: NPC_Destinations
+main: net.livecar.nuttyworks.npc_destinations.DestinationsPlugin
+description: Extends Citizens to allow location settings for NPC's with many other options.
+version: and-2.6.11
+depend: [Citizens]
+softdepend: [Betonquest]
+author: Sir_Nutty@Spigot
+api-version: 1.13
+website: https://www.spigotmc.org/resources/13863/
+commands:
+  npcdest:
+    description: Give your citizens NPC's a goal in life.
+    aliases: [nd]
+    usage:
+      /npcdest help
